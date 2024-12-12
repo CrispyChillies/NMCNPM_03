@@ -285,14 +285,6 @@ export const GameProductManagement = () => {
             </TableBody>
           </Table>
         </div>
-
-        {/* Add Game Button */}
-        <div className="mt-4 flex justify-end">
-          <Button  className="bg-emerald-600 hover:bg-emerald-700">
-          {/* onClick={handleAddGame} */}
-            <Plus className="mr-2 h-4 w-4" /> Add Game
-          </Button>
-        </div>
       </div>
     </div>
   )

@@ -35,7 +35,7 @@ export default function SignUp() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+      <div className="w-[480px] h-[810px] bg-[#2D2D2D] px-8 py-[66px] space-y-6 bg-white rounded-[30px] shadow-md text-white ">
         <h1 className="text-2xl font-bold text-center">Sign Up for Game Market</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -46,6 +46,7 @@ export default function SignUp() {
               placeholder="First Name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
+              className="w-[400px] h-[60px] rouded-[10px]"
             />
           </div>
           <div className="space-y-2">
@@ -56,6 +57,7 @@ export default function SignUp() {
               placeholder="Last Name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
+              className="w-[400px] h-[60px] rouded-[10px]"
             />
           </div>
           <div className="space-y-2">
@@ -66,6 +68,7 @@ export default function SignUp() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-[400px] h-[60px] rouded-[10px]"
             />
           </div>
           <div className="space-y-2">
@@ -75,7 +78,8 @@ export default function SignUp() {
               type="tel"
               placeholder="Phone Number"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => setPhone(e.target.value)}className="w-[400px] h-[60px] rouded-[10px]"
+
             />
           </div>
           <div className="flex items-center space-x-2">
@@ -92,7 +96,7 @@ export default function SignUp() {
             </label>
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
-          <Button type="submit" className="w-full">Sign Up</Button>
+          <Button type="submit" className="w-[400px] h-[60px] bg-[#106D5C] hover:bg-[#E75353] rounded-[10px] transition-colors duration-200 font-bold text-[20px]">Sign Up</Button>
         </form>
         <p className="text-center text-sm">
           Already have an account?{' '}
