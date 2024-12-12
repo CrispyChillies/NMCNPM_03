@@ -145,7 +145,7 @@ const handleLikeReply = (commentId: number, replyId: number) => {
                 <p className="price-cont mb-4 bg-gray-700 rounded-xl py-3 text-center font-serif text-3xl font-extrabold">
                   ${ProductData.price}
                 </p>
-                <p className="rating  rounded-xl py-1 text-center font-serif text-3xl font-extrabold">
+                <p className="rating  py-1 text-center">
                 <div id="rating">
                   <StarRating/ >
                 </div>
@@ -173,12 +173,12 @@ const handleLikeReply = (commentId: number, replyId: number) => {
             <div className="Name text-7xl mt-7 pl-7 font-sans text-white font-extrabold">{ProductData.name}</div>
             <div className="Author text-xl mt-3 pl-7 underline underline-offset-2 text-green-400 font-serif">{ProductData.author}</div>
             <div className="Stats">
-              <ul className="list font-sans text-2xl pl-7 mt-7 list-image-checkmark list-inside text-white ">
-                <li>Genre: {ProductData.genre}</li>
-                <li>Compitabilty: {ProductData.compatibility}</li>
-                <li>Release date: {ProductData["release-date"]}</li>
-                <li>Nearest update: {ProductData["last-update"]}</li>
-              </ul>
+              <div className="list font-sans text-2xl pl-7 mt-7 list-inside text-white grid grid-cols-12">
+                <p className="col-span-1 text-green-400">✓</p><div className="col-span-11 hover:text-green-400"> Genre: {ProductData.genre}</div>
+                <p className="col-span-1 text-green-400">✓</p><div className="col-span-11 hover:text-green-400"> Compatibility: {ProductData.compatibility}</div>
+                <p className="col-span-1 text-green-400">✓</p><div className="col-span-11 hover:text-green-400"> Release date: {ProductData["release-date"]}</div>
+                <p className="col-span-1 text-green-400">✓</p><div className="col-span-11 hover:text-green-400"> Last update: {ProductData["last-update"]}</div>
+              </div>
             </div>
             <h1 className="Description mt-7 pl-7 font-mono font-bold text-green-400 text-3xl">ABOUT THIS GAME</h1>
             <p className="pl-7 pr-2 indent-8 text-white">
@@ -200,7 +200,7 @@ const handleLikeReply = (commentId: number, replyId: number) => {
                 className="send-btn w-full bg-green-400 text-white font-bold py-2 rounded-md hover:bg-green-600"
                 onClick={handleAddComment}
               >
-                Send
+                SEND
               </button>
 
               {/* Show All Comments */}
@@ -219,10 +219,10 @@ const handleLikeReply = (commentId: number, replyId: number) => {
                         <p className="pl-2 pr-2 pt-1 pb-1">{comment.content}</p>
                       </div>
                       <button
-                        className="text-sm bg-green-400 p-1 rounded-md ml-2 hover:bg-green-600"
+                        className="text-sm bg-green-400 p-1 rounded-md ml-2 text-white hover:bg-green-600"
                         onClick={() => handleLikeComment(comment.id)}
                       >
-                        👍 {comment.likes}
+                        ❤ {comment.likes}
                       </button>  
                     </div>
                     {/* Replies */}
@@ -236,12 +236,12 @@ const handleLikeReply = (commentId: number, replyId: number) => {
                             {reply.timestamp.hour}:{reply.timestamp.min}
                             </div>
                           <div className="justify-between grid grid-cols-10 flex items-center ">
-                            <div className="reply bg-gray-200 p-1 pl-3 rounded-md mt-1 col-span-9">{reply.content}</div>
+                            <div className="reply bg-gray-400 p-1 pl-3 rounded-md mt-1 col-span-9">{reply.content}</div>
                             <button
-                              className="text-sm bg-green-400 rounded-md ml-2 p-1 hover:bg-green-600"
+                              className="text-sm bg-green-400 rounded-md ml-2 p-1 hover:bg-green-600 text-white"
                               onClick={() => handleLikeReply(comment.id,reply.id)}
                             >
-                              👍 {reply.likes}
+                              ❤ {reply.likes}
                             </button>
                           </div>
                         </div>
@@ -259,7 +259,7 @@ const handleLikeReply = (commentId: number, replyId: number) => {
                             className="rep-btn w-full bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600"
                             onClick={() => handleAddReply(comment.id)}
                           >
-                            Send reply
+                            SEND REPLY
                           </button>
                         </div>
                         ) : (
@@ -267,7 +267,7 @@ const handleLikeReply = (commentId: number, replyId: number) => {
                             onClick={() => setReplyingCommentId(comment.id)}
                             className="text-sm mt-2 border-2 p-1 rounded-md pl-3 pr-3 font-bold text-green-400 border-green-400 hover:bg-green-600 hover:text-white"
                           >
-                            Reply
+                            REPLY
                           </button>
                   )}
                     </div>
