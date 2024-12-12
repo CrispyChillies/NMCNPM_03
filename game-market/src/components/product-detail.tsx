@@ -94,6 +94,25 @@ export default function ProductDetail() {
     );
   };
 
+  // Like a reply
+const handleLikeReply = (commentId: number, replyId: number) => {
+  setComments((prevComments) =>
+    prevComments.map((comment) =>
+      comment.id === commentId
+        ? {
+            ...comment,
+            replies: comment.replies.map((reply) =>
+              reply.id === replyId
+                ? { ...reply, likes: reply.likes + 1 }
+                : reply
+            ),
+          }
+        : comment
+    )
+  );
+};
+
+
 
   return (
     <SidebarProvider>
@@ -182,7 +201,7 @@ export default function ProductDetail() {
               </button>
 
               {/* Show All Comments */}
-              <div className="all-comments flex flex-col gap-4 mt-5">
+              <div className="all-comments flex flex-col gap-4 mt-5 mb-5">
                 {comments.map((comment) => (
                   <div
                     key={comment.id}
@@ -217,9 +236,9 @@ export default function ProductDetail() {
                             <div className="reply bg-gray-200 p-1 rounded-md mt-1 col-span-9">{reply.content}</div>
                             <button
                               className="text-sm bg-green-200 rounded-md ml-2 p-1 hover:bg-green-300"
-                              onClick={() => handleLikeComment(comment.id)}
+                              onClick={() => handleLikeReply(comment.id,reply.id)}
                             >
-                              👍 {comment.likes}
+                              👍 {reply.likes}
                             </button>
                           </div>
                         </div>
