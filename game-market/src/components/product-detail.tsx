@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import React, { useState } from "react";
+import StarRating from "./effects/rating";
 import ProductData from "@/components/data/product-detail.json";
 import {
   Breadcrumb,
@@ -138,14 +139,16 @@ const handleLikeReply = (commentId: number, replyId: number) => {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0 grid grid-cols-3 bg-green-400">
-            <div className="col1-container bg-muted/50 px-7 py-7 col-span-1 flex-col">
+            <div className="col1-container bg-muted/50 px-7 py-7 ">
               <img src={ProductData.img} className="rounded-xl object-cover w-96 h-auto" alt="fc24" />
-              <div className="price my-3 rounded-xl flex flex-1 grid flex-row grid-cols-2">
-                <p className="price-cont bg-muted/50 rounded-xl py-1 text-center font-serif text-3xl font-extrabold hover:bg-green-400 mr-1">
+              <div className="price my-3 rounded-xl  flex-1 ">
+                <p className="price-cont mb-4 bg-muted/50 rounded-xl py-1 text-center font-serif text-3xl font-extrabold hover:bg-green-400">
                   ${ProductData.price}
                 </p>
-                <p className="rating bg-muted/50 rounded-xl py-1 text-center font-serif text-3xl font-extrabold ml-1">
-                  {ProductData.rating}
+                <p className="rating bg-muted/50 rounded-xl py-1 text-center font-serif text-3xl font-extrabold">
+                <div id="rating">
+                  <StarRating/ >
+                </div>
                 </p>
               </div>
               <div className="add-to-cart bg-muted/65 my-3 rounded-xl">
@@ -233,7 +236,7 @@ const handleLikeReply = (commentId: number, replyId: number) => {
                             {reply.timestamp.hour}:{reply.timestamp.min}
                             </div>
                           <div className="justify-between grid grid-cols-10 flex items-center ">
-                            <div className="reply bg-gray-200 p-1 rounded-md mt-1 col-span-9">{reply.content}</div>
+                            <div className="reply bg-gray-200 p-1 pl-3 rounded-md mt-1 col-span-9">{reply.content}</div>
                             <button
                               className="text-sm bg-green-200 rounded-md ml-2 p-1 hover:bg-green-300"
                               onClick={() => handleLikeReply(comment.id,reply.id)}

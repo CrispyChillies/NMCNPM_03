@@ -1,4 +1,5 @@
-{
+
+    {
     "name": "FC24",
     "author": "Electronic Arts",
     "genre":"Sport",
@@ -9,4 +10,4 @@
     "price": 777,
     "rating": "5/5",
     "img":"../../../public/img/fc24.png"
-}
+    }
