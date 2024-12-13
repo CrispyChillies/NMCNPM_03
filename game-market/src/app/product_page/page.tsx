@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AppSidebar } from '@/components/app-sidebar';
 import { ProductCard } from '@/components/product-card';
 import { Header } from '@/components/header';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import {ProductFilters} from '@/components/poduct-filters.tsx'
+import { ProductFilters } from '@/components/poduct-filters'
 
 interface Product {
   id: number;
@@ -20,6 +20,9 @@ interface Product {
     label: string;
     type: 'truck' | 'creditCard';
   }[];
+  platforms?: string[];
+  genres?: string[];
+  condition?: string;
 }
 
 const data = {
@@ -28,181 +31,195 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   }
-}
+};
 
 const products: Product[] = [
   {
     id: 1,
-    name: 'Product 1',
-    price: 29.99,
-    category: 'Category 1',
-    rating: 4.5,
-    reviews: 10,
+    name: 'The Legend of Zelda: Breath of the Wild',
+    price: 59.99,
+    category: 'Adventure',
+    rating: 4.9,
+    reviews: 1023,
     discount: '10%',
-    image: 'image1.jpg',
+    image: 'zelda.jpg',
     badges: [
-      { label: 'Free Shipping', type: 'truck' },
-      { label: 'Credit Card', type: 'creditCard' },
+      { label: 'Top Seller', type: 'creditCard' },
     ],
+    platforms: ['Nintendo Switch'],
+    genres: ['Adventure', 'Action', 'Open World'],
+    condition: 'New',
   },
   {
     id: 2,
-    name: 'Product 2',
+    name: 'God of War',
     price: 49.99,
-    category: 'Category 2',
-    rating: 4.0,
-    reviews: 20,
-    image: 'image2.jpg',
+    category: 'Action',
+    rating: 4.8,
+    reviews: 879,
+    image: 'god_of_war.jpg',
     badges: [
-      { label: 'Free Shipping', type: 'truck' },
+      { label: 'Limited Edition', type: 'creditCard' },
     ],
+    platforms: ['PlayStation 4', 'PlayStation 5'],
+    genres: ['Action', 'Adventure', 'Mythology'],
+    condition: 'Good',
   },
   {
     id: 3,
-    name: 'Product 3',
-    price: 19.99,
-    category: 'Category 3',
-    rating: 3.5,
-    reviews: 5,
-    discount: '5%',
-    image: 'image3.jpg',
+    name: 'Red Dead Redemption 2',
+    price: 39.99,
+    category: 'Adventure',
+    rating: 4.7,
+    reviews: 754,
+    image: 'rdr2.jpg',
     badges: [
-      { label: 'Credit Card', type: 'creditCard' },
+      { label: 'Best Graphics', type: 'creditCard' },
     ],
+    platforms: ['PlayStation 4', 'Xbox One', 'PC'],
+    genres: ['Adventure', 'Action', 'Western'],
+    condition: 'Like New',
   },
   {
     id: 4,
-    name: 'Product 4',
-    price: 99.99,
-    category: 'Category 4',
-    rating: 5.0,
-    reviews: 50,
-    image: 'image4.jpg',
+    name: 'Super Mario Odyssey',
+    price: 59.99,
+    category: 'Platformer',
+    rating: 4.9,
+    reviews: 980,
+    image: 'mario_odyssey.jpg',
     badges: [
-      { label: 'Free Shipping', type: 'truck' },
-      { label: 'Credit Card', type: 'creditCard' },
+      { label: 'Family Friendly', type: 'creditCard' },
     ],
+    platforms: ['Nintendo Switch'],
+    genres: ['Platformer', 'Adventure'],
+    condition: 'Fair',
   },
   {
     id: 5,
-    name: 'Product 5',
-    price: 39.99,
-    category: 'Category 5',
-    rating: 4.2,
-    reviews: 15,
-    image: 'image5.jpg',
+    name: 'Spider-Man',
+    price: 49.99,
+    category: 'Action',
+    rating: 4.8,
+    reviews: 845,
+    image: 'spiderman.jpg',
     badges: [
-      { label: 'Free Shipping', type: 'truck' },
+      { label: 'Exclusive', type: 'creditCard' },
     ],
+    platforms: ['PlayStation 4'],
+    genres: ['Action', 'Adventure'],
+    condition: 'New',
   },
   {
     id: 6,
-    name: 'Product 6',
-    price: 59.99,
-    category: 'Category 6',
-    rating: 4.8,
-    reviews: 25,
-    discount: '15%',
-    image: 'image6.jpg',
+    name: 'Horizon Zero Dawn',
+    price: 29.99,
+    category: 'RPG',
+    rating: 4.6,
+    reviews: 623,
+    image: 'horizon_zero_dawn.jpg',
     badges: [
-      { label: 'Credit Card', type: 'creditCard' },
+      { label: 'Award Winning', type: 'creditCard' },
     ],
+    platforms: ['PlayStation 4', 'PC'],
+    genres: ['RPG', 'Action', 'Open World'],
+    condition: 'Good',
   },
   {
     id: 7,
-    name: 'Product 7',
-    price: 79.99,
-    category: 'Category 7',
-    rating: 4.6,
-    reviews: 30,
-    image: 'image7.jpg',
+    name: 'Minecraft',
+    price: 19.99,
+    category: 'Sandbox',
+    rating: 4.5,
+    reviews: 1500,
+    image: 'minecraft.jpg',
     badges: [
-      { label: 'Free Shipping', type: 'truck' },
+      { label: 'Top Seller', type: 'creditCard' },
     ],
+    platforms: ['PC', 'Xbox One', 'PlayStation 4', 'Nintendo Switch'],
+    genres: ['Sandbox', 'Adventure'],
+    condition: 'Fair',
   },
   {
     id: 8,
-    name: 'Product 8',
-    price: 89.99,
-    category: 'Category 8',
-    rating: 4.9,
-    reviews: 40,
-    image: 'image8.jpg',
+    name: 'Fortnite',
+    price: 0,
+    category: 'Battle Royale',
+    rating: 4.3,
+    reviews: 2000,
+    image: 'fortnite.jpg',
     badges: [
-      { label: 'Credit Card', type: 'creditCard' },
+      { label: 'Free to Play', type: 'creditCard' },
     ],
+    platforms: ['PC', 'Xbox One', 'PlayStation 4', 'Nintendo Switch'],
+    genres: ['Battle Royale', 'Shooter'],
+    condition: 'Like New',
   },
   {
     id: 9,
-    name: 'Product 9',
-    price: 25.99,
-    category: 'Category 9',
-    rating: 3.9,
-    reviews: 8,
-    image: 'image9.jpg',
+    name: 'The Witcher 3: Wild Hunt',
+    price: 39.99,
+    category: 'RPG',
+    rating: 4.9,
+    reviews: 1120,
+    image: 'witcher3.jpg',
     badges: [
-      { label: 'Free Shipping', type: 'truck' },
+      { label: 'Game of the Year', type: 'creditCard' },
     ],
+    platforms: ['PC', 'Xbox One', 'PlayStation 4'],
+    genres: ['RPG', 'Action', 'Open World'],
+    condition: 'Good',
   },
   {
     id: 10,
-    name: 'Product 10',
-    price: 45.99,
-    category: 'Category 10',
-    rating: 4.3,
-    reviews: 18,
-    discount: '20%',
-    image: 'image10.jpg',
+    name: 'Cyberpunk 2077',
+    price: 59.99,
+    category: 'RPG',
+    rating: 4.2,
+    reviews: 500,
+    image: 'cyberpunk2077.jpg',
     badges: [
-      { label: 'Credit Card', type: 'creditCard' },
+      { label: 'New Release', type: 'creditCard' },
     ],
-  },
-  {
-    id: 11,
-    name: 'Product 11',
-    price: 55.99,
-    category: 'Category 11',
-    rating: 4.7,
-    reviews: 22,
-    image: 'image11.jpg',
-    badges: [
-      { label: 'Free Shipping', type: 'truck' },
-    ],
-  },
-  {
-    id: 12,
-    name: 'Product 12',
-    price: 65.99,
-    category: 'Category 12',
-    rating: 4.4,
-    reviews: 28,
-    image: 'image12.jpg',
-    badges: [
-      { label: 'Credit Card', type: 'creditCard' },
-    ],
+    platforms: ['PC', 'Xbox One', 'PlayStation 4'],
+    genres: ['RPG', 'Action', 'Open World'],
+    condition: 'Fair',
   },
 ];
 
 export default function Page() {
-  const [filteredProducts, setFilteredProducts] = useState(products)
+  const [filteredProducts, setFilteredProducts] = useState(products);
 
-  // Get unique categories from products
-  const categories = [...new Set(products.map(product => product.category))]
+  const applyFilters = (platforms: string[], genres: string[], conditions: string[], sortBy: string) => {
+    let filtered = [...products];
 
-  const handleCategoryChange = (category: string) => {
-    if (category === 'all') {
-      setFilteredProducts(products)
-    } else {
-      setFilteredProducts(products.filter(product => product.category === category))
+    if (platforms.length > 0) {
+      filtered = filtered.filter(product =>
+        platforms.some(platform => product.platforms?.includes(platform))
+      );
     }
-  }
 
-  const handleSortChange = (direction: 'asc' | 'desc') => {
-    const sorted = [...filteredProducts].sort((a, b) => {
-      return direction === 'asc' ? a.price - b.price : b.price - a.price
-    })
-    setFilteredProducts(sorted)
-  }
+    if (genres.length > 0) {
+      filtered = filtered.filter(product =>
+        genres.some(genre => product.genres?.includes(genre))
+      );
+    }
+
+    if (conditions.length > 0) {
+      filtered = filtered.filter(product =>
+        conditions.some(condition => product.condition === condition)
+      );
+    }
+
+    const [field, direction] = sortBy.split('-');
+    if (field === 'price' || field === 'rating') {
+      filtered.sort((a, b) =>
+        direction === 'asc' ? a[field] - b[field] : b[field] - a[field]
+      );
+    }
+
+    setFilteredProducts(filtered);
+  };
 
   return (
     <SidebarProvider>
@@ -211,10 +228,8 @@ export default function Page() {
         <Header user={data.user} className="sticky top-0 z-10 bg-background" />
         <main className="flex-grow overflow-y-auto">
           <div className="flex-1 overflow-auto bg-background border-gray-700">
-            <ProductFilters 
-              categories={categories}
-              onCategoryChange={handleCategoryChange}
-              onSortChange={handleSortChange}
+            <ProductFilters
+              onApplyFilters={applyFilters}
             />
             <div className="w-full px-6 py-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -236,5 +251,5 @@ export default function Page() {
         </main>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

@@ -1,28 +1,24 @@
-// src/components/product-filters.tsx
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 interface ProductFiltersProps {
-  onPlatformsChange: (platforms: string[]) => void;
-  onGenresChange: (genres: string[]) => void;
-  onSortChange: (sortDirection: 'asc' | 'desc') => void;
-  onConditionChange: (conditions: string[]) => void;
+  onApplyFilters: (platforms: string[], genres: string[], conditions: string[], sortBy: string) => void;
 }
 
 const platforms = [
   "PlayStation 5",
-  "PlayStation 4", 
-  "Xbox Series X|S",
+  "PlayStation 4",
+  "Xbox Series X",
   "Xbox One",
   "Nintendo Switch",
-  "PC"
+  "PC",
 ];
 
 const genres = [
@@ -32,14 +28,14 @@ const genres = [
   "Adventure",
   "Sports",
   "Racing",
-  "Strategy"
+  "Strategy",
 ];
 
 const conditions = [
   "New",
-  "99%",
-  "95%",
-  "<95%"
+  "Like New",
+  "Good",
+  "Fair"
 ];
 
 type SortOption = {
@@ -50,52 +46,32 @@ type SortOption = {
 const SORT_OPTIONS: SortOption[] = [
   { value: 'rating-desc', label: 'Rating' },
   { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'price-asc', label: 'Price: Low to High' }
+  { value: 'price-asc', label: 'Price: Low to High' },
 ];
 
-export function ProductFilters({
-  onPlatformsChange,
-  onGenresChange,
-  onSortChange,
-  onConditionChange
-}: ProductFiltersProps) {
-  const [selectedConditions, setSelectedConditions] = useState<string[]>([])
-  const [tempConditions, setTempConditions] = useState<string[]>([])
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([])
-  const [tempPlatforms, setTempPlatforms] = useState<string[]>([])
-  const [tempGenres, setTempGenres] = useState<string[]>([])
-  const [tempSort, setTempSort] = useState<'asc' | 'desc'>('asc')
+export function ProductFilters({ onApplyFilters }: ProductFiltersProps) {
   const [selectedSort, setSelectedSort] = useState('rating-desc');
+  const [tempPlatforms, setTempPlatforms] = useState<string[]>([]);
+  const [tempGenres, setTempGenres] = useState<string[]>([]);
+  const [tempConditions, setTempConditions] = useState<string[]>([]);
 
   const handleApplyFilters = () => {
-    setSelectedPlatforms(tempPlatforms)
-    setSelectedGenres(tempGenres)
-    onPlatformsChange(tempPlatforms)
-    onGenresChange(tempGenres)
-    onSortChange(tempSort)
-    setSelectedConditions(tempConditions)
-    onConditionChange(tempConditions)
-  }
+    // Apply both filters and current sort
+    onApplyFilters(tempPlatforms, tempGenres, tempConditions, selectedSort);
+  };
 
   const handleResetFilters = () => {
-    setTempPlatforms([])
-    setTempGenres([])
-    setTempSort('asc')
-    setSelectedConditions([])
-    setTempConditions([])
-    setSelectedPlatforms([])
-    setSelectedGenres([])
-    onPlatformsChange([])
-    onGenresChange([])
-    onSortChange('asc')
-    onConditionChange([])
-  }
+    setTempPlatforms([]);
+    setTempGenres([]);
+    setTempConditions([]);
+    setSelectedSort('rating-desc');
+    onApplyFilters([], [], [], 'rating-desc');
+  };
 
   const handleSortChange = (value: string) => {
     setSelectedSort(value);
-    const [field, direction] = value.split('-');
-    onSortChange(direction as 'asc' | 'desc');
+    // Only apply sort, using empty arrays for filters
+    onApplyFilters([], [], [], value);
   };
 
   return (
@@ -123,7 +99,7 @@ export function ProductFilters({
           </DropdownMenu>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-4 p-4 border-b">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -138,9 +114,9 @@ export function ProductFilters({
                 checked={tempPlatforms.includes(platform)}
                 onCheckedChange={(checked) => {
                   if (checked) {
-                    setTempPlatforms([...tempPlatforms, platform])
+                    setTempPlatforms([...tempPlatforms, platform]);
                   } else {
-                    setTempPlatforms(tempPlatforms.filter(p => p !== platform))
+                    setTempPlatforms(tempPlatforms.filter(p => p !== platform));
                   }
                 }}
               >
@@ -163,9 +139,9 @@ export function ProductFilters({
                 checked={tempGenres.includes(genre)}
                 onCheckedChange={(checked) => {
                   if (checked) {
-                    setTempGenres([...tempGenres, genre])
+                    setTempGenres([...tempGenres, genre]);
                   } else {
-                    setTempGenres(tempGenres.filter(g => g !== genre))
+                    setTempGenres(tempGenres.filter(g => g !== genre));
                   }
                 }}
               >
@@ -182,23 +158,24 @@ export function ProductFilters({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            {conditions.map((conditions) => (
+            {conditions.map((condition) => (
               <DropdownMenuCheckboxItem
-                key={conditions}
-                checked={tempConditions.includes(conditions)}
+                key={condition}
+                checked={tempConditions.includes(condition)}
                 onCheckedChange={(checked) => {
                   if (checked) {
-                    setTempConditions([...tempConditions, conditions])
+                    setTempConditions([...tempConditions, condition]);
                   } else {
-                    setTempConditions(tempConditions.filter(g => g !== conditions))
+                    setTempConditions(tempConditions.filter(c => c !== condition));
                   }
                 }}
               >
-                {conditions}
+                {condition}
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
         <div className="flex items-center w-full">
           <div className="ml-auto flex gap-2">
             <Button onClick={handleApplyFilters}>
@@ -211,5 +188,5 @@ export function ProductFilters({
         </div>
       </div>
     </div>
-  )
+  );
 }
