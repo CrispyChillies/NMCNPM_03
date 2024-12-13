@@ -5,6 +5,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { ProductCard } from '@/components/product-card';
 import { Header } from '@/components/header';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import {ProductFilters} from '@/components/poduct-filters.tsx'
 
 interface Product {
   id: number;
@@ -183,6 +184,26 @@ const products: Product[] = [
 ];
 
 export default function Page() {
+  const [filteredProducts, setFilteredProducts] = useState(products)
+
+  // Get unique categories from products
+  const categories = [...new Set(products.map(product => product.category))]
+
+  const handleCategoryChange = (category: string) => {
+    if (category === 'all') {
+      setFilteredProducts(products)
+    } else {
+      setFilteredProducts(products.filter(product => product.category === category))
+    }
+  }
+
+  const handleSortChange = (direction: 'asc' | 'desc') => {
+    const sorted = [...filteredProducts].sort((a, b) => {
+      return direction === 'asc' ? a.price - b.price : b.price - a.price
+    })
+    setFilteredProducts(sorted)
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -190,25 +211,30 @@ export default function Page() {
         <Header user={data.user} className="sticky top-0 z-10 bg-background" />
         <main className="flex-grow overflow-y-auto">
           <div className="flex-1 overflow-auto bg-background border-gray-700">
-              <div className="w-full px-6 py-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      name={product.name}
-                      price={product.price}
-                      rating={product.rating}
-                      reviews={product.reviews}
-                      discount={product.discount}
-                      image={product.image}
-                      badges={product.badges}
-                    />
-                  ))}
-                </div>
+            <ProductFilters 
+              categories={categories}
+              onCategoryChange={handleCategoryChange}
+              onSortChange={handleSortChange}
+            />
+            <div className="w-full px-6 py-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    name={product.name}
+                    price={product.price}
+                    rating={product.rating}
+                    reviews={product.reviews}
+                    discount={product.discount}
+                    image={product.image}
+                    badges={product.badges}
+                  />
+                ))}
               </div>
             </div>
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }
