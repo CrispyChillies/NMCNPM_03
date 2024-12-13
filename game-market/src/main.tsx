@@ -8,6 +8,6 @@ import CheckoutPage from './app/checkout/page.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ProductPage />
+    <CheckoutPage />
   </StrictMode>,
 )

@@ -1,19 +1,10 @@
-import React from 'react'
+import React from "react";
 import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { Header } from "@/components/header"
 
 // First define the interface
 interface OrderItem {
@@ -24,34 +15,43 @@ interface OrderItem {
   quantity: number; // Added quantity field
 }
 
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+};
 const CheckoutPage: React.FC = () => {
   const orderItems: OrderItem[] = [
-    { id: '1', name: 'Secret Chocolate', price: 31.45, imageUrl: '/placeholder.svg?height=64&width=64', quantity: 1 },
-    { id: '2', name: 'Vegan Platter', price: 51.20, imageUrl: '/placeholder.svg?height=64&width=64', quantity: 1 },
-    { id: '3', name: 'Rose Petrol', price: 41.85, imageUrl: '/placeholder.svg?height=64&width=64', quantity: 1 },
+    {
+      id: "1",
+      name: "Secret Chocolate",
+      price: 31.45,
+      imageUrl: "/placeholder.svg?height=64&width=64",
+      quantity: 1,
+    },
+    {
+      id: "2",
+      name: "Vegan Platter",
+      price: 51.2,
+      imageUrl: "/placeholder.svg?height=64&width=64",
+      quantity: 1,
+    },
+    {
+      id: "3",
+      name: "Rose Petrol",
+      price: 41.85,
+      imageUrl: "/placeholder.svg?height=64&width=64",
+      quantity: 1,
+    },
   ];
 
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Checkout</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
+      <SidebarInset className="flex flex-col h-screen overflow-hidden h-4">
+        <Header user={data.user} className="sticky top-0 z-10 bg-background" />
         <div className="min-h-screen bg-zinc-900 text-zinc-50 p-6">
           <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2">
             {/* Customer Information Form */}
@@ -60,7 +60,10 @@ const CheckoutPage: React.FC = () => {
               <div className="grid gap-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label htmlFor="firstName" className="block text-sm font-medium">
+                    <label
+                      htmlFor="firstName"
+                      className="block text-sm font-medium"
+                    >
                       First Name
                     </label>
                     <input
@@ -70,7 +73,10 @@ const CheckoutPage: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="lastName" className="block text-sm font-medium">
+                    <label
+                      htmlFor="lastName"
+                      className="block text-sm font-medium"
+                    >
                       Last Name
                     </label>
                     <input
@@ -81,7 +87,10 @@ const CheckoutPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="address" className="block text-sm font-medium">
+                  <label
+                    htmlFor="address"
+                    className="block text-sm font-medium"
+                  >
                     Address
                   </label>
                   <input
@@ -106,11 +115,22 @@ const CheckoutPage: React.FC = () => {
                 <h2 className="text-xl font-semibold">Payment Method</h2>
                 <div className="space-y-3">
                   <label className="flex items-center space-x-2 bg-emerald-800 p-4 rounded-md cursor-pointer">
-                    <input type="radio" name="paymentMethod" value="cod" className="text-emerald-500 focus:ring-emerald-500" defaultChecked />
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cod"
+                      className="text-emerald-500 focus:ring-emerald-500"
+                      defaultChecked
+                    />
                     <span>Cash On Delivery</span>
                   </label>
                   <label className="flex items-center space-x-2 bg-emerald-800 p-4 rounded-md cursor-pointer">
-                    <input type="radio" name="paymentMethod" value="bank" className="text-emerald-500 focus:ring-emerald-500" />
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="bank"
+                      className="text-emerald-500 focus:ring-emerald-500"
+                    />
                     <span>Mobile Banking</span>
                   </label>
                 </div>
@@ -125,26 +145,41 @@ const CheckoutPage: React.FC = () => {
                   {/* Product List */}
                   <div className="space-y-4">
                     {orderItems.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-6"> {/* Increased space-x */}
+                      <div
+                        key={item.id}
+                        className="flex items-center space-x-6"
+                      >
+                        {" "}
+                        {/* Increased space-x */}
                         {/* Product Image */}
-                        <div className="relative h-20 w-20 flex-shrink-0 rounded-md overflow-hidden"> {/* Increased size */}
+                        <div className="relative h-20 w-20 flex-shrink-0 rounded-md overflow-hidden">
+                          {" "}
+                          {/* Increased size */}
                           <img
-                            src={item.imageUrl || "/placeholder.svg?height=80&width=80"}
+                            src={
+                              item.imageUrl ||
+                              "/placeholder.svg?height=80&width=80"
+                            }
                             alt={item.name}
                             className="object-cover w-full h-full"
                           />
                         </div>
-
                         {/* Product Details */}
                         <div className="flex-grow">
-                          <p className="font-medium text-lg mb-1">{item.name}</p> {/* Increased text size and added margin */}
-                          <p className="text-sm text-zinc-400">${item.price.toFixed(2)}</p>
+                          <p className="font-medium text-lg mb-1">
+                            {item.name}
+                          </p>{" "}
+                          {/* Increased text size and added margin */}
+                          <p className="text-sm text-zinc-400">
+                            ${item.price.toFixed(2)}
+                          </p>
                         </div>
-
                         {/* Quantity */}
                         <div className="flex-shrink-0 text-right">
                           <span className="inline-flex items-center justify-center bg-zinc-700 px-4 py-2 rounded-md">
-                            <span className="text-sm text-zinc-400 mr-2">Qty:</span>
+                            <span className="text-sm text-zinc-400 mr-2">
+                              Qty:
+                            </span>
                             <span className="font-medium">{item.quantity}</span>
                           </span>
                         </div>
@@ -156,13 +191,22 @@ const CheckoutPage: React.FC = () => {
                     <div className="flex justify-between">
                       <p>Total</p>
                       <p className="font-medium">
-                        ${orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}
+                        $
+                        {orderItems
+                          .reduce(
+                            (sum, item) => sum + item.price * item.quantity,
+                            0
+                          )
+                          .toFixed(2)}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p>Total Items</p>
                       <p className="font-medium">
-                        {orderItems.reduce((sum, item) => sum + item.quantity, 0)}
+                        {orderItems.reduce(
+                          (sum, item) => sum + item.quantity,
+                          0
+                        )}
                       </p>
                     </div>
                   </div>
@@ -176,7 +220,7 @@ const CheckoutPage: React.FC = () => {
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
-}
+  );
+};
 
-export default CheckoutPage
+export default CheckoutPage;
