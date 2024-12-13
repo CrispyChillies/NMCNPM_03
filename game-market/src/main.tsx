@@ -11,6 +11,20 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
 import Home from './app/home.tsx'
+import Product from './app/product.tsx'
+import Checkout from './app/checkout.tsx'
+import ThankYou from './app/thankyou.tsx'
+import BecomeSeller from './app/become-seller.tsx'
+import Dashboard from './app/dashboard.tsx'
+import GameManagement from './app/game-management.tsx'
+import OrderList from './app/order-list.tsx'
+import SignIn from './app/sign-in.tsx'
+import SignUp from './app/sign-up.tsx'
+import UserManagement from './app/user-management.tsx'
+import UserRequest from './app/user-request.tsx'
+import ProfileUpdating from "./app/profile-updating.tsx";
+import ProductUploading from "./app/product-uploading.tsx";
+import ProductDetail from "./app/product-detail.tsx";
 
 const data = {
   user: {
@@ -29,9 +43,23 @@ createRoot(document.querySelector('.root')!).render(
         <SidebarInset className="flex flex-col h-screen h-4 overflow-hidden">
           <Header user={data.user} userType={data.userType} className="sticky top-0 z-10 bg-background" />
           <main className="flex-grow overflow-y-auto">
-            <div className="container mx-auto px-4">
+            <div className="mx-auto px-4">
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/product" element={<Product />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/thankyou" element={<ThankYou />} />
+                <Route path="/become-seller" element={<BecomeSeller />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/game-management" element={<GameManagement />} />
+                <Route path="/order-list" element={<OrderList />} />
+                <Route path="/sign-in" element={<SignIn />} />
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/user-management" element={<UserManagement />} />
+                <Route path="/user-request" element={<UserRequest />} />
+                <Route path="/profile-updating" element={<ProfileUpdating />} />
+                <Route path="/product-uploading" element={<ProductUploading />} />
+                <Route path="/product-detail" element={<ProductDetail />} />
               </Routes>
               <Footer className="bg-background z-10" />
             </div>
