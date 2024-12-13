@@ -1,15 +1,12 @@
 import * as React from "react"
 import {
-  BookOpen,
-  Bot,
   Command,
-  Frame,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Send,
-  Settings2,
   SquareTerminal,
+  LayoutDashboard,
+  UserRound,
+  Gamepad2,
+  ShoppingCart,
+  GitPullRequest,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -36,7 +33,7 @@ const data = {
     {
       title: "Dash board",
       url: "/dashboard", 
-      icon: SquareTerminal,
+      icon: LayoutDashboard,
       isActive: true,
       // items: [
       //   {
@@ -56,7 +53,7 @@ const data = {
     {
       title: "User Management",
       url: "/users", 
-      icon: SquareTerminal,
+      icon: UserRound,
       isActive: true,
       // items: [
       //   {
@@ -76,7 +73,7 @@ const data = {
     {
       title: "Game Management",
       url: "/games", 
-      icon: SquareTerminal,
+      icon: Gamepad2,
       isActive: true,
       // items: [
       //   {
@@ -96,7 +93,7 @@ const data = {
     {
       title: "Order Management",
       url: "/orders", 
-      icon: SquareTerminal,
+      icon: ShoppingCart,
       isActive: true,
       // items: [
       //   {
@@ -114,7 +111,7 @@ const data = {
       // ],
     },
     {
-      title: "User Request Managment",
+      title: "Upload Product Request Managment",
       url: "/user-requests", 
       icon: SquareTerminal,
       isActive: true,
@@ -133,6 +130,27 @@ const data = {
       //   },
       // ],
     },
+    {
+      title: "Become Seller Request Management",
+      url: "/becomeseller-requests", 
+      icon: GitPullRequest,
+      isActive: true,
+      // items: [
+      //   {
+      //     title: "History",
+      //     url: "#",
+      //   },
+      //   {
+      //     title: "Starred",
+      //     url: "#",
+      //   },
+      //   {
+      //     title: "Settings",
+      //     url: "#",
+      //   },
+      // ],
+    },
+    
     
   ],
 }

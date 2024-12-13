@@ -8,20 +8,10 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ProductShowcase } from "@/components/product-showcase"
 import { NavMain } from "@/components/nav-main"
-import { Routes } from "react-router-dom";
-import { Route } from "react-router-dom";
-import { BrowserRouter } from "react-router-dom";
-
-import SignIn from '../signin/sign-in'
-import SignUp from '../signup/sign-up'
-import OrderListPage from '../order-list/page'
-import UserManagementPage from '../user-management/user-management'
-import GameManagementPage from '../game-managment/game-management'
-import UserRequest from '../user-request-pending/user-request'
-import Dashboard from './dashboard'
 
 
-const data = {
+
+export const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
@@ -265,7 +255,7 @@ function CarouselBanner({ images }: { images: string[] }) {
           />
         ))}
       </div>
-    </div>
+    </div>  
   );
 }
 
@@ -295,6 +285,7 @@ export default function DashboardDemo() {
                 <Route path="/games" element={<GameManagementPage />} />
                 <Route path="/user-requests" element={<UserRequest />} />
                 <Route path="/dashboard-demo" element={<DashboardDemo />} />
+                <Route path="/becomeseller-requests" element={<BecomeSeller />} />
               </Routes>
             </BrowserRouter>
         </main>

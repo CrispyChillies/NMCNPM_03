@@ -36,7 +36,7 @@ export function Header({ user }: HeaderProps) {
         <div className="flex items-center gap-4">
           <SidebarTrigger className="-ml-2 text-foreground" />
           <Separator orientation="vertical" className="h-6" />
-          <Breadcrumb>
+          {/* <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:inline-flex">
                 <BreadcrumbLink href="#">Building Your Application</BreadcrumbLink>
@@ -46,7 +46,7 @@ export function Header({ user }: HeaderProps) {
                 <BreadcrumbPage>Data Fetching</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
-          </Breadcrumb>
+          </Breadcrumb> */}
         </div>
         <div className="flex items-center gap-4">
           <form className="relative">
