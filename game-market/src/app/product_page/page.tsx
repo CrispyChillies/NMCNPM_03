@@ -1,338 +1,214 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { Filter, Search, DollarSign } from 'lucide-react'
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { useState, useEffect } from 'react';
+import { AppSidebar } from '@/components/app-sidebar';
+import { ProductCard } from '@/components/product-card';
+import { Header } from '@/components/header';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 
 interface Product {
-  id: number
-  name: string
-  price: number
-  category: string
-  platform: string
-  image: string
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  rating: number;
+  reviews: number;
+  discount?: string;
+  image: string;
+  badges: {
+    label: string;
+    type: 'truck' | 'creditCard';
+  }[];
 }
 
-export default function ProductPage() {
-  const [selectedPlatform, setSelectedPlatform] = useState<string>('all')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100])
-  const [maxPrice, setMaxPrice] = useState(100)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [isDragging, setIsDragging] = useState<number | null>(null)
-  
-  const products: Product[] = [
-    {
-      id: 1,
-      name: "Elden Ring",
-      price: 59.99,
-      category: "RPG",
-      platform: "PS5",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 2,
-      name: "God of War Ragnarök",
-      price: 69.99,
-      category: "Action",
-      platform: "PS5",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 3,
-      name: "Halo Infinite",
-      price: 59.99,
-      category: "FPS",
-      platform: "Xbox",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 4,
-      name: "Animal Crossing: New Horizons",
-      price: 49.99,
-      category: "Simulation",
-      platform: "Switch",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 5,
-      name: "Cyberpunk 2077",
-      price: 39.99,
-      category: "RPG",
-      platform: "PS4",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    // Additional games
-    {
-      id: 6,
-      name: "FIFA 24",
-      price: 69.99,
-      category: "Sports",
-      platform: "PS5",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 7,
-      name: "The Legend of Zelda: Tears of the Kingdom",
-      price: 59.99,
-      category: "Action",
-      platform: "Switch",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 8,
-      name: "Call of Duty: Modern Warfare III",
-      price: 69.99,
-      category: "FPS",
-      platform: "Xbox",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 9,
-      name: "Final Fantasy XVI",
-      price: 69.99,
-      category: "RPG",
-      platform: "PS5",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 10,
-      name: "Starfield",
-      price: 69.99,
-      category: "RPG",
-      platform: "Xbox",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 11,
-      name: "Mario Kart 8 Deluxe",
-      price: 49.99,
-      category: "Sports",
-      platform: "Switch",
-      image: "/placeholder.svg?height=200&width=200"
-    },
-    {
-      id: 12,
-      name: "Resident Evil 4 Remake",
-      price: 59.99,
-      category: "Action",
-      platform: "PS5",
-      image: "/placeholder.svg?height=200&width=200"
-    }
-  ];
-
-  useEffect(() => {
-    const max = Math.max(...products.map(p => p.price))
-    setMaxPrice(Math.ceil(max / 10) * 10)
-    setPriceRange([0, Math.ceil(max / 10) * 10])
-  }, [])
-
-  const handlePriceChange = useCallback((newValue: number, index: number) => {
-    setPriceRange(prev => {
-      const newRange = [...prev] as [number, number]
-      if (index === 0) {
-        return [Math.min(newValue, newRange[1] - 1), newRange[1]]
-      } else {
-        return [newRange[0], Math.max(newValue, newRange[0] + 1)]
-      }
-    })
-  }, [])
-
-  const handleMouseDown = (index: number) => {
-    setIsDragging(index)
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
   }
+}
 
-  const handleMouseUp = () => {
-    setIsDragging(null)
-  }
+const products: Product[] = [
+  {
+    id: 1,
+    name: 'Product 1',
+    price: 29.99,
+    category: 'Category 1',
+    rating: 4.5,
+    reviews: 10,
+    discount: '10%',
+    image: 'image1.jpg',
+    badges: [
+      { label: 'Free Shipping', type: 'truck' },
+      { label: 'Credit Card', type: 'creditCard' },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Product 2',
+    price: 49.99,
+    category: 'Category 2',
+    rating: 4.0,
+    reviews: 20,
+    image: 'image2.jpg',
+    badges: [
+      { label: 'Free Shipping', type: 'truck' },
+    ],
+  },
+  {
+    id: 3,
+    name: 'Product 3',
+    price: 19.99,
+    category: 'Category 3',
+    rating: 3.5,
+    reviews: 5,
+    discount: '5%',
+    image: 'image3.jpg',
+    badges: [
+      { label: 'Credit Card', type: 'creditCard' },
+    ],
+  },
+  {
+    id: 4,
+    name: 'Product 4',
+    price: 99.99,
+    category: 'Category 4',
+    rating: 5.0,
+    reviews: 50,
+    image: 'image4.jpg',
+    badges: [
+      { label: 'Free Shipping', type: 'truck' },
+      { label: 'Credit Card', type: 'creditCard' },
+    ],
+  },
+  {
+    id: 5,
+    name: 'Product 5',
+    price: 39.99,
+    category: 'Category 5',
+    rating: 4.2,
+    reviews: 15,
+    image: 'image5.jpg',
+    badges: [
+      { label: 'Free Shipping', type: 'truck' },
+    ],
+  },
+  {
+    id: 6,
+    name: 'Product 6',
+    price: 59.99,
+    category: 'Category 6',
+    rating: 4.8,
+    reviews: 25,
+    discount: '15%',
+    image: 'image6.jpg',
+    badges: [
+      { label: 'Credit Card', type: 'creditCard' },
+    ],
+  },
+  {
+    id: 7,
+    name: 'Product 7',
+    price: 79.99,
+    category: 'Category 7',
+    rating: 4.6,
+    reviews: 30,
+    image: 'image7.jpg',
+    badges: [
+      { label: 'Free Shipping', type: 'truck' },
+    ],
+  },
+  {
+    id: 8,
+    name: 'Product 8',
+    price: 89.99,
+    category: 'Category 8',
+    rating: 4.9,
+    reviews: 40,
+    image: 'image8.jpg',
+    badges: [
+      { label: 'Credit Card', type: 'creditCard' },
+    ],
+  },
+  {
+    id: 9,
+    name: 'Product 9',
+    price: 25.99,
+    category: 'Category 9',
+    rating: 3.9,
+    reviews: 8,
+    image: 'image9.jpg',
+    badges: [
+      { label: 'Free Shipping', type: 'truck' },
+    ],
+  },
+  {
+    id: 10,
+    name: 'Product 10',
+    price: 45.99,
+    category: 'Category 10',
+    rating: 4.3,
+    reviews: 18,
+    discount: '20%',
+    image: 'image10.jpg',
+    badges: [
+      { label: 'Credit Card', type: 'creditCard' },
+    ],
+  },
+  {
+    id: 11,
+    name: 'Product 11',
+    price: 55.99,
+    category: 'Category 11',
+    rating: 4.7,
+    reviews: 22,
+    image: 'image11.jpg',
+    badges: [
+      { label: 'Free Shipping', type: 'truck' },
+    ],
+  },
+  {
+    id: 12,
+    name: 'Product 12',
+    price: 65.99,
+    category: 'Category 12',
+    rating: 4.4,
+    reviews: 28,
+    image: 'image12.jpg',
+    badges: [
+      { label: 'Credit Card', type: 'creditCard' },
+    ],
+  },
+];
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (isDragging !== null) {
-      const rect = e.currentTarget.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const percentage = Math.min(Math.max(x / rect.width, 0), 1)
-      const newValue = Math.round(percentage * maxPrice)
-      handlePriceChange(newValue, isDragging)
-    }
-  }, [isDragging, maxPrice, handlePriceChange])
-
-  useEffect(() => {
-    const handleGlobalMouseUp = () => setIsDragging(null)
-    document.addEventListener('mouseup', handleGlobalMouseUp)
-    return () => document.removeEventListener('mouseup', handleGlobalMouseUp)
-  }, [])
-
-  const filteredProducts = products.filter(product => {
-    if (selectedPlatform !== 'all' && product.platform !== selectedPlatform) return false
-    if (selectedCategory !== 'all' && product.category !== selectedCategory) return false
-    if (product.price < priceRange[0] || product.price > priceRange[1]) return false
-    if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) return false
-    return true
-  })
-
+export default function Page() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 bg-gray-800">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Products</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-
-        <div className="min-h-screen bg-gray-900">
-          <div className="bg-gray-800 border-t border-gray-700">
-            <div className="container mx-auto px-4 py-4">
-              <div className="flex flex-col gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    type="text"
-                    placeholder="Search games..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-md border border-gray-600 focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-
-                <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Filter className="h-5 w-5 text-emerald-500" />
-                    <span className="text-white">Filters:</span>
-                  </div>
-                  
-                  <select 
-                    className="bg-gray-700 text-white px-4 py-2 rounded-md border border-gray-600 focus:outline-none focus:border-emerald-500"
-                    value={selectedPlatform}
-                    onChange={(e) => setSelectedPlatform(e.target.value)}
-                  >
-                    <option value="all">All Platforms</option>
-                    <option value="PS5">PlayStation 5</option>
-                    <option value="PS4">PlayStation 4</option>
-                    <option value="Xbox">Xbox Series X|S</option>
-                    <option value="Switch">Nintendo Switch</option>
-                  </select>
-
-                  <select
-                    className="bg-gray-700 text-white px-4 py-2 rounded-md border border-gray-600 focus:outline-none focus:border-emerald-500"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                  >
-                    <option value="all">All Categories</option>
-                    <option value="Action">Action</option>
-                    <option value="RPG">RPG</option>
-                    <option value="FPS">FPS</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Simulation">Simulation</option>
-                  </select>
-
-                  <div className="flex items-center gap-2 w-full max-w-md">
-                    <DollarSign className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-                    <div className="w-full">
-                      <div 
-                        className="relative pt-1 pb-6"
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={handleMouseUp}
-                      >
-                        <div className="h-2 bg-gray-700 rounded-full">
-                          <div
-                            className="absolute h-2 rounded-full bg-emerald-500"
-                            style={{
-                              left: `${(priceRange[0] / maxPrice) * 100}%`,
-                              right: `${100 - (priceRange[1] / maxPrice) * 100}%`,
-                            }}
-                          ></div>
-                        </div>
-                        <div
-                          className="absolute w-4 h-4 -mt-1 bg-emerald-500 rounded-full cursor-pointer"
-                          style={{ left: `calc(${(priceRange[0] / maxPrice) * 100}% - 8px)` }}
-                          onMouseDown={() => handleMouseDown(0)}
-                          role="slider"
-                          aria-valuemin={0}
-                          aria-valuemax={maxPrice}
-                          aria-valuenow={priceRange[0]}
-                          tabIndex={0}
-                        ></div>
-                        <div
-                          className="absolute w-4 h-4 -mt-1 bg-emerald-500 rounded-full cursor-pointer"
-                          style={{ left: `calc(${(priceRange[1] / maxPrice) * 100}% - 8px)` }}
-                          onMouseDown={() => handleMouseDown(1)}
-                          role="slider"
-                          aria-valuemin={0}
-                          aria-valuemax={maxPrice}
-                          aria-valuenow={priceRange[1]}
-                          tabIndex={0}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between text-white text-sm mt-2">
-                        <span>${priceRange[0].toFixed(2)}</span>
-                        <span>${priceRange[1].toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </div>
+      <SidebarInset className="flex flex-col h-screen h-4 overflow-hidden">
+        <Header user={data.user} className="sticky top-0 z-10 bg-background" />
+        <main className="flex-grow overflow-y-auto">
+          <div className="flex-1 overflow-auto bg-background border-gray-700">
+              <div className="w-full px-6 py-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      name={product.name}
+                      price={product.price}
+                      rating={product.rating}
+                      reviews={product.reviews}
+                      discount={product.discount}
+                      image={product.image}
+                      badges={product.badges}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
-          </div>
-
-          <main className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-emerald-500 transition-colors">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h3 className="text-white font-semibold text-lg">{product.name}</h3>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-emerald-500 font-bold">${product.price.toFixed(2)}</span>
-                      <div className="flex gap-2">
-                        <span className="px-2 py-1 bg-gray-700 rounded-md text-xs text-white">
-                          {product.platform}
-                        </span>
-                        <span className="px-2 py-1 bg-gray-700 rounded-md text-xs text-white">
-                          {product.category}
-                        </span>
-                      </div>
-                    </div>
-                    <button className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
-                      Add to Cart
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </main>
-        </div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

@@ -270,7 +270,7 @@ export default function Page() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="flex flex-col h-screen overflow-hidden">
+      <SidebarInset className="flex flex-col h-screen overflow-hidden h-4">
         <Header user={data.user} className="sticky top-0 z-10 bg-background" />
         <main className="flex-grow overflow-y-auto">
           <div className="container mx-auto px-4">
