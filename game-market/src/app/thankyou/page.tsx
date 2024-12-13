@@ -1,33 +1,31 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Gamepad2 } from 'lucide-react'
+import { Card, CardContent } from "@/components/ui/card";
 import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { Header } from "@/components/header"
 
 interface OrderItem {
-  id: number
-  name: string
-  description: string
-  price: number
-  quantity: number
-  image: string
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+  image: string;
 }
 
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+};
+
 interface ThankYouPageProps {
-  orderNumber: string
-  items: OrderItem[]
+  orderNumber: string;
+  items: OrderItem[];
 }
 
 export default function ThankYouPage({
@@ -39,15 +37,15 @@ export default function ThankYouPage({
       description: "Covers dark circles covers dark",
       price: 21.45,
       quantity: 1,
-      image: "/placeholder.svg"
+      image: "/placeholder.svg",
     },
     {
       id: 2,
       name: "Vegan Powder",
       description: "Cloud Silk Baked Setting & Smoothing Talc",
-      price: 15.00,
+      price: 15.0,
       quantity: 2,
-      image: "/placeholder.svg"
+      image: "/placeholder.svg",
     },
     {
       id: 3,
@@ -55,32 +53,15 @@ export default function ThankYouPage({
       description: "August Mechanical",
       price: 18.99,
       quantity: 1,
-      image: "/placeholder.svg"
-    }
-  ]
+      image: "/placeholder.svg",
+    },
+  ],
 }: ThankYouPageProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 bg-gray-800">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Thank You</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-
+      <SidebarInset className="flex flex-col h-screen overflow-hidden h-4">
+        <Header user={data.user} className="sticky top-0 z-10 bg-background" />
         <div className="min-h-screen bg-zinc-900 py-12 px-4 sm:px-6 lg:px-8">
           <Card className="max-w-3xl mx-auto bg-zinc-800/50 border-zinc-700">
             <CardContent className="p-6 sm:p-8">
@@ -129,5 +110,5 @@ export default function ThankYouPage({
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
