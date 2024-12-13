@@ -10,7 +10,6 @@ interface ProductShowcaseProps {
 
 export function ProductShowcase({ category, products }: ProductShowcaseProps) {
   const [showAll, setShowAll] = useState(false)
-
   const displayedProducts = showAll ? products : products.slice(0, 8)
 
   return (

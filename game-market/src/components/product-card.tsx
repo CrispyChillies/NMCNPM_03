@@ -51,7 +51,7 @@ export function ProductCard({
       <CardContent className="p-1 mt-1 mx-4 mb-4">
         <div className="flex items-center justify-between gap-4">
           {showBadge && discount && (
-            <Badge variant="secondary" className="bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+            <Badge variant="outline" className="bg-red-200 text-primary-800 dark:bg-primary-900 dark:text-primary-300">
               {discount}
             </Badge>
           )}
