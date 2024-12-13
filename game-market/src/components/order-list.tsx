@@ -81,60 +81,6 @@ export const OrderList = () => {
   return (
     <div className="flex h-screen bg-gray-900">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800 p-4">
-        <div className="mb-8">
-          <img src="/placeholder.svg" alt="Logo" className="h-12 w-12" />
-        </div>
-        <nav className="space-y-6">
-          <div>
-            <Button
-              variant="ghost"
-              className="w-full justify-start bg-emerald-800 text-white hover:bg-emerald-700"
-            >
-              Category
-            </Button>
-          </div>
-          <div>
-            <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white">
-              <Heart className="mr-2 h-4 w-4" />
-              Favorite
-            </Button>
-          </div>
-          <div>
-            <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white">
-              <Bell className="mr-2 h-4 w-4" />
-              Notification
-            </Button>
-          </div>
-          <div>
-            <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white">
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Message
-            </Button>
-          </div>
-          <div>
-            <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white">
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </Button>
-          </div>
-        </nav>
-        <div className="mt-auto pt-6">
-          <div className="mb-4">
-            <Button
-              variant="ghost"
-              className="w-full justify-start bg-emerald-800 text-white hover:bg-emerald-700"
-            >
-              Gerne
-            </Button>
-          </div>
-          <div className="mb-4 px-4 text-sm text-gray-400">Kien</div>
-          <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white">
-            <LogOut className="mr-2 h-4 w-4" />
-            Log Out
-          </Button>
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-8">

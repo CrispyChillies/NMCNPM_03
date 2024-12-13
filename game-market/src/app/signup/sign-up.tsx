@@ -35,7 +35,7 @@ export default function SignUp() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-[480px] h-[810px] bg-[#2D2D2D] px-8 py-[66px] space-y-6 bg-white rounded-[30px] shadow-md text-white ">
+      <div className="w-[480px] h-[810px] bg-[#2D2D2D] px-8 py-[66px] space-y-6 bg-black rounded-[30px] shadow-md text-white ">
         <h1 className="text-2xl font-bold text-center">Sign Up for Game Market</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
