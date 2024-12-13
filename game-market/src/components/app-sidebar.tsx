@@ -18,7 +18,7 @@ import { NavProjects } from "./nav-projects"
 // Declare userType separately
 type UserType = "Admin" | "GameProvider" | "Buyer"
 
-const userType: UserType = "Admin" // This can be dynamically set based on the logged-in user
+const userType: UserType = "Buyer" // This can be dynamically set based on the logged-in user
 
 const data = {
   user: {
