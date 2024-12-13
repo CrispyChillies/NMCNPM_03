@@ -34,9 +34,9 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-[480px] h-[810px] bg-[#2D2D2D] px-8 py-[66px] space-y-6 bg-black rounded-[30px] shadow-md text-white ">
-        <h1 className="text-2xl font-bold text-center">Sign Up for Game Market</h1>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="w-[480px] h-[810px] bg-[#2D2D2D] px-8 py-[66px] space-y-6 bg-background rounded-[30px] shadow-md text-white border">
+        <h1 className="text-4xl font-bold text-center text-foreground">SIGN UP</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="firstName" className="block text-left">First Name</Label>
@@ -48,6 +48,7 @@ export default function SignUp() {
               onChange={(e) => setFirstName(e.target.value)}
               className="w-[400px] h-[60px] rouded-[10px]"
             />
+            <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="lastName" className="block text-left">Last Name</Label>
@@ -59,6 +60,7 @@ export default function SignUp() {
               onChange={(e) => setLastName(e.target.value)}
               className="w-[400px] h-[60px] rouded-[10px]"
             />
+            <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email" className="block text-left">Email</Label>
@@ -70,6 +72,7 @@ export default function SignUp() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-[400px] h-[60px] rouded-[10px]"
             />
+            <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone" className="block text-left">Phone Number</Label>
@@ -79,8 +82,8 @@ export default function SignUp() {
               placeholder="Phone Number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}className="w-[400px] h-[60px] rouded-[10px]"
-
             />
+            <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox 
@@ -90,7 +93,7 @@ export default function SignUp() {
             />
             <label
               htmlFor="terms"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground"
             >
               I accept the terms of use
             </label>
@@ -98,9 +101,9 @@ export default function SignUp() {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <Button type="submit" className="w-[400px] h-[60px] bg-[#106D5C] hover:bg-[#E75353] rounded-[10px] transition-colors duration-200 font-bold text-[20px]">Sign Up</Button>
         </form>
-        <p className="text-center text-sm">
+        <p className="text-center text-sm text-foreground">
           Already have an account?{' '}
-          <a href="./signin/sign-in" className="text-blue-600 hover:underline">
+          <a href="./signin" className="text-blue-600 hover:underline">
             Sign in
           </a>
         </p>

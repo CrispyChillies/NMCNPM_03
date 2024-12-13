@@ -116,15 +116,15 @@ export default function UserRequestPending() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-900">
+    <div className="flex h-screen bg-background">
       {/* Sidebar */}
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-8">
-        <h1 className="mb-8 text-3xl font-bold text-white">User Request Pending</h1>
+        <h1 className="mb-8 text-3xl font-bold text-foreground">User Request Pending</h1>
 
         {/* Filters */}
-        <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-white p-4">
+        <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-white p-4 border">
           <Filter className="h-5 w-5 text-gray-500" />
           <span className="text-gray-700">Filter By</span>
           <Input
@@ -183,7 +183,7 @@ export default function UserRequestPending() {
         </div>
 
         {/* Table */}
-        <div className="rounded-lg bg-white">
+        <div className="rounded-lg bg-white border">
           <Table>
             <TableHeader>
               <TableRow>

@@ -24,9 +24,9 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-[480px] h-[810px] bg-[#2D2D2D] px-8 py-[66px] space-y-6 bg-black rounded-[30px] shadow-md text-white ">
-          <h1 className="text-2xl font-bold text-center">Sign In to Game Market</h1>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="w-[480px] h-[810px] bg-[#2D2D2D] px-8 py-[66px] space-y-6 bg-background rounded-[30px] shadow-md text-white border">
+          <h1 className="text-4xl font-bold text-foreground text-center">SIGN IN</h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username" className="block text-left">Username</Label>
@@ -38,7 +38,7 @@ export default function SignIn() {
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-[400px] h-[60px] rouded-[10px]"
               />
-              <p className="text-sm text-white block text-left">Enter your user name, Email, or Phone number</p>
+              <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password" className="block text-left">Password</Label>
@@ -50,14 +50,14 @@ export default function SignIn() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-[400px] h-[60px] rouded-[10px]"
               />
-              <p className="text-sm text-white block text-left">Enter your Password to sign in into Game Market</p>
+              <p className="text-sm text-foreground block text-left">Enter your Password to sign in into Game Market</p>
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
             <Button type="submit" className="w-[400px] h-[60px] bg-[#106D5C] hover:bg-[#E75353] rounded-[10px] transition-colors duration-200 font-bold text-[20px]">Sign In</Button>
           </form>
-          <p className="text-center text-sm">
+          <p className="text-center text-sm text-foreground">
             Don't have an account?{' '}
-            <a href="/signup/sign-up" className="text-blue-600 hover:underline">
+            <a href="/signup" className="text-blue-600 hover:underline">
               Sign up
             </a>
           </p>

@@ -1,16 +1,14 @@
 import { Users, Package, DollarSign, Clock } from 'lucide-react'
-import { Sidebar } from "../../components/sidebar"
 import { StatCard } from "../../components/stat-card"
 import { SalesChart } from "../../components/sales-chart"
 
 export default function Dashboard() {
   return (
-    <div className="hidden md:block">
+    <div className="w-full">
       <div className="border-t">
         <div className="bg-background">
-          <div className="grid lg:grid-cols-5">
-            <Sidebar className="hidden lg:block" />
-            <div className="col-span-3 lg:col-span-4 lg:border-l">
+          <div className="grid w-full">
+            <div className="w-full">
               <div className="h-full px-4 py-6 lg:px-8">
                 <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
