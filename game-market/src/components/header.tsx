@@ -34,7 +34,7 @@ export function Header({ user }: HeaderProps) {
     return (
       <header className="flex h-16 shrink-0 items-center justify-between border-b px-4">
         <div className="flex items-center gap-4">
-          <SidebarTrigger className="-ml-2" />
+          <SidebarTrigger className="-ml-2 text-foreground" />
           <Separator orientation="vertical" className="h-6" />
           <Breadcrumb>
             <BreadcrumbList>
@@ -58,11 +58,11 @@ export function Header({ user }: HeaderProps) {
             />
           </form>
           <Button size="icon" variant="ghost">
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-5 w-5 text-foreground" />
             <span className="sr-only">Shopping cart</span>
           </Button>
           <Button size="icon" variant="ghost">
-            <Bell className="h-5 w-5" />
+            <Bell className="h-5 w-5 text-foreground" />
             <span className="sr-only">Notifications</span>
           </Button>
           <DropdownMenu>
@@ -71,7 +71,7 @@ export function Header({ user }: HeaderProps) {
               variant="ghost"
               className="relative h-8 w-8 rounded-full"
             >
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-8 w-8 text-foreground">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback>
                   {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
@@ -79,7 +79,7 @@ export function Header({ user }: HeaderProps) {
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuContent className="w-56 bg-background" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{user.name}</p>
