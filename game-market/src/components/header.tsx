@@ -135,7 +135,7 @@ export function Header({ user, userType }: HeaderProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {userType === "buyer" && (
+            {userType === "user" && (
               <>
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
