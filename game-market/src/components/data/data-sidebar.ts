@@ -212,6 +212,10 @@ export const navMainByUserType = {
           url: "/admin/dashboard",
         },
         {
+          title: "Seller Registration",
+          url: "/admin/become-seller",
+        },
+        {
           title: "Games Management",
           url: "/admin/game-management",
         },
@@ -229,6 +233,6 @@ export const navMainByUserType = {
         },
       ],
     },
-    ...userCategories,
+    // ...userCategories,
   ],
 };
