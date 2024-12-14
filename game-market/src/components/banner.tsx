@@ -53,7 +53,7 @@ export function CarouselBanner({ images }: CarouselBannerProps) {
 
   return (
     <div
-      className="relative w-full sm:w-5/6 lg:w-3/4 min-h-[300px] max-h-[400px] overflow-hidden select-none mx-auto rounded-lg mt-4"
+      className="relative w-full sm:w-5/6 lg:w-3/4 min-h-[300px] max-h-[600px]  overflow-hidden select-none mx-auto rounded-lg mt-4"
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
