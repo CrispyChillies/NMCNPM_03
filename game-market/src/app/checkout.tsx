@@ -3,14 +3,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button"
 
 
@@ -144,38 +136,62 @@ const CheckoutPage: React.FC = () => {
               <CardTitle>Items</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Price</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {orderItems.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.quantity}</TableCell>
-                      <TableCell>${item.price.toFixed(2)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="space-y-4">
+                {/* Product List */}
+                {orderItems.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-center justify-between space-x-4 py-2"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="h-16 w-16 rounded-md overflow-hidden">
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-medium">{item.name}</p>
+                        <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                      </div>
+                    </div>
+                    <div className="font-medium">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="mt-6 space-y-2 border-t pt-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Subtotal</span>
+                    <span className="font-medium">
+                      ${orderItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Total Items</span>
+                    <span className="font-medium">
+                      {orderItems.reduce((total, item) => total + item.quantity, 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t">
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={() => {
+                      // Handle checkout logic here
+                      console.log("Processing checkout...");
+                    }}
+                  >
+                    Proceed to Checkout
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
-          <div className="flex justify-between font-semibold">
-            <span>Total</span>
-            <span>
-              $
-              {orderItems
-                .reduce((total, item) => total + item.price * item.quantity, 0)
-                .toFixed(2)}
-            </span>
-          </div>
-          <Button type="submit" className="w-full bg-black text-white">
-            Checkout
-          </Button>
         </div>
       </div>
     </div>

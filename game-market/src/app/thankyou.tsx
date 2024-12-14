@@ -1,10 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
-import { Header } from "@/components/header"
 
 interface OrderItem {
   id: number;
