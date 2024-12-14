@@ -33,13 +33,17 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href={`/${userType.toLowerCase()}/home`}>
+              <a href= "/" >
                 <div className="flex aspect-square items-center justify-center rounded-lg">
                   <img src={logo} alt="Logo" className="size-8" />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-left text-base leading-tight">
                   <span className="truncate font-semibold">Game Market</span>
-                  <span className="truncate text-xs">{userType}</span>
+                  {userType === "Buyer" ? (
+                    <span className="truncate text-xs">Hi, {user.name.split(' ').slice(-1)}!</span>
+                  ) : (
+                    <span className="truncate text-xs">{userType}</span>
+                  )}
                 </div>
               </a>
             </SidebarMenuButton>

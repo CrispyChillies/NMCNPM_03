@@ -14,14 +14,14 @@ import Home from './app/home.tsx'
 import Product from './app/product.tsx'
 import Checkout from './app/checkout.tsx'
 import ThankYou from './app/thankyou.tsx'
-import BecomeSeller from './app/become-seller.tsx'
-import Dashboard from './app/dashboard.tsx'
-import GameManagement from './app/game-management.tsx'
+import BecomeSeller from './app/admin/become-seller.tsx'
+import Dashboard from './app/admin/dashboard.tsx'
+import GameManagement from './app/admin/game-management.tsx'
 import OrderList from './app/order-list.tsx'
 import SignIn from './app/sign-in.tsx'
 import SignUp from './app/sign-up.tsx'
-import UserManagement from './app/user-management.tsx'
-import UserRequest from './app/user-request.tsx'
+import UserManagement from './app/admin/user-management.tsx'
+import UserRequest from './app/admin/user-request.tsx'
 import ProfileUpdating from "./app/profile-updating.tsx";
 import ProductUploading from "./app/product-uploading.tsx";
 import ProductDetail from "./app/product-detail.tsx";
@@ -32,7 +32,7 @@ const data = {
     email: "pvquyen22@clc.fitus.edu.vn",
     avatar: "https://i.pinimg.com/736x/4e/ff/15/4eff156ff63f26f40a4280445631172d.jpg",
   },
-  userType: "GameProvider",
+  userType: "Buyer",
 }
 
 createRoot(document.querySelector('.root')!).render(

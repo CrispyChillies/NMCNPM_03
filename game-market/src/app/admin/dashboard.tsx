@@ -1,6 +1,6 @@
 import { Users, Package, DollarSign, Clock } from 'lucide-react'
-import { StatCard } from "../components/stat-card"
-import { SalesChart } from "../components/sales-chart"
+import { StatCard } from "../../components/ui/stat-card"
+import { SalesChart } from "../../components/sales-chart"
 
 export default function Dashboard() {
   return (
