@@ -10,7 +10,7 @@ import {
   ClipboardList,
   Bell,
   Component,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const projects = [
   {
@@ -103,7 +103,7 @@ const buyerCategories = [
       {
         title: "Orders History",
         url: "/user/purchase/history",
-      }
+      },
     ],
   },
   {
@@ -139,6 +139,16 @@ const buyerCategories = [
         url: "/user/setting/privacy",
       },
     ],
+  },
+  {
+    title: "Profile Updating",
+    url: "/profile-updating",
+    icon: User,
+  },
+  {
+    title: "Product Uploading",
+    url: "/product-uploading",
+    icon: ClipboardList,
   },
 ];
 
