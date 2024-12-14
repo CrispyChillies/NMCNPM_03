@@ -129,7 +129,7 @@ export default function ProductDetail() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-background text-foreground min-h-screen">
       <div className="col1-container bg-card rounded-lg shadow-lg p-6 text-card-foreground">
         <img
-          src="../images/fc24.png"
+          src="/images/fc24.png"
           className="rounded-xl w-full h-auto mb-4"
           alt="fc24"
         />
