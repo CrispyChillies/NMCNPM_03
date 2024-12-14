@@ -71,7 +71,7 @@ export function Header({ user, userType }: HeaderProps) {
         {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join('/')}`;
           const isLast = index === pathnames.length - 1;
-          const title = urlToTitleMap[to];
+          let title = urlToTitleMap[to];
           if (!title) return null;
           return (
             <BreadcrumbItem key={to}>
