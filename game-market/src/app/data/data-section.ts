@@ -22,6 +22,7 @@ import {
   Component,
   DollarSign,
   Gift,
+  HandCoins,
 } from "lucide-react";
 
 export const featureSection = [
@@ -154,6 +155,12 @@ export const featureSection = [
         description: "Get an overview of the platform's performance, including key metrics and statistics.",
         url: "/admin/dashboard",
         icon: React.createElement(LayoutDashboard, { className: "h-8 w-8" }),
+      },
+      {
+        title: "Seller Registration",
+        description: "Manage seller applications and approve new sellers. Monitor the onboarding process and ensure compliance with platform policies",
+        url: "/admin/become-seller",
+        icon: React.createElement(HandCoins, { className: "h-8 w-8" }),
       },
       {
         title: "Games Management",
