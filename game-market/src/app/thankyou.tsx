@@ -58,51 +58,44 @@ export default function ThankYouPage({
   ],
 }: ThankYouPageProps) {
   return (
-    <div className="min-h-screen bg-zinc-900 py-12 px-4 sm:px-6 lg:px-8">
-    <Card className="max-w-3xl mx-auto bg-zinc-800/50 border-zinc-700">
-      <CardContent className="p-6 sm:p-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-emerald-500 mb-6">
-          Thank you for your purchase
-        </h1>
-        
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-2xl font-semibold text-zinc-400 mb-3">Order detail</h2>
-            <p className="text-zinc-400">
-              Thank you for your order! Order <span className="text-blue-400">#{orderNumber}</span> has been received and is being 
-              processed. You&apos;ll receive updates as it moves through each step. If you have 
-              any questions, feel free to contact us. We appreciate your purchase!
-            </p>
-          </div>
+    <div className="min-h-screen bg-white text-black py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="max-w-3xl mx-auto bg-slate-50 text-black">
+        <CardContent className="p-6 sm:p-8">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-6">
+            Thank you for your purchase
+          </h1>
+          
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-semibold mb-3">Order Details</h2>
+              <p>
+                Thank you for your order! Order <span className="font-semibold">#{orderNumber}</span> has been received and is being 
+                processed. You'll receive updates as it moves through each step. If you have 
+                any questions, feel free to contact us. We appreciate your purchase!
+              </p>
+            </div>
 
-          <div className="space-y-4">
-            {items.map((item) => (
-              <div key={item.id} className="flex items-center space-x-4 p-4 rounded-lg border border-zinc-700 bg-zinc-800/50">
-                <div className="flex-shrink-0">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-20 h-20 rounded-md object-cover"
-                  />
-                </div>
-                <div className="flex-grow">
-                  <h3 className="font-semibold text-zinc-100">{item.name}</h3>
-                  <p className="text-sm text-zinc-400">{item.description}</p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="text-sm bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">
-                    x{item.quantity}
+            <div className="space-y-4">
+              {items.map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-4 rounded-lg border bg-white text-black">
+                  <div>
+                    <h3 className="text-lg font-semibold">{item.name}</h3>
+                    <p className="text-sm">Quantity: {item.quantity}</p>
+                    <p className="text-sm">Price: ${item.price.toFixed(2)}</p>
                   </div>
-                  <div className="font-semibold text-zinc-100">
-                    ${item.price.toFixed(2)}
+                  <div className="flex-shrink-0">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="h-16 w-16 object-cover rounded-md"
+                    />
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

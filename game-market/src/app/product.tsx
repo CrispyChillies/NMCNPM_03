@@ -227,19 +227,21 @@ export default function Page() {
       <ProductFilters
         onApplyFilters={applyFilters}
       />
-      <div className="w-full px-6 py-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="w-full px-6 py-4 flex justify-center">
+        <div className="flex flex-wrap gap-4 justify-start ml-[5%]">
           {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              name={product.name}
-              price={product.price}
-              rating={product.rating}
-              reviews={product.reviews}
-              discount={product.discount}
-              image={product.image}
-              badges={product.badges}
-            />
+            <div className="flex-shrink-0 w-[280px]">
+              <ProductCard
+                key={product.id}
+                name={product.name}
+                price={product.price}
+                rating={product.rating}
+                reviews={product.reviews}
+                discount={product.discount}
+                image={product.image}
+                badges={product.badges}
+              />
+            </div>
           ))}
         </div>
       </div>
