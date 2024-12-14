@@ -1,4 +1,4 @@
-import { OrderList } from "@/components/order-list";
+import { OrderList } from "@/app/admin/order-list";
 
 export default function OrderListPage() {
   return <OrderList />
