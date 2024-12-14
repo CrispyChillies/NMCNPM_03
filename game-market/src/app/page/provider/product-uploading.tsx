@@ -84,17 +84,17 @@ export default function ProductUploading() {
   };
 
   return (
-    <div className="w-full max-w-screen-2xl mx-auto my-10 px-4">
-      <h2 className="text-2xl font-bold mb-6 text-left text-[var(--foreground)]">
+    <div className="w-full max-w-screen-2xl mx-auto my-8 px-4">
+      <h2 className="text-xl font-bold mb-6 text-left text-primary px-6">
         Upload Game Disc
       </h2>
-      <Card className="w-full bg-[#2D2D2D] text-white">
+      <Card className="w-full bg-card text-card-foreground">
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Each input group */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-white">
+                <Label htmlFor="name" className="text-card-foreground">
                   Name
                 </Label>
                 <Input
@@ -103,11 +103,11 @@ export default function ProductUploading() {
                   value={gameDetails.name}
                   onChange={handleInputChange}
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="initialStock" className="text-white">
+                <Label htmlFor="initialStock" className="text-card-foreground">
                   Initial Stock
                 </Label>
                 <Input
@@ -118,11 +118,11 @@ export default function ProductUploading() {
                   onChange={handleInputChange}
                   min="0"
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="price" className="text-white">
+                <Label htmlFor="price" className="text-card-foreground">
                   Price
                 </Label>
                 <Input
@@ -133,11 +133,11 @@ export default function ProductUploading() {
                   min="0"
                   onChange={handleInputChange}
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="version" className="text-white">
+                <Label htmlFor="version" className="text-card-foreground">
                   Version
                 </Label>
                 <Input
@@ -145,11 +145,11 @@ export default function ProductUploading() {
                   name="version"
                   value={gameDetails.version}
                   onChange={handleInputChange}
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="sizeInMB" className="text-white">
+                <Label htmlFor="sizeInMB" className="text-card-foreground">
                   Size in Megabyte
                 </Label>
                 <Input
@@ -159,11 +159,11 @@ export default function ProductUploading() {
                   min="0"
                   value={gameDetails.sizeInMB}
                   onChange={handleInputChange}
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="releaseDate" className="text-white">
+                <Label htmlFor="releaseDate" className="text-card-foreground">
                   Date of Release from Manufacturer
                 </Label>
                 <Input
@@ -172,7 +172,7 @@ export default function ProductUploading() {
                   type="date"
                   value={gameDetails.releaseDate}
                   onChange={handleInputChange}
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
 
@@ -180,7 +180,7 @@ export default function ProductUploading() {
               <div className="space-y-2">
                 <Label
                   htmlFor="englishSupported"
-                  className="text-white px-3 text-xl"
+                  className="text-card-foreground px-3 text-xl"
                 >
                   English Supported?
                 </Label>
@@ -190,7 +190,7 @@ export default function ProductUploading() {
                   value={gameDetails.englishSupported}
                   onChange={handleInputChange}
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C] rounded-[30px]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
                 >
                   <option value="" disabled>
                     Select an option
@@ -200,7 +200,7 @@ export default function ProductUploading() {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="developer" className="text-white">
+                <Label htmlFor="developer" className="text-card-foreground">
                   Developer
                 </Label>
                 <Input
@@ -209,11 +209,11 @@ export default function ProductUploading() {
                   value={gameDetails.developer}
                   onChange={handleInputChange}
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="publisher" className="text-white">
+                <Label htmlFor="publisher" className="text-card-foreground">
                   Publisher
                 </Label>
                 <Input
@@ -222,11 +222,11 @@ export default function ProductUploading() {
                   value={gameDetails.publisher}
                   onChange={handleInputChange}
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="categories" className="text-white">
+                <Label htmlFor="categories" className="text-card-foreground">
                   Categories
                 </Label>
                 <Input
@@ -236,11 +236,11 @@ export default function ProductUploading() {
                   onChange={handleInputChange}
                   placeholder="e.g., Action, Adventure"
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="genres" className="text-white">
+                <Label htmlFor="genres" className="text-card-foreground">
                   Genres
                 </Label>
                 <Input
@@ -250,11 +250,11 @@ export default function ProductUploading() {
                   onChange={handleInputChange}
                   placeholder="e.g., RPG, Shooter"
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="owners" className="text-white">
+                <Label htmlFor="owners" className="text-card-foreground">
                   Owners
                 </Label>
                 <Input
@@ -264,14 +264,14 @@ export default function ProductUploading() {
                   onChange={handleInputChange}
                   placeholder="e.g., John Doe, Jane Smith"
                   required
-                  className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
                 />
               </div>
             </div>
 
             {/* Description textarea */}
             <div className="space-y-2 mt-6">
-              <Label htmlFor="description" className="text-white">
+              <Label htmlFor="description" className="text-card-foreground">
                 Description
               </Label>
               <Textarea
@@ -280,13 +280,13 @@ export default function ProductUploading() {
                 value={gameDetails.description}
                 onChange={handleInputChange}
                 rows={4}
-                className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
               />
             </div>
 
             {/* File upload */}
             <div className="space-y-2 mt-6">
-              <Label htmlFor="image" className="text-white">
+              <Label htmlFor="image" className="text-card-foreground">
                 Game Image
               </Label>
               <Input
@@ -295,14 +295,14 @@ export default function ProductUploading() {
                 type="file"
                 onChange={handleImageUpload}
                 accept="image/*"
-                className="bg-[#2D2D2D] text-white border-2 border-white focus:border-[#106D5C] focus:ring-[#106D5C]"
+                className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary"
               />
             </div>
 
-            {/* Upload button remains Turquoise Green */}
+            {/* Upload button */}
             <Button
               type="submit"
-              className="w-full bg-[#106D5C] hover:bg-[#0A5446] text-white mt-6 py-3 text-lg font-semibold transition-colors duration-200"
+              className="w-full bg-primary hover:bg-primary-foreground text-primary-foreground mt-6 py-3 text-lg font-semibold transition-colors duration-200"
             >
               <Upload className="mr-2 h-5 w-5" /> UPLOAD
             </Button>

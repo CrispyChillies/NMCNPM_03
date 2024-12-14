@@ -76,8 +76,8 @@ export function ProductFilters({ onApplyFilters }: ProductFiltersProps) {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex justify-between items-center p-4">
-        <h2 className="text-2xl font-bold">Filters</h2>
+      <div className="flex justify-between items-center px-6 mt-8">
+        <h2 className="text-xl font-bold px-4">Filters</h2>
         <div className="flex items-center justify-end gap-2">
           <span className="text-sm font-medium">Sort by</span>
           <DropdownMenu>
