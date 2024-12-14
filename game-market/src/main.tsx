@@ -24,10 +24,8 @@ import OrderList from "@/app/page/admin/order-list"
 import UserRequest from "@/app/page/admin/user-request"
 import ProductUploading from "@/app/page/provider/product-uploading"
 import ProductDetail from "@/app/page/product-detail"
-import SignIn from "./app/sign-in"
-import SignUp from "./app/sign-up"
-import { useLocation, Link } from 'react-router-dom';
-
+import SignIn from "@/app/page/auth/sign-in"
+import SignUp from "@/app/page/auth/sign-up"
 
 const data = {
   user: {
@@ -41,59 +39,69 @@ const data = {
 createRoot(document.querySelector('.root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <SidebarProvider>
-        <AppSidebar user={data.user} userType={data.userType} />
-        <SidebarInset className="flex flex-col h-screen overflow-hidden">
-          <Header user={data.user} userType={data.userType} className="sticky top-0 z-10 bg-background" />
-          <main className="flex-grow overflow-y-auto min-w-screen">
-            <div className="mx-auto px-4">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/home" element={<Navigate to="/" />} />
-                <Route path="/user/game" element={<Section />} />
-                <Route path="/user/account" element={<Section />} />
-                <Route path="/user/purchase" element={<Section />} />
-                <Route path="/user/notification" element={<Section />} />
-                <Route path="/user/setting" element={<Section />} />
-                <Route path="/user/game/all" element={<Product />} />
-                <Route path="/user/game/category" element={<Section />} />
-                <Route path="/user/account/payment" element={<Section />} />
-                <Route path="/user/account/profile" element={<ProfileUpdating />} />
-                <Route path="user/account/address" element={<Section />} />
-                <Route path="/user/account/password" element={<Section />} />
-                <Route path="/user/purchase/order" element={<Section />} />
-                <Route path="/user/purchase/history" element={<Section />} />
-                <Route path="/user/notification/order" element={<Section />} />
-                <Route path="/user/notification/promotion" element={<Section />} />
-                <Route path="/user/setting/general" element={<Section />} />
-                <Route path="/user/setting/notification" element={<Section />} />
-                <Route path="/user/setting/privacy" element={<Section />} />
-                <Route path="/user/cart" element={<CartPage />} />
-                <Route path="/user/checkout" element={<CheckoutPage />} /> {/* Add the checkout route */}
-                <Route path="/user/order-confirm" element={<OrderConfirmPage />} /> {/* Add the order confirm route */}
-                <Route path="/admin" element={<Section />} />
-                <Route path="/admin/dashboard" element={<Dashboard />} />
-                <Route path="/admin/game-management" element={<GameManagement />} />
-                <Route path="/admin/user-management" element={<UserManagement />} />
-                <Route path="/admin/become-seller" element={<BecomeSeller />} />
-                <Route path="/admin/order-management" element={<OrderList />} />
-                <Route path="/admin/report-management" element={<UserRequest />} />
-                <Route path="/provider" element={<Section />} />
-                <Route path="/provider/dashboard" element={<Section />} />
-                <Route path="/provider/game" element={<ProductUploading />} />
-                <Route path="/provider/order" element={<Section />} />
-                <Route path="/provider/customer" element={<Section />} />
-                <Route path="/provider/finance" element={<Section />} />
-                <Route path="/provider/promotion" element={<Section />} />
-                <Route path="/provider/report" element={<Section />} />
-                <Route path="/user/product/:productId" element={<ProductDetail />} />
-                <Route path="*" element={<Navigate to="/" />} />
-              </Routes>
-              <Footer className="bg-background z-10" />
-            </div>
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
+      <Routes>
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route
+          path="/*"
+          element={
+            <SidebarProvider>
+              <AppSidebar user={data.user} userType={data.userType} />
+              <SidebarInset className="flex flex-col h-screen overflow-hidden">
+                <Header user={data.user} userType={data.userType} className="sticky top-0 z-10 bg-background" />
+                <main className="flex-grow overflow-y-auto min-w-screen">
+                  <div className="mx-auto px-4">
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/home" element={<Navigate to="/" />} />
+                      <Route path="/user/game" element={<Section />} />
+                      <Route path="/user/account" element={<Section />} />
+                      <Route path="/user/purchase" element={<Section />} />
+                      <Route path="/user/notification" element={<Section />} />
+                      <Route path="/user/setting" element={<Section />} />
+                      <Route path="/user/game/all" element={<Product />} />
+                      <Route path="/user/game/category" element={<Section />} />
+                      <Route path="/user/account/payment" element={<Section />} />
+                      <Route path="/user/account/profile" element={<ProfileUpdating />} />
+                      <Route path="user/account/address" element={<Section />} />
+                      <Route path="/user/account/password" element={<Section />} />
+                      <Route path="/user/purchase/order" element={<Section />} />
+                      <Route path="/user/purchase/history" element={<Section />} />
+                      <Route path="/user/notification/order" element={<Section />} />
+                      <Route path="/user/notification/promotion" element={<Section />} />
+                      <Route path="/user/setting/general" element={<Section />} />
+                      <Route path="/user/setting/notification" element={<Section />} />
+                      <Route path="/user/setting/privacy" element={<Section />} />
+                      <Route path="/user/cart" element={<CartPage />} />
+                      <Route path="/user/checkout" element={<CheckoutPage />} />
+                      <Route path="/user/order-confirm" element={<OrderConfirmPage />} />
+                      <Route path="/admin" element={<Section />} />
+                      <Route path="/admin/dashboard" element={<Dashboard />} />
+                      <Route path="/admin/game-management" element={<GameManagement />} />
+                      <Route path="/admin/user-management" element={<UserManagement />} />
+                      <Route path="/admin/become-seller" element={<BecomeSeller />} />
+                      <Route path="/admin/order-management" element={<OrderList />} />
+                      <Route path="/admin/report-management" element={<UserRequest />} />
+                      <Route path="/provider" element={<Section />} />
+                      <Route path="/provider/dashboard" element={<Section />} />
+                      <Route path="/provider/game" element={<ProductUploading />} />
+                      <Route path="/provider/order" element={<Section />} />
+                      <Route path="/provider/customer" element={<Section />} />
+                      <Route path="/provider/finance" element={<Section />} />
+                      <Route path="/provider/promotion" element={<Section />} />
+                      <Route path="/provider/report" element={<Section />} />
+                      <Route path="/user/product/:productId" element={<ProductDetail />} />
+                      <Route path="*" element={<Navigate to="/" />} />
+                    </Routes>
+                    <Footer className="bg-background z-10" />
+                  </div>
+                </main>
+              </SidebarInset>
+            </SidebarProvider>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   </StrictMode>
 )
+
