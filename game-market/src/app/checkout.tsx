@@ -1,10 +1,18 @@
 import React from "react";
-import { AppSidebar } from "@/components/app-sidebar"
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
-import { Header } from "@/components/header"
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button"
+
 
 // First define the interface
 interface OrderItem {
@@ -48,169 +56,126 @@ const CheckoutPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-zinc-50 p-6">
+    <div className="min-h-screen bg-white text-black">
       <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2">
         {/* Customer Information Form */}
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Address</h2>
+          <h2 className="text-xl font-semibold text-black">Address</h2>
           <div className="grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label
+                <Label
                   htmlFor="firstName"
-                  className="block text-sm font-medium"
+                  className="block text-sm font-medium text-black"
                 >
                   First Name
-                </label>
-                <input
+                </Label>
+                <Input
                   id="firstName"
-                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 bg-white border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   placeholder="First Name"
                 />
               </div>
               <div className="space-y-2">
-                <label
+                <Label
                   htmlFor="lastName"
-                  className="block text-sm font-medium"
+                  className="block text-sm font-medium text-black"
                 >
                   Last Name
-                </label>
-                <input
+                </Label>
+                <Input
                   id="lastName"
-                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 bg-white border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   placeholder="Last Name"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <label
+              <Label
                 htmlFor="address"
-                className="block text-sm font-medium"
+                className="block text-sm font-medium text-black"
               >
                 Address
-              </label>
-              <input
+              </Label>
+              <Input
                 id="address"
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 bg-white border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="Address"
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="phone" className="block text-sm font-medium">
+              <Label
+                htmlFor="phone"
+                className="block text-sm font-medium text-black"
+              >
                 Phone Number
-              </label>
-              <input
+              </Label>
+              <Input
                 id="phone"
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 bg-white border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="Phone Number"
               />
             </div>
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Payment Method</h2>
-            <div className="space-y-3">
-              <label className="flex items-center space-x-2 bg-emerald-800 p-4 rounded-md cursor-pointer">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="cod"
-                  className="text-emerald-500 focus:ring-emerald-500"
-                  defaultChecked
+            <h2 className="text-xl font-semibold text-black">Payment Method</h2>
+            <RadioGroup className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="mobileBanking" id="mobileBanking" />
+                <Label htmlFor="mobileBanking">Mobile Banking</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem
+                  value="Cash On Delivery"
+                  id="Cash On Delivery"
                 />
-                <span>Cash On Delivery</span>
-              </label>
-              <label className="flex items-center space-x-2 bg-emerald-800 p-4 rounded-md cursor-pointer">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="bank"
-                  className="text-emerald-500 focus:ring-emerald-500"
-                />
-                <span>Mobile Banking</span>
-              </label>
-            </div>
+                <Label htmlFor="Cash On Delivery">Cash On Delivery</Label>
+              </div>
+            </RadioGroup>
           </div>
         </div>
 
         {/* Order Summary */}
-        <div className="bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Order summary</h2>
-            <div className="space-y-4">
-              {/* Product List */}
-              <div className="space-y-4">
-                {orderItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center space-x-6"
-                  >
-                    {" "}
-                    {/* Increased space-x */}
-                    {/* Product Image */}
-                    <div className="relative h-20 w-20 flex-shrink-0 rounded-md overflow-hidden">
-                      {" "}
-                      {/* Increased size */}
-                      <img
-                        src={
-                          item.imageUrl ||
-                          "/placeholder.svg?height=80&width=80"
-                        }
-                        alt={item.name}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                    {/* Product Details */}
-                    <div className="flex-grow">
-                      <p className="font-medium text-lg mb-1">
-                        {item.name}
-                      </p>{" "}
-                      {/* Increased text size and added margin */}
-                      <p className="text-sm text-zinc-400">
-                        ${item.price.toFixed(2)}
-                      </p>
-                    </div>
-                    {/* Quantity */}
-                    <div className="flex-shrink-0 text-right">
-                      <span className="inline-flex items-center justify-center bg-zinc-700 px-4 py-2 rounded-md">
-                        <span className="text-sm text-zinc-400 mr-2">
-                          Qty:
-                        </span>
-                        <span className="font-medium">{item.quantity}</span>
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {/* Total */}
-              <div className="border-t border-zinc-700 pt-4 mt-4">
-                <div className="flex justify-between">
-                  <p>Total</p>
-                  <p className="font-medium">
-                    $
-                    {orderItems
-                      .reduce(
-                        (sum, item) => sum + item.price * item.quantity,
-                        0
-                      )
-                      .toFixed(2)}
-                  </p>
-                </div>
-                <div className="flex justify-between">
-                  <p>Total Items</p>
-                  <p className="font-medium">
-                    {orderItems.reduce(
-                      (sum, item) => sum + item.quantity,
-                      0
-                    )}
-                  </p>
-                </div>
-              </div>
-              <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
-                ORDER
-              </button>
-            </div>
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-black">Order Summary</h2>
+          <Card className="bg-white text-black">
+            <CardHeader>
+              <CardTitle>Items</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Price</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orderItems.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>${item.price.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+          <div className="flex justify-between font-semibold">
+            <span>Total</span>
+            <span>
+              $
+              {orderItems
+                .reduce((total, item) => total + item.price * item.quantity, 0)
+                .toFixed(2)}
+            </span>
           </div>
+          <Button type="submit" className="w-full bg-black text-white">
+            Checkout
+          </Button>
         </div>
       </div>
     </div>
