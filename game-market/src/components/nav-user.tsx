@@ -86,7 +86,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {userType === "buyer" && (
+            {userType === "user" && (
               <>
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
