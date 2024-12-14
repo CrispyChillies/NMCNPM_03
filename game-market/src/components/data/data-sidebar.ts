@@ -5,12 +5,11 @@ import {
   PieChart,
   Send,
   Settings2,
-  ShoppingCart,
-  Users,
-  Gamepad,
+  User,
+  Gamepad2,
   Home,
-  Package,
-  MessageSquare
+  ClipboardList,
+  Bell,
 } from 'lucide-react'
 
 export const projects = [
@@ -48,224 +47,111 @@ export const navMainByUserType = {
   Buyer: [
     {
       title: "Home",
-      url: "/buyer/home",
+      url: "/home",
       icon: Home,
       isActive: true,
     },
     {
-      title: "Browse Games",
-      url: "/buyer/browse",
-      icon: Gamepad,
+      title: "Games",
+      url: "/user/game",
+      icon: Gamepad2,
       items: [
         {
           title: "All Games",
-          url: "/buyer/browse/all",
+          url: "/user/game/all",
         },
         {
           title: "Categories",
-          url: "/buyer/browse/categories",
+          url: "/user/game/category",
         },
         {
-          title: "Trending",
-          url: "/buyer/browse/trending",
+          title: "Favorites",
+          url: "/user/favorite",
         },
       ],
     },
     {
       title: "My Account",
-      url: "/buyer/account",
-      icon: Users,
+      url: "/user/account",
+      icon: User,
       items: [
         {
           title: "Profile",
-          url: "/buyer/account/profile",
+          url: "/user/account/profile",
         },
         {
-          title: "Orders",
-          url: "/buyer/account/orders",
+          title: "Banks & Cards",
+          url: "user/account/payment",
         },
         {
-          title: "Favorites",
-          url: "/buyer/account/favorites",
+          title: "Addresses",
+          url: "user/account/address",
+        },
+        {
+          title: "Change Password",
+          url: "user/account/password",
         },
       ],
     },
     {
-      title: "Cart",
-      url: "/buyer/cart",
-      icon: ShoppingCart,
+      title: "My Purchase",
+      url: "/user/purchase/",
+      icon: ClipboardList,
       items: [
         {
           title: "View Cart",
-          url: "/buyer/cart/view",
+          url: "/user/cart",
         },
         {
-          title: "Checkout",
-          url: "/buyer/cart/checkout",
+          title: "Purchase Orders",
+          url: "/user/purchase/order",
+        },
+        {
+          title: "Orders History",
+          url: "/user/purchase/history",
+        }
+      ],
+    },
+    {
+      title: "Notifications",
+      url: "/user/notification",
+      icon: Bell,
+      items: [
+        {
+          title: "Order updates",
+          url: "/user/notification/order",
+        },
+        {
+          title: "Promotions",
+          url: "/user/notification/promotion",
         },
       ],
     },
     {
       title: "Settings",
-      url: "/buyer/settings",
+      url: "/user/setting",
       icon: Settings2,
       items: [
         {
           title: "General",
-          url: "/buyer/settings/general",
+          url: "/user/setting/general",
         },
         {
           title: "Notifications",
-          url: "/buyer/settings/notifications",
+          url: "/user/setting/notification",
         },
         {
           title: "Privacy",
-          url: "/buyer/settings/privacy",
+          url: "/user/setting/privacy",
         },
       ],
     },
   ],
   Admin: [
-    {
-      title: "Dashboard",
-      url: "/admin/dashboard",
-      icon: PieChart,
-      isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: "/admin/dashboard/overview",
-        },
-        {
-          title: "Analytics",
-          url: "/admin/dashboard/analytics",
-        },
-      ],
-    },
-    {
-      title: "User Management",
-      url: "/admin/users",
-      icon: Users,
-      items: [
-        {
-          title: "All Users",
-          url: "/admin/users/all",
-        },
-        {
-          title: "Approvals",
-          url: "/admin/users/approvals",
-        },
-        {
-          title: "Reports",
-          url: "/admin/users/reports",
-        },
-      ],
-    },
-    {
-      title: "Game Management",
-      url: "/admin/games",
-      icon: Gamepad,
-      items: [
-        {
-          title: "All Games",
-          url: "/admin/games/all",
-        },
-        {
-          title: "Approvals",
-          url: "/admin/games/approvals",
-        },
-        {
-          title: "Featured Games",
-          url: "/admin/games/featured",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/admin/settings",
-      icon: Settings2,
-      items: [
-        {
-          title: "Platform Settings",
-          url: "/admin/settings/platform",
-        },
-        {
-          title: "Moderation Rules",
-          url: "/admin/settings/moderation",
-        },
-      ],
-    },
+
   ],
   GameProvider: [
-    {
-      title: "Dashboard",
-      url: "/provider/dashboard",
-      icon: PieChart,
-      isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: "/provider/dashboard/overview",
-        },
-        {
-          title: "Analytics",
-          url: "/provider/dashboard/analytics",
-        },
-      ],
-    },
-    {
-      title: "Game Management",
-      url: "/provider/games",
-      icon: Gamepad,
-      items: [
-        {
-          title: "My Games",
-          url: "/provider/games/list",
-        },
-        {
-          title: "Add New Game",
-          url: "/provider/games/new",
-        },
-        {
-          title: "Game Statistics",
-          url: "/provider/games/stats",
-        },
-      ],
-    },
-    {
-      title: "Orders",
-      url: "/provider/orders",
-      icon: Package,
-      items: [
-        {
-          title: "All Orders",
-          url: "/provider/orders/all",
-        },
-        {
-          title: "Pending Orders",
-          url: "/provider/orders/pending",
-        },
-      ],
-    },
-    {
-      title: "Customer Interaction",
-      url: "/provider/customers",
-      icon: MessageSquare,
-      items: [
-        {
-          title: "Feedback",
-          url: "/provider/customers/feedback",
-        },
-        {
-          title: "Chat Support",
-          url: "/provider/customers/chat",
-        },
-        {
-          title: "Promotions",
-          url: "/provider/customers/promotions",
-        },
-      ],
-    },
+   
   ],
 }
 
