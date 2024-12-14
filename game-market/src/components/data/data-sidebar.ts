@@ -157,12 +157,15 @@ export const navMainByUserType = {
       ],
     },
   ],
-  user: userCategories,
+  user: [
+    home,
+    ...userCategories,
+  ],
   provider: [
     home,
     {
-      title: "Provider Center",
-      url: "/provider/center",
+      title: "Provider Centre",
+      url: "/provider",
       icon: Component,
       items: [
         {
@@ -200,8 +203,8 @@ export const navMainByUserType = {
   admin: [
     home,
     {
-      title: "Admin Center",
-      url: "/admin/center",
+      title: "Admin Centre",
+      url: "/admin",
       icon: Component,
       items: [
         {
