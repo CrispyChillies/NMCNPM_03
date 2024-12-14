@@ -32,7 +32,7 @@ const data = {
     email: "pvquyen22@clc.fitus.edu.vn",
     avatar: "https://i.pinimg.com/736x/4e/ff/15/4eff156ff63f26f40a4280445631172d.jpg",
   },
-  userType: "GameProvider",
+  userType: "user",
 }
 
 createRoot(document.querySelector('.root')!).render(
