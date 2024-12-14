@@ -24,6 +24,9 @@ import OrderList from "@/app/page/admin/order-list"
 import UserRequest from "@/app/page/admin/user-request"
 import ProductUploading from "@/app/page/provider/product-uploading"
 import ProductDetail from "@/app/page/product-detail"
+import SignIn from "./app/sign-in"
+import SignUp from "./app/sign-up"
+import { useLocation, Link } from 'react-router-dom';
 
 
 const data = {
