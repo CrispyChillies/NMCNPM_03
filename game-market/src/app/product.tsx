@@ -1,10 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AppSidebar } from '@/components/app-sidebar';
 import { ProductCard } from '@/components/product-card';
-import { Header } from '@/components/header';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { ProductFilters } from '@/components/product-filters'
 
 interface Product {
