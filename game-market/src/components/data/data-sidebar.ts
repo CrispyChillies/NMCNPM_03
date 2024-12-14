@@ -75,15 +75,15 @@ const userCategories = [
       },
       {
         title: "Banks & Cards",
-        url: "user/account/payment",
+        url: "/user/account/payment",
       },
       {
         title: "Addresses",
-        url: "user/account/address",
+        url: "/user/account/address",
       },
       {
         title: "Change Password",
-        url: "user/account/password",
+        url: "/user/account/password",
       },
     ],
   },

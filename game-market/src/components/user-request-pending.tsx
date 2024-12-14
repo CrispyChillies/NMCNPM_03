@@ -121,7 +121,7 @@ export default function UserRequestPending() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-8">
-        <h1 className="mb-8 text-3xl font-bold text-foreground">User Request Pending</h1>
+        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">User Request Pending</h1>
 
         {/* Filters */}
         <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-white p-4 border">

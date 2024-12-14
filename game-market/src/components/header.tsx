@@ -45,11 +45,11 @@ const urlToTitleMap = {
 
 interface HeaderProps {
   user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-  userType: string;
+    name: string
+    email: string
+    avatar: string
+  },
+  userType: string,
 }
 
 export function Header({ user, userType }: HeaderProps) {
@@ -113,7 +113,7 @@ export function Header({ user, userType }: HeaderProps) {
         <a href="/user/notifications">
           <Button size="icon" variant="ghost">
             <Bell className="h-5 w-5 text-foreground" />
-            <span className="sr-only">Notifications</span>
+            <span className="sr-only">Notification</span>
           </Button>
         </a>
         <DropdownMenu>
@@ -163,7 +163,7 @@ export function Header({ user, userType }: HeaderProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut />
-              <span>Log out</span>
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
