@@ -38,13 +38,13 @@ export const navSecondary = [
   },
 ];
 
-const buyerCategories = [
-  {
-    title: "Home",
-    url: "/home",
-    icon: Home,
-    isActive: true,
-  },
+const home = {
+  title: "Home",
+  url: "/",
+  icon: Home,
+};
+
+const userCategories = [
   {
     title: "Games",
     url: "/user/game",
@@ -89,13 +89,9 @@ const buyerCategories = [
   },
   {
     title: "My Purchase",
-    url: "/user/purchase/",
+    url: "/user/purchase",
     icon: ClipboardList,
     items: [
-      {
-        title: "View Cart",
-        url: "/user/cart",
-      },
       {
         title: "Purchase Orders",
         url: "/user/purchase/order",
@@ -143,8 +139,27 @@ const buyerCategories = [
 ];
 
 export const navMainByUserType = {
-  Buyer: buyerCategories,
-  GameProvider: [
+  guest: [
+    home,
+    {
+      title: "Games",
+      url: "/user/game",
+      icon: Gamepad2,
+      items: [
+        {
+          title: "All Games",
+          url: "/user/game/all",
+        },
+        {
+          title: "Categories",
+          url: "/user/game/category",
+        },
+      ],
+    },
+  ],
+  user: userCategories,
+  provider: [
+    home,
     {
       title: "Provider Center",
       url: "/provider/center",
@@ -152,37 +167,38 @@ export const navMainByUserType = {
       items: [
         {
           title: "Dashboard",
-          url: "/provider/dashboard/",
+          url: "/provider/dashboard",
         },
         {
           title: "Games",
-          url: "/provider/game/",
+          url: "/provider/game",
         },
         {
           title: "Orders",
-          url: "/provider/order/",
+          url: "/provider/order",
         },
         {
           title: "Customers",
-          url: "/provider/customer/",
+          url: "/provider/customer",
         },
         {
           title: "Finance",
-          url: "/provider/finance/",
+          url: "/provider/finance",
         },
         {
           title: "Promotions",
-          url: "/provider/promotion/",
+          url: "/provider/promotion",
         },
         {
           title: "Reports",
-          url: "/provider/report/",
+          url: "/provider/report",
         },
       ],
     },
-    ...buyerCategories,
+    ...userCategories,
   ],
-  Admin: [
+  admin: [
+    home,
     {
       title: "Admin Center",
       url: "/admin/center",
@@ -190,26 +206,26 @@ export const navMainByUserType = {
       items: [
         {
           title: "Dashboard",
-          url: "/admin/dashboard/",
+          url: "/admin/dashboard",
         },
         {
           title: "Games Management",
-          url: "/admin/game-management/",
+          url: "/admin/game-management",
         },
         {
           title: "Orders Management",
-          url: "/admin/order-management/",
+          url: "/admin/order-management",
         },
         {
           title: "Users Management",
-          url: "/admin/user-management/",
+          url: "/admin/user-management",
         },
         {
           title: "Reports Management",
-          url: "/admin/report-management/",
+          url: "/admin/report-management",
         },
       ],
     },
-    ...buyerCategories,
+    ...userCategories,
   ],
 };

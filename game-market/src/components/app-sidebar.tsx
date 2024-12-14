@@ -26,7 +26,6 @@ export function AppSidebar({
   userType: keyof typeof navMainByUserType;
 }) {
   const navMain = navMainByUserType[userType]
-
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -39,7 +38,7 @@ export function AppSidebar({
                 </div>
                 <div className="grid flex-1 text-left text-base leading-tight">
                   <span className="truncate font-semibold">Game Market</span>
-                  {userType === "Buyer" ? (
+                  {userType === "user" ? (
                     <span className="truncate text-xs">Hi, {user.name.split(' ').slice(-1)}!</span>
                   ) : (
                     <span className="truncate text-xs">{userType}</span>
