@@ -6,13 +6,6 @@ export const categories = [
     "Special Offers"
 ]
 
-export const navMain = [
-    { label: "Home", href: "/" },
-    { label: "Products", href: "/products" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-]
-
 export const products = [
     {
     name: "PlayStation 5",
@@ -32,7 +25,7 @@ export const products = [
     rating: 4.2,
     reviews: 80,
     discount: "Save 20%",
-    image: "/images/xbox.jpg",
+    image: "https://cdn.akamai.steamstatic.com/steam/apps/20200/header.jpg?t=1640121033",
     badges: [
         { label: "Free Shipping", type: "truck" },
         { label: "Credit Card", type: "creditCard" },
@@ -44,7 +37,7 @@ export const products = [
     rating: 4.8,
     reviews: 150,
     discount: "Save 15%",
-    image: "/images/switch.jpg",
+    image: "https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/20200/header.jpg?t=1733875998",
     badges: [
         { label: "Free Shipping", type: "truck" },
         { label: "Credit Card", type: "creditCard" },
