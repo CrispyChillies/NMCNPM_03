@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import StarRating from '@/components/rating';
 
 interface Product {
   id: number;
@@ -49,9 +50,14 @@ export default function ProductDetail() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col lg:flex-row lg:space-x-6">
-            <img src={product.image} alt={product.name} className="w-full lg:w-1/3 object-cover rounded-lg" />
+            <div className="w-full lg:w-1/3 object-cover rounded-lg">
+              <img src={product.image} alt={product.name} className="w-full object-cover rounded-lg" />
+              <div className='rating w-full pt-5'>
+                <StarRating/>
+              </div>
+            </div>
             <div className="flex-1 space-y-4">
-              <p className="text-lg text-primary">${product.price.toFixed(2)}</p>
+              <p className="text-5xl text-primary font-semibold ">${product.price.toFixed(2)}</p>
               <p className="text-primary">{product.description}</p>
               <div className="space-y-2">
                 <p className="text-primary"><strong>Developer:</strong> {product.developer}</p>
@@ -63,7 +69,7 @@ export default function ProductDetail() {
                 <p className="text-primary"><strong>Version:</strong> {product.version}</p>
                 <p className="text-primary"><strong>English Supported:</strong> {product.englishSupported}</p>
               </div>
-              <Button className="bg-primary hover:bg-primary-foreground text-primary-foreground mt-4">
+              <Button className="bg-primary hover:bg-primary-foreground text-primary-foreground mt-4 hover:text-primary">
                 Add to Cart
               </Button>
             </div>

@@ -38,7 +38,7 @@ const StarRating = () => {
         {stars.map((_, index) => (
           <span
             key={index}
-            className={`cursor-pointer text-[50px] px-2 text-white opacity-100 inline-block transform origin-bottom-center transition-all duration-300 ${
+            className={`cursor-pointer text-[50px] text-foreground opacity-100 inline-block transform origin-bottom-center transition-all duration-300 ${
               index <= (hoverIndex !== -1 ? hoverIndex : selectedIndex)
                 ? "text-yellow-400 opacity-100 rotate-x-0 "
                 : ""
