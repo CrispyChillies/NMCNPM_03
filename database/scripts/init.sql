@@ -1,4 +1,12 @@
 -- 4. Create the Account Table (no foreign keys here)
+
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'gamemarket')
+BEGIN
+    CREATE DATABASE gamemarket;
+
+-- Switch to the gamemarket database
+USE gamemarket;
+GO
 CREATE DATABASE gamemarket
 GO 
 
@@ -1144,7 +1152,7 @@ ALTER TABLE OrderDetail
 ADD CONSTRAINT fk_orderdetail_product
 FOREIGN KEY (productId) REFERENCES Product(productId);
 
--- Foreign key from Order to Users
+-- Foreign key from OrFder to Users
 ALTER TABLE [Order]
 ADD CONSTRAINT fk_order_user
 FOREIGN KEY (userId) REFERENCES Users(id);
@@ -1155,3 +1163,6 @@ ADD CONSTRAINT fk_order_orderdetail
 FOREIGN KEY (orderDetailId) REFERENCES OrderDetail(orderDetailId);
 
 GO 
+
+END
+
