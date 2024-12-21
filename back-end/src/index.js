@@ -1,0 +1,31 @@
+import express from 'express';
+import { connectDB, queryDemo } from './config/connectDB.js';
+
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+app.get('/test-query', async (req, res) => {
+  try {
+    await queryDemo();
+    res.send('Query executed successfully. Check the console for results.');
+  } catch (err) {
+    res.status(500).send('Query failed.');
+  }
+});
+
+app.post('/signup', (req, res) => {
+  // Implement sign-up logic here
+  res.send('Sign-up endpoint');
+});
+
+app.post('/signin', (req, res) => {
+  // Implement sign-in logic here
+  res.send('Sign-in endpoint');
+});
+
+app.listen(port, async () => {
+  await connectDB();
+  console.log(`Server is running on http://localhost:${port}`);
+});
