@@ -1,37 +1,39 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-// import Link from 'next/link'
-// import { useRouter } from 'next/navigation'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useState } from 'react';
+import axios from 'axios';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function SignUp() {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [acceptTerms, setAcceptTerms] = useState(false)
-  const [error, setError] = useState('')
-  // const router = useRouter()
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!firstName || !lastName || !email || !phone) {
-      setError('Please fill in all fields')
-      return
+      setError('Please fill in all fields');
+      return;
     }
     if (!acceptTerms) {
-      setError('Please accept the terms of use')
-      return
+      setError('Please accept the terms of use');
+      return;
     }
-    // Here you would typically call your registration API
-    console.log('Sign up with', { firstName, lastName, email, phone })
-    // For demo purposes, we'll just redirect to a success page
-    // router.push('/signup-success')
-  }
+
+    try {
+      const response = await axios.post('http://localhost:6969/api/signup', { username: email, password: phone });
+      alert(response.data);
+    } catch (error) {
+      console.error('Sign-up failed:', error);
+      setError('Sign-up failed');
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
@@ -46,9 +48,8 @@ export default function SignUp() {
               placeholder="First Name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="w-[400px] h-[60px] rouded-[10px]"
+              className="w-[400px] h-[60px] rounded-[10px]"
             />
-            <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="lastName" className="block text-left">Last Name</Label>
@@ -58,9 +59,8 @@ export default function SignUp() {
               placeholder="Last Name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className="w-[400px] h-[60px] rouded-[10px]"
+              className="w-[400px] h-[60px] rounded-[10px]"
             />
-            <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email" className="block text-left">Email</Label>
@@ -70,9 +70,8 @@ export default function SignUp() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-[400px] h-[60px] rouded-[10px]"
+              className="w-[400px] h-[60px] rounded-[10px]"
             />
-            <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone" className="block text-left">Phone Number</Label>
@@ -81,9 +80,9 @@ export default function SignUp() {
               type="tel"
               placeholder="Phone Number"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}className="w-[400px] h-[60px] rouded-[10px]"
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-[400px] h-[60px] rounded-[10px]"
             />
-            <p className="text-sm text-foreground block text-left">Enter your user name, Email, or Phone number</p>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox 
@@ -109,6 +108,5 @@ export default function SignUp() {
         </p>
       </div>
     </div>
-  )
+  );
 }
-
