@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import viewEngine from "./config/viewEngine";
 import initWebRoutes from './route/web';
 import {connectDB, queryDemo} from "./config/connectDB";
+import { handleSearch } from './controllers/searchController';
 import cors from 'cors';
 require('dotenv').config();
 
@@ -42,6 +43,8 @@ app.post('/signin', (req, res) => {
   // Implement sign-in logic here
   res.send('Sign-in endpoint');
 });
+
+app.get('/api/search', handleSearch);
 
 app.listen(port, () => {
     //callback

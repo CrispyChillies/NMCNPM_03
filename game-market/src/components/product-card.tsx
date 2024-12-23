@@ -9,26 +9,24 @@ interface ProductCardProps {
   name: string
   price: number
   rating: number
-  reviews: number
   discount?: string
   image: string
-  badges: {
+  badges?: {
     label: string
     icon: React.ReactNode
   }[]
   showBadge?: boolean
 }
 
-export function ProductCard({
+export const ProductCard: React.FC<ProductCardProps> = ({
   name,
   price,
   rating,
-  reviews,
   discount,
   image,
   badges,
   showBadge = true
-}: ProductCardProps) {
+}) => {
   const [isFavorite, setIsFavorite] = useState(false)
 
   const handleFavoriteClick = () => {
@@ -94,11 +92,10 @@ export function ProductCard({
             ))}
           </div>
           <p className="text-sm font-medium text-foreground">{rating}</p>
-          <p className="text-sm font-medium text-muted-foreground">({reviews})</p>
         </div>
 
         <ul className="mt-2 flex items-center gap-4">
-          {badges.map((badge, index) => (
+          {badges?.map((badge, index) => (
             <li key={index} className="flex items-center gap-2">
               {badge.icon}
               <p className="text-xs font-medium text-muted-foreground">{badge.label}</p>

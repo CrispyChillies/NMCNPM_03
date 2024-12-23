@@ -91,6 +91,7 @@ createRoot(document.querySelector('.root')!).render(
                       <Route path="/provider/promotion" element={<Section />} />
                       <Route path="/provider/report" element={<Section />} />
                       <Route path="/user/product/:productId" element={<ProductDetail />} />
+                      <Route path="/products" element={<Product />} />
                       <Route path="*" element={<Navigate to="/" />} />
                     </Routes>
                     <Footer className="bg-background z-10" />
@@ -104,4 +105,3 @@ createRoot(document.querySelector('.root')!).render(
     </BrowserRouter>
   </StrictMode>
 )
-

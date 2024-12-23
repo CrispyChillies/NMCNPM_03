@@ -1,4 +1,4 @@
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Bell, Search, ShoppingCart, User, HandCoins, Settings, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { projects, navSecondary, navMainByUserType } from "@/components/data/data-sidebar";
+import { useState } from 'react';
 
 const flattenNavItems = (items, map = {}) => {
   items.forEach(item => {
@@ -54,6 +55,13 @@ interface HeaderProps {
 
 export function Header({ user, userType }: HeaderProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    navigate(`/products?query=${searchQuery}`);
+  };
 
   const generateBreadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter((x) => x);
@@ -100,9 +108,15 @@ export function Header({ user, userType }: HeaderProps) {
         <Breadcrumb>{generateBreadcrumbs()}</Breadcrumb>
       </div>
       <div className="flex items-center gap-4">
-        <form className="relative">
+        <form className="relative" onSubmit={handleSearchSubmit}>
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search..." className="w-56 pl-8" />
+          <Input
+            type="search"
+            placeholder="Search..."
+            className="w-56 pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </form>
         <a href="/user/cart">
           <Button size="icon" variant="ghost">
