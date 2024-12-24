@@ -4,5 +4,6 @@ database/data/*
 
 # Ensure system and sensitive directories are also ignored
 database/data/.system/
+database/data/log/core.sqlservr.12_19_2024_12_36_39.9.d/core.sqlservr.9.gdmp
 database/data/log/
 database/data/secrets/
