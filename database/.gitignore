@@ -1,0 +1,8 @@
+# Database data directory
+database/data/*
+!database/data/.gitkeep
+
+# Ensure system and sensitive directories are also ignored
+database/data/.system/
+database/data/log/
+database/data/secrets/
