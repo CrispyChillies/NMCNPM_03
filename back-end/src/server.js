@@ -2,8 +2,11 @@ import express from "express";
 import bodyParser from "body-parser";
 import viewEngine from "./config/viewEngine";
 import initWebRoutes from './route/web';
+import testRoute from './route/producttest';
 import {connectDB, queryDemo} from "./config/connectDB";
 import { handleSearch } from './controllers/searchController';
+import { getProductDetail } from "./controllers/productDetailController";
+
 import cors from 'cors';
 require('dotenv').config();
 
@@ -13,9 +16,12 @@ let app = express();
 app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json());
 
+testRoute(app);
 viewEngine(app);
 initWebRoutes(app);
+
 
 let port = process.env.PORT || 6969;
 //Port === undefined => port = 6969
@@ -45,7 +51,7 @@ app.post('/signin', (req, res) => {
 });
 
 app.get('/api/search', handleSearch);
-
+app.get('/api/test',getProductDetail);
 app.listen(port, () => {
     //callback
     console.log("Backend Nodejs is runing on the port : " + port)
