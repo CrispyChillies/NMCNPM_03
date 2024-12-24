@@ -10,7 +10,7 @@
         condition: null,
         image: null,
         status: null,
-        releaseDate: null,
+        releaseDay: null,
         tag: null,
         rating:null,
     };

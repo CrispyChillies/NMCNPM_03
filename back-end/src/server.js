@@ -51,7 +51,7 @@ app.post('/signin', (req, res) => {
 });
 
 app.get('/api/search', handleSearch);
-app.get('/api/test',getProductDetail);
+app.get('/api/product/:productID',getProductDetail);
 app.listen(port, () => {
     //callback
     console.log("Backend Nodejs is runing on the port : " + port)

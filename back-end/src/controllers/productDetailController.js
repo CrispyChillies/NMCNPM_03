@@ -3,11 +3,11 @@ import { connectDB } from '../config/connectDB';
 import { productData } from '../config/product';
 
 export async function getProductDetail(req, res) {
-    const ID = req.params.ID || "1"; // Use a dynamic ID or fallback to "1"
+    const ID = req.params.productID || "0"; // Use a dynamic ID or fallback to "1"
     try {
         const db = await connectDB();
 
-        // Fetch product details from the database
+        // Fetch product details from the datab ase
         const result = await db.request()
             .input('productID', sql.VarChar, ID) // Pass ID directly
             .query(`
@@ -24,7 +24,7 @@ export async function getProductDetail(req, res) {
         const info = result.recordset[0];
 
         // Populate `productData` object
-        productData.productId = String(info.productId);
+        productData.productId = info.productId;
         productData.sellerId = info.sellerId;
         productData.name = info.name;
         productData.price = info.price;
@@ -33,7 +33,7 @@ export async function getProductDetail(req, res) {
         productData.image = info.image;
         productData.condition = info.condition;
         productData.genre = info.genre;
-        productData.releaseDate = info.releaseDate;
+        productData.releaseDay = info.releaseDay;
         productData.status = info.status;
         productData.stock = info.stock;
         productData.tag = info.tag;
