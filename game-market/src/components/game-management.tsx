@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect , useState } from "react"
+import axios from 'axios';
 import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Trash, Edit, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -33,49 +34,48 @@ import {
 // import { useRouter } from 'next/navigation'
 
 interface Game {
-  id: string
+  productId: string
   name: string
-  category: string
-  developers: string
+  genre: string
   price: number
-  releaseDate: string
+  releaseDay: string
 }
 
 // Sample data
 const games: Game[] = [
-  {
-    id: "001",
-    name: "The Witcher 3",
-    category: "RPG",
-    developers: "CD Projekt Red",
-    price: 39.99,
-    releaseDate: "2015-05-19",
-  },
-  {
-    id: "002",
-    name: "FIFA 22",
-    category: "Sports",
-    developers: "EA Sports",
-    price: 59.99,
-    releaseDate: "2021-10-01",
-  },
-  {
-    id: "003",
-    name: "Minecraft",
-    category: "Sandbox",
-    developers: "Mojang",
-    price: 26.95,
-    releaseDate: "2011-11-18",
-  },
-  {
-    id: "004",
-    name: "Cyberpunk 2077",
-    category: "RPG",
-    developers: "CD Projekt Red",
-    price: 59.99,
-    releaseDate: "2020-12-10",
-  },
-  // Add more sample data as needed
+  // {
+  //   id: "001",
+  //   name: "The Witcher 3",
+  //   category: "RPG",
+  //   developers: "CD Projekt Red",
+  //   price: 39.99,
+  //   releaseDate: "2015-05-19",
+  // },
+  // {
+  //   id: "002",
+  //   name: "FIFA 22",
+  //   category: "Sports",
+  //   developers: "EA Sports",
+  //   price: 59.99,
+  //   releaseDate: "2021-10-01",
+  // },
+  // {
+  //   id: "003",
+  //   name: "Minecraft",
+  //   category: "Sandbox",
+  //   developers: "Mojang",
+  //   price: 26.95,
+  //   releaseDate: "2011-11-18",
+  // },
+  // {
+  //   id: "004",
+  //   name: "Cyberpunk 2077",
+  //   category: "RPG",
+  //   developers: "CD Projekt Red",
+  //   price: 59.99,
+  //   releaseDate: "2020-12-10",
+  // },
+  // // Add more sample data as needed
 ]
 
 export const GameProductManagement = () => {
@@ -88,18 +88,31 @@ export const GameProductManagement = () => {
   // const router = useRouter()
 
   const filterData = gameData.filter((game) => {
-    const matchesCategory = selectedCategory ? game.category.toLowerCase() === selectedCategory.toLowerCase() : true
-    const matchesDeveloper = selectedDeveloper ? game.developers.toLowerCase() === selectedDeveloper.toLowerCase() : true
+    const matchesCategory = selectedCategory ? game.genre.toLowerCase() === selectedCategory.toLowerCase() : true
+    // const matchesDeveloper = selectedDeveloper ? game.developers.toLowerCase() === selectedDeveloper.toLowerCase() : true
     const matchesName = nameFilter ? game.name.toLowerCase().includes(nameFilter.toLowerCase()) : true
     const matchesMinPrice = minPrice ? game.price >= parseFloat(minPrice) : true
     const matchesMaxPrice = maxPrice ? game.price <= parseFloat(maxPrice) : true
 
-    return matchesCategory && matchesDeveloper && matchesName && matchesMinPrice && matchesMaxPrice
+    return matchesCategory && matchesName && matchesMinPrice && matchesMaxPrice
   })
 
   const handleDelete = (id: string) => {
-    setGameData(gameData.filter(game => game.id !== id))
+    setGameData(gameData.filter(game => game.productId !== id))
   }
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const response = await axios.get('http://localhost:6969/api/games');
+        setGameData(response.data);
+      } catch (error) {
+        console.error('Failed to fetch games:', error);
+      }
+    };
+
+    fetchGames();
+  }, []);
 
   // const handleEdit = (id: string) => {
   //   router.push(`/edit-game/${id}`)
@@ -135,6 +148,8 @@ export const GameProductManagement = () => {
               <SelectItem value="rpg">RPG</SelectItem>
               <SelectItem value="sports">Sports</SelectItem>
               <SelectItem value="sandbox">Sandbox</SelectItem>
+              <SelectItem value="action">Sandbox</SelectItem>
+              <SelectItem value="others">Sandbox</SelectItem>
             </SelectContent>
           </Select>
           <Select value={selectedDeveloper} onValueChange={setSelectedDeveloper}>
@@ -192,13 +207,13 @@ export const GameProductManagement = () => {
             </TableHeader>
             <TableBody>
               {filterData.map((game) => (
-                <TableRow key={game.id}>
-                  <TableCell className="text-center">{game.id}</TableCell>
+                <TableRow key={game.productId}>
+                  <TableCell className="text-center">{game.productId}</TableCell>
                   <TableCell>{game.name}</TableCell>
-                  <TableCell>{game.category}</TableCell>
-                  <TableCell>{game.developers}</TableCell>
+                  <TableCell>{game.genre}</TableCell>
+                  {/* <TableCell>{game.developers}</TableCell> */}
                   <TableCell>${game.price.toFixed(2)}</TableCell>
-                  <TableCell>{game.releaseDate}</TableCell>
+                  <TableCell>{game.releaseDay}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button variant="outline" size="icon"> 
@@ -220,7 +235,7 @@ export const GameProductManagement = () => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(game.id)}>Delete</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleDelete(game.productId)}>Delete</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

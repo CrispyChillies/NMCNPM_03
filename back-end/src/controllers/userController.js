@@ -60,7 +60,7 @@ let banUser = async (req, res) => {
 
     try {
         await connectDB();
-        await sql.query`UPDATE Account SET status = 'banned' WHERE id = ${id}`;
+        await sql.query`UPDATE Users SET userStatus = 'banned' WHERE id = ${id}`;
         res.send('User banned successfully');
     } catch (err) {
         console.error('Failed to ban user: ', err);
@@ -73,13 +73,44 @@ let deleteUser = async (req, res) => {
 
     try {
         await connectDB();
-        await sql.query`DELETE FROM Account WHERE id = ${id}`;
+        
+        // Disable foreign key constraints
+        await sql.query`ALTER TABLE Users NOCHECK CONSTRAINT fk_user_cart`;
+        await sql.query`ALTER TABLE ProductRequest NOCHECK CONSTRAINT fk_productrequest_product`;
+        await sql.query`ALTER TABLE OrderDetail NOCHECK CONSTRAINT fk_orderdetail_product`;
+        await sql.query`ALTER TABLE [Order] NOCHECK CONSTRAINT fk_order_user`;
+
+        // Delete related records in the Cart table where the user is referenced
+        await sql.query`DELETE FROM Cart WHERE userId = ${id}`;
+        
+        // Delete related records in the Cart table where the product is referenced
+        await sql.query`DELETE FROM Cart WHERE productId IN (SELECT id FROM Product WHERE sellerId = ${id})`;
+        
+        // Delete related records in the ProductRequest table
+        await sql.query`DELETE FROM ProductRequest WHERE userId = ${id}`;
+        
+        // Delete related records in the Product table
+        await sql.query`DELETE FROM Product WHERE sellerId = ${id}`;
+        
+        // Delete related records in the Account table
+        await sql.query`DELETE FROM Account WHERE userId = ${id}`;
+        
+        // Delete the user
+        await sql.query`DELETE FROM Users WHERE id = ${id}`;
+
+        // Enable foreign key constraints
+        await sql.query`ALTER TABLE Users CHECK CONSTRAINT fk_user_cart`;
+        await sql.query`ALTER TABLE ProductRequest CHECK CONSTRAINT fk_productrequest_product`;
+        await sql.query`ALTER TABLE OrderDetail CHECK CONSTRAINT fk_orderdetail_product`;
+        await sql.query`ALTER TABLE [Order] CHECK CONSTRAINT fk_order_user`;
+        
         res.send('User deleted successfully');
     } catch (err) {
         console.error('Failed to delete user: ', err);
         res.status(500).send('Failed to delete user');
     }
 }
+
 
 module.exports = {
     handleSignUp,
