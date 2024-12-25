@@ -1,63 +1,62 @@
 import React, { useState } from "react";
 
-const StarRating = () => {
-  const [hoverIndex, setHoverIndex] = useState(-1); // For hover state
-  const [selectedIndex, setSelectedIndex] = useState(-1); // For click state
+interface StarRatingProps {
+  onRatingSubmit: (rating: number) => void;
+}
 
-  const stars = Array(5).fill(0); // Create an array of 5 stars
-  const icons = ["😒", "😕", "🙄", "🙂", "😍"]; // Define the icons for each star level
+export function StarRating({ onRatingSubmit }: StarRatingProps) {
+  const [hoverRating, setHoverRating] = useState<number>(0);
+  const [selectedRating, setSelectedRating] = useState<number>(0);
 
-  const handleMouseEnter = (index: number) => {
-    setHoverIndex(index); // Update hoverIndex on hover
+  const handleMouseEnter = (rating: number) => {
+    setHoverRating(rating);
   };
 
   const handleMouseLeave = () => {
-    setHoverIndex(-1); // Reset hoverIndex on mouse leave
+    setHoverRating(0);
   };
 
-  const handleClick = (index: number) => {
-    setSelectedIndex(index); // Set the selected star index on click
-  };
-
-  // Determine which icon should be displayed based on the number of stars
-  const getIcon = () => {
-    return icons[hoverIndex !== -1 ? hoverIndex : selectedIndex];
+  const handleClick = (rating: number) => {
+    setSelectedRating(rating);
+    onRatingSubmit(rating);
   };
 
   return (
-    <div
-      id="rating"
-      className="flex flex-col items-center"
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Display the icon that corresponds to the hovered or selected star */}
-      <div className="text-4xl mb-2">{getIcon()}</div>
-
-      {/* Map through the stars and display them */}
-      <div>
-        {stars.map((_, index) => (
-          <span
-            key={index}
-            className={`cursor-pointer text-[50px] text-foreground opacity-100 inline-block transform origin-bottom-center transition-all duration-300 ${
-              index <= (hoverIndex !== -1 ? hoverIndex : selectedIndex)
-                ? "text-yellow-400 opacity-100 rotate-x-0 "
-                : ""
-            }`}
-            style={{
-              transform:
-                index <= (hoverIndex !== -1 ? hoverIndex : selectedIndex)
-                  ? "rotateX(0deg)"
-                  : "rotateX(45deg)",
-            }}
-            onMouseEnter={() => handleMouseEnter(index)}
-            onClick={() => handleClick(index)}
+    <div className="flex items-center gap-2">
+      <div 
+        className="flex"
+        onMouseLeave={handleMouseLeave}
+        role="radiogroup"
+        aria-label="Product rating"
+      >
+        {[1, 2, 3, 4, 5].map((rating) => (
+          <button
+            key={rating}
+            className="p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            onMouseEnter={() => handleMouseEnter(rating)}
+            onClick={() => handleClick(rating)}
+            role="radio"
+            aria-checked={selectedRating === rating}
+            aria-label={`Rate ${rating} out of 5 stars`}
           >
-            ★
-          </span>
+            <span
+              className={`text-2xl ${
+                rating <= (hoverRating || selectedRating)
+                  ? 'text-yellow-400'
+                  : 'text-gray-300'
+              }`}
+            >
+              ★
+            </span>
+          </button>
         ))}
       </div>
+      {selectedRating > 0 && (
+        <span className="text-sm text-muted-foreground">
+          Your rating: {selectedRating}
+        </span>
+      )}
     </div>
   );
-};
+}
 
-export default StarRating;

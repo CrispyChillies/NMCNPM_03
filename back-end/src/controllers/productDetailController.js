@@ -40,7 +40,6 @@ export async function getProductDetail(req, res) {
             tag: info.tag,
             rating: info.rating,
         };
-
         // Respond with the product details as JSON
         return res.status(200).json(productData);
     } catch (err) {

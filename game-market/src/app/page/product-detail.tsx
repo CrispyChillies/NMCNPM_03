@@ -1,9 +1,12 @@
-import { useParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import StarRating from '@/components/rating';
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { Heart } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { displayTag, displayStatus, displayRating } from '@/components/display';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { StarRating } from '@/components/rating';
 
 interface Product {
   productId: number;
@@ -12,6 +15,7 @@ interface Product {
   price: number;
   description: string;
   image: string;
+  images: string[];
   platform: string;
   condition: string;
   releaseDay: string;
@@ -20,76 +24,167 @@ interface Product {
   genre: string;
   status: string;
   rating: number;
+  sellerName: string;
+  sellerRating: number;
+  sellerFeedback: number;
 }
 
 export default function ProductDetail() {
-  const { productId } = useParams(); // Get the product ID from the URL
-  const [product, setProduct] = useState<Product | null>(null); // State to store the product details
-  const [loading, setLoading] = useState<boolean>(true); // State to show loading status
-  const [error, setError] = useState<string | null>(null); // State to store error message, if any
+  const { productId } = useParams<{ productId: string }>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProductDetail = async () => {
       try {
-        const response = await axios.get(`http://localhost:6969/api/product/${productId}`); // Fetch product details
-        setProduct(response.data); // Set the product state with the received JSON data
-        setLoading(false); // Hide loading indicator
+        const response = await axios.get<Product>(`http://localhost:6969/api/product/${productId}`);
+        setProduct(response.data);
+        setSelectedImage(response.data.image);
+        setLoading(false);
       } catch (err) {
-        setError('Error fetching product details'); // Set error message
-        setLoading(false); // Hide loading indicator
+        setError('Error fetching product details');
+        setLoading(false);
       }
     };
 
     fetchProductDetail();
-  }, [productId]); // Re-run when productId changes
+  }, [productId]);
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading message while data is being fetched
-  }
+  const handleRatingSubmit = (rating: number) => {
+    console.log(`Submitted rating: ${rating}`);
+    // Here you would typically send the rating to your backend
+  };
 
-  if (error) {
-    return <div>{error}</div>; // Show error message if fetching fails
-  }
-
-  if (!product) {
-    return <div>Product not found</div>; // Show message if no product is found
-  }
+  if (loading) return <div className="flex justify-center p-8">Loading...</div>;
+  if (error) return <div className="flex justify-center p-8 text-red-500">{error}</div>;
+  if (!product) return <div className="flex justify-center p-8">Product not found</div>;
 
   return (
-    <div className="w-full max-w-screen-lg mx-auto my-10 px-4">
-      <Card className="bg-card text-card-foreground">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-primary">{product.name}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex flex-col lg:flex-row lg:space-x-6">
-            <div className="w-full lg:w-1/3 object-cover rounded-lg">
-              <img src={product.image} alt={product.name} className="w-full object-cover rounded-lg" />
-              <div className="rating w-full pt-5">
-                <StarRating rating={product.rating} /> {/* Assuming the rating component accepts a rating */}
-              </div>
-            </div>
-            <div className="flex-1 space-y-4">
-              <p className="text-5xl text-primary font-semibold">${product.price.toFixed(2)}</p>
-              <p className="text-primary">{product.description}</p>
-              <div className="space-y-2">
-                <p className="text-primary"><strong>Seller ID:</strong> {product.sellerId}</p>
-                <p className="text-primary"><strong>Rating:</strong> {product.rating}</p>
-                <p className="text-primary"><strong>Release Date:</strong> {product.releaseDay}</p>
-                <p className="text-primary"><strong>Tags:</strong> {product.tag}</p>
-                <p className="text-primary"><strong>Genres:</strong> {product.genre}</p>
-                <p className="text-primary"><strong>Stock:</strong> {product.stock}</p>
-                <p className="text-primary"><strong>Status:</strong> {product.status}</p>
-                <p className="text-primary"><strong>Platform:</strong> {product.platform}</p>
-                <p className="text-primary"><strong>Condition:</strong> {product.condition}</p>
-              </div>
-              <Button className="bg-primary hover:bg-primary-foreground text-primary-foreground mt-4 hover:text-primary">
-                Add to Cart
-              </Button>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Left Column - Images */}
+        <div className="lg:w-2/3">
+          <div className="space-y-4">
+            <img
+              src={selectedImage}
+              alt={product.name}
+              className="w-full aspect-video object-cover rounded-lg"
+            />
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {[product.image, ...(product.images || [])].map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(img)}
+                  className={`flex-shrink-0 ${
+                    selectedImage === img ? 'ring-2 ring-primary' : ''
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`${product.name} ${idx + 1}`}
+                    className="w-24 h-24 object-cover rounded-md"
+                  />
+                </button>
+              ))}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Right Column - Product Info */}
+        <div className="lg:w-1/3 space-y-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
+              <div className="flex flex-wrap gap-2">
+                {displayTag(product.tag)}
+                {displayStatus(product.status)}
+              </div>
+            </div>
+            <Button variant="outline" size="icon">
+              <Heart className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <Card className="p-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div>
+                    <h3 className="font-medium">{product.sellerName}</h3>
+                    <p className="text-muted-foreground">
+                      Ratings:
+                    </p>
+                  </div>
+                </div>
+                {displayRating(product.rating)}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span>Platform:</span>
+                  <span className="font-medium">{product.platform}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Region:</span>
+                  <span className="font-medium">GLOBAL</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Type:</span>
+                  <span className="font-medium">{product.condition}</span>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t">
+                <div className="flex flex-row justify-between">
+                  <div className="text-3xl font-bold mb-2">
+                    ${product.price.toFixed(2)}
+                  </div>
+                  <div>
+                    <StarRating onRatingSubmit={handleRatingSubmit} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Button className="w-full" size="lg">
+                    Add to cart
+                  </Button>
+                  <Button variant="outline" className="w-full" size="lg">
+                    Buy Now
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Tabs defaultValue="description" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="description">Description</TabsTrigger>
+              <TabsTrigger value="details">Details</TabsTrigger>
+            </TabsList>
+            <TabsContent value="description" className="mt-4">
+              <p className="text-sm text-muted-foreground">{product.description}</p>
+            </TabsContent>
+            <TabsContent value="details" className="mt-4">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Release Date:</span>
+                  <span>{new Date(product.releaseDay).toLocaleDateString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Genre:</span>
+                  <span>{product.genre}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Stock:</span>
+                  <span>{product.stock} available</span>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 }
+
