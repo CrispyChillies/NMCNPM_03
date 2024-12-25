@@ -1,39 +1,23 @@
-import React, { useState } from "react"
-import { Star, Eye, Heart } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import React, { useState } from "react";
+import { Star, Eye, Heart, ShoppingCart } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from 'react-router-dom';
 
-interface Product {
-  productId: number;
-  sellerId: number;
+interface ProductCardProps {
   name: string;
   price: number;
-  description: string;
-  stock: number;
-  platform: string;
-  genre: string;
-  condition: string;
-  image: string;
-  status: string;
-  releaseDay: string;
-  tag: string;
   rating: number;
-}
-
-interface ProductCardProps {
-  name: string
-  price: number
-  rating: number
-  discount?: string
-  image: string
+  discount?: string;
+  image: string;
   badges?: {
-    label: string
-    icon: React.ReactNode
-  }[]
-  showBadge?: boolean
+    label: string;
+    icon: React.ReactNode;
+  }[];
+  showBadge?: boolean;
+  productId: number;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -43,19 +27,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   discount,
   image,
   badges,
-  showBadge = true
+  showBadge = true,
+  productId
 }) => {
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const handleFavoriteClick = () => {
-    setIsFavorite(!isFavorite)
-  }
+    setIsFavorite(!isFavorite);
+  };
+
+  const generateProductLink = (name: string, id: number) => {
+    const formattedName = name.toLowerCase().replace(/\s+/g, '-');
+    return `/user/game/${formattedName}-g${id}`;
+  };
 
   return (
     <Card className="overflow-hidden">
-      <div className="h-48 w-full hover:scale-110 transition-transform overflow-hidden">
-        <img src={image} alt={name} className="mx-auto h-full w-full object-cover" />
-      </div>
+      <Link to={generateProductLink(name, productId)}>
+        <div className="h-48 w-full hover:scale-110 transition-transform overflow-hidden">
+          <img src={image} alt={name} className="mx-auto h-full w-full object-cover" />
+        </div>
+      </Link>
       
       <CardContent className="p-1 mt-1 mx-4 mb-4">
         <div className="flex items-center justify-between gap-4">
@@ -64,7 +56,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {discount}
             </Badge>
           ) : (
-            <div className="w-16"></div> // Placeholder div to maintain layout
+            <div className="w-16"></div>
           )}
 
           <div className="flex items-center justify-end gap-1">
@@ -98,9 +90,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        <a href="#" className="text-primary font-semibold leading-tight text-foreground hover:underline dark:text-foreground product-name">
+        <Link to={generateProductLink(name, productId)} className="text-primary font-semibold leading-tight text-foreground hover:underline dark:text-foreground product-name">
           {name}
-        </a>
+        </Link>
 
         <div className="mt-2 flex items-center gap-2">
           <div className="flex items-center">
@@ -129,15 +121,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </p>
 
           <Button className="inline-flex items-center gap-2 bg-primary text-primary-foreground">
-            <svg className="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6" />
-            </svg>
+            <ShoppingCart className="h-5 w-5" />
             Add to cart
           </Button>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Add the following CSS styles to ensure text wrapping

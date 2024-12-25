@@ -23,7 +23,7 @@ import BecomeSeller from "@/app/page/admin/become-seller"
 import OrderList from "@/app/page/admin/order-list"
 import UserRequest from "@/app/page/admin/user-request"
 import ProductUploading from "@/app/page/provider/product-uploading"
-// import ProductDetail from "@/app/page/product-detail"
+import ProductDetail from "@/app/page/product-detail"
 import SignIn from "@/app/page/auth/sign-in"
 import SignUp from "@/app/page/auth/sign-up"
 
@@ -47,7 +47,7 @@ createRoot(document.querySelector('.root')!).render(
           element={
             <SidebarProvider>
               <AppSidebar user={data.user} userType={data.userType} />
-              <SidebarInset className="flex flex-col h-screen overflow-hidden">
+              <SidebarInset className="flex flex-col h-4 overflow-hidden">
                 <Header user={data.user} userType={data.userType} className="sticky top-0 z-10 bg-background" />
                 <main className="flex-grow overflow-y-auto min-w-screen">
                   <div className="mx-auto px-4">
@@ -60,7 +60,7 @@ createRoot(document.querySelector('.root')!).render(
                       <Route path="/user/notification" element={<Section />} />
                       <Route path="/user/setting" element={<Section />} />
                       <Route path="/user/game/all" element={<Product />} />
-                      {/* <Route path="/user/game/:id" element={<ProductDetail />} /> */}
+                      <Route path="/user/game/:productId" element={<ProductDetail />} />
                       <Route path="/user/game/category" element={<Section />} />
                       <Route path="/user/account/payment" element={<Section />} />
                       <Route path="/user/account/profile" element={<ProfileUpdating />} />

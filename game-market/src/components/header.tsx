@@ -23,7 +23,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { projects, navSecondary, navMainByUserType } from "@/components/data/data-sidebar";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const flattenNavItems = (items, map = {}) => {
   items.forEach(item => {
@@ -42,6 +42,7 @@ const urlToTitleMap = {
   ...flattenNavItems(navMainByUserType.admin),
   ...flattenNavItems(projects),
   ...flattenNavItems(navSecondary),
+  '/user/cart': 'Shopping Cart',
 };
 
 interface HeaderProps {
@@ -57,11 +58,30 @@ export function Header({ user, userType }: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [productName, setProductName] = useState('');
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     navigate(`/user/game/all?query=${searchQuery}`);
   };
+
+  useEffect(() => {
+    const fetchProductName = async (productId) => {
+      try {
+        const response = await fetch(`http://localhost:6969/api/game/${productId}`);
+        const data = await response.json();
+        setProductName(data.name);
+      } catch (error) {
+        console.error('Error fetching product name:', error);
+      }
+    };
+
+    const pathnames = location.pathname.split('/').filter((x) => x);
+    if (pathnames[0] === 'user' && pathnames[1] === 'game' && pathnames[2]) {
+      const productId = pathnames[2].split('-g').pop();
+      fetchProductName(productId);
+    }
+  }, [location.pathname]);
 
   const generateBreadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter((x) => x);
@@ -80,6 +100,9 @@ export function Header({ user, userType }: HeaderProps) {
           const to = `/${pathnames.slice(0, index + 1).join('/')}`;
           const isLast = index === pathnames.length - 1;
           let title = urlToTitleMap[to];
+          if (to.includes('/user/game/') && !title) {
+            title = productName;
+          }
           if (!title) return null;
           return (
             <BreadcrumbItem key={to}>

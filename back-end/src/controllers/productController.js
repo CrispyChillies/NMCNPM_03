@@ -27,3 +27,17 @@ export async function getProducts(req, res) {
     res.status(500).send('Failed to fetch products');
   }
 }
+
+export async function getProductById(req, res) {
+  const { productId } = req.params;
+  try {
+    const pool = await connectDB();
+    const result = await pool.request()
+      .input('productId', sql.Int, productId)
+      .query('SELECT * FROM Product WHERE productId = @productId AND status = \'available\'');
+    res.json(result.recordset[0]);
+  } catch (err) {
+    console.error('Error fetching product:', err);
+    res.status(500).send('Failed to fetch product');
+  }
+}

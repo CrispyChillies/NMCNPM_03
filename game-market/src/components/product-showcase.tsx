@@ -38,6 +38,7 @@ export function ProductShowcase({ category, products }: ProductShowcaseProps) {
           {displayedProducts.map((product) => (
             <div key={product.productId} className="w-[250px] flex-shrink-0">
               <ProductCard
+                productId={product.productId}
                 name={product.name}
                 price={product.price}
                 rating={product.rating}
