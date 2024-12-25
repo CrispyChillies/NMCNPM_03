@@ -14,7 +14,7 @@ interface Product {
   image: string;
   platform: string;
   condition: string;
-  releaseDate: string;
+  releaseDay: string;
   tag: string;
   stock: number;
   genre: string;
@@ -23,7 +23,7 @@ interface Product {
 }
 
 export default function ProductDetail() {
-  const { productId } = useParams<{ productId: string }>(); // Get the product ID from the URL
+  const { productId } = useParams(); // Get the product ID from the URL
   const [product, setProduct] = useState<Product | null>(null); // State to store the product details
   const [loading, setLoading] = useState<boolean>(true); // State to show loading status
   const [error, setError] = useState<string | null>(null); // State to store error message, if any
@@ -31,9 +31,8 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchProductDetail = async () => {
       try {
-        // Make sure your backend API is running and adjust URL as necessary
-        const response = await axios.get(`http://localhost:6969/api/product/${productId}`); // Backend URL
-        setProduct(response.data); // Set the product data
+        const response = await axios.get(`http://localhost:6969/api/product/${productId}`); // Fetch product details
+        setProduct(response.data); // Set the product state with the received JSON data
         setLoading(false); // Hide loading indicator
       } catch (err) {
         setError('Error fetching product details'); // Set error message
@@ -76,7 +75,7 @@ export default function ProductDetail() {
               <div className="space-y-2">
                 <p className="text-primary"><strong>Seller ID:</strong> {product.sellerId}</p>
                 <p className="text-primary"><strong>Rating:</strong> {product.rating}</p>
-                <p className="text-primary"><strong>Release Date:</strong> {product.releaseDate}</p>
+                <p className="text-primary"><strong>Release Date:</strong> {product.releaseDay}</p>
                 <p className="text-primary"><strong>Tags:</strong> {product.tag}</p>
                 <p className="text-primary"><strong>Genres:</strong> {product.genre}</p>
                 <p className="text-primary"><strong>Stock:</strong> {product.stock}</p>

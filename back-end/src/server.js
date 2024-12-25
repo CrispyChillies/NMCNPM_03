@@ -13,7 +13,11 @@ require('dotenv').config();
 let app = express();
 
 //config app
-app.use(cors()); // Enable CORS
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow requests from the frontend URL
+  methods: 'GET,POST,PUT,DELETE', // Allowed HTTP methods
+  credentials: true, // Allow cookies if necessary
+})); // Enable CORS
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.json());
@@ -51,7 +55,15 @@ app.post('/signin', (req, res) => {
 });
 
 app.get('/api/search', handleSearch);
-app.get('/api/product/:productID',getProductDetail);
+
+app.get('/api/product/:productID', async (req, res) => {
+  try {
+    await getProductDetail(req, res); // Call the controller function with req and res
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
+});
+
 app.listen(port, () => {
     //callback
     console.log("Backend Nodejs is runing on the port : " + port)
