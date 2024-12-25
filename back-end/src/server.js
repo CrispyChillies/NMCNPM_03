@@ -2,24 +2,21 @@ import express from "express";
 import bodyParser from "body-parser";
 import viewEngine from "./config/viewEngine";
 import initWebRoutes from './route/web';
-import {connectDB, queryDemo} from "./config/connectDB";
-import { handleSearch } from './controllers/searchController';
+import { connectDB, queryDemo } from "./config/connectDB";
 import cors from 'cors';
 require('dotenv').config();
 
 let app = express();
 
-//config app
+// Config app
 app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
 
 viewEngine(app);
 initWebRoutes(app);
 
 let port = process.env.PORT || 6969;
-//Port === undefined => port = 6969
-
 
 app.get('/test-query', async (req, res) => {
   try {
@@ -32,9 +29,9 @@ app.get('/test-query', async (req, res) => {
 
 app.post('/signup', (req, res) => {
   // Implement sign-up logic here
-  try{
+  try {
     res.send('Sign-up endpoint');
-  }catch(err){
+  } catch (err) {
     res.status(500).send(err);
   }
 });
@@ -44,11 +41,9 @@ app.post('/signin', (req, res) => {
   res.send('Sign-in endpoint');
 });
 
-app.get('/api/search', handleSearch);
-
 app.listen(port, () => {
-    //callback
-    console.log("Backend Nodejs is runing on the port : " + port)
-})
+  // Callback
+  console.log("Backend Nodejs is running on the port: " + port);
+});
 
 connectDB();

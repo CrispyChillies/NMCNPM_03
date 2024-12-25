@@ -4,6 +4,24 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Link } from 'react-router-dom';
+
+interface Product {
+  productId: number;
+  sellerId: number;
+  name: string;
+  price: number;
+  description: string;
+  stock: number;
+  platform: string;
+  genre: string;
+  condition: string;
+  image: string;
+  status: string;
+  releaseDay: string;
+  tag: string;
+  rating: number;
+}
 
 interface ProductCardProps {
   name: string
@@ -41,10 +59,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       
       <CardContent className="p-1 mt-1 mx-4 mb-4">
         <div className="flex items-center justify-between gap-4">
-          {showBadge && discount && (
+          {showBadge && discount ? (
             <Badge variant="outline" className="bg-red-300 text-secondary-foreground dark:bg-red-300 dark:text-secondary-foreground">
               {discount}
             </Badge>
+          ) : (
+            <div className="w-16"></div> // Placeholder div to maintain layout
           )}
 
           <div className="flex items-center justify-end gap-1">
@@ -78,7 +98,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        <a href="#" className="text-primary font-semibold leading-tight text-foreground hover:underline dark:text-foreground">
+        <a href="#" className="text-primary font-semibold leading-tight text-foreground hover:underline dark:text-foreground product-name">
           {name}
         </a>
 
@@ -119,3 +139,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </Card>
   )
 }
+
+// Add the following CSS styles to ensure text wrapping
+const styles = `
+.product-name {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+`;
+
+// Inject styles into the document head
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);

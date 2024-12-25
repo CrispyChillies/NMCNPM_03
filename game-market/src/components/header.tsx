@@ -60,7 +60,7 @@ export function Header({ user, userType }: HeaderProps) {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    navigate(`/products?query=${searchQuery}`);
+    navigate(`/user/game/all?query=${searchQuery}`);
   };
 
   const generateBreadcrumbs = () => {

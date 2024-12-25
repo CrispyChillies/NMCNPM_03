@@ -1,10 +1,12 @@
 import express from "express";
-import searchController from "../controllers/searchController.js";
+import cors from "cors";
+import { getProducts } from "../controllers/productController.js";
 
 let router = express.Router();
 
 let initWebRoutes = (app) => {
-    router.get('/api/search', searchController.handleSearch);
+    app.use(cors()); // Enable CORS
+    router.get('/api/game', getProducts);
     return app.use("/", router);
 }
 

@@ -23,7 +23,7 @@ import BecomeSeller from "@/app/page/admin/become-seller"
 import OrderList from "@/app/page/admin/order-list"
 import UserRequest from "@/app/page/admin/user-request"
 import ProductUploading from "@/app/page/provider/product-uploading"
-import ProductDetail from "@/app/page/product-detail"
+// import ProductDetail from "@/app/page/product-detail"
 import SignIn from "@/app/page/auth/sign-in"
 import SignUp from "@/app/page/auth/sign-up"
 
@@ -33,7 +33,7 @@ const data = {
     email: "pvquyen22@clc.fitus.edu.vn",
     avatar: "https://i.pinimg.com/736x/4e/ff/15/4eff156ff63f26f40a4280445631172d.jpg",
   },
-  userType: "admin",
+  userType: "user",
 }
 
 createRoot(document.querySelector('.root')!).render(
@@ -60,6 +60,7 @@ createRoot(document.querySelector('.root')!).render(
                       <Route path="/user/notification" element={<Section />} />
                       <Route path="/user/setting" element={<Section />} />
                       <Route path="/user/game/all" element={<Product />} />
+                      {/* <Route path="/user/game/:id" element={<ProductDetail />} /> */}
                       <Route path="/user/game/category" element={<Section />} />
                       <Route path="/user/account/payment" element={<Section />} />
                       <Route path="/user/account/profile" element={<ProfileUpdating />} />
@@ -90,8 +91,6 @@ createRoot(document.querySelector('.root')!).render(
                       <Route path="/provider/finance" element={<Section />} />
                       <Route path="/provider/promotion" element={<Section />} />
                       <Route path="/provider/report" element={<Section />} />
-                      <Route path="/user/product/:productId" element={<ProductDetail />} />
-                      <Route path="/products" element={<Product />} />
                       <Route path="*" element={<Navigate to="/" />} />
                     </Routes>
                     <Footer className="bg-background z-10" />

@@ -19,7 +19,6 @@ import {
   ClipboardList,
   Users,
   BarChart,
-  Component,
   DollarSign,
   Gift,
   HandCoins,

@@ -37,33 +37,35 @@ interface ProductCardProps {
 }
 
 export default function ProductPage() {
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [originalProducts, setOriginalProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
+  const [productsToShow, setProductsToShow] = useState(50);
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`http://localhost:6969/api/search?query=${query}`);
+        const response = await fetch(`http://localhost:6969/api/game${query ? `?query=${query}` : ''}`);
         const data = await response.json();
-        setFilteredProducts(data);
-        setOriginalProducts(data); // Store original data
+        setProducts(data);
+        setDisplayedProducts(data.slice(0, productsToShow));
       } catch (error) {
         console.error('Error fetching products:', error);
       }
     };
 
-    if (query) {
-      fetchProducts();
-    } else {
-      setFilteredProducts([]);
-      setOriginalProducts([]);
-    }
-  }, [query]);
+    fetchProducts();
+  }, [query, productsToShow]);
+
+  const handleShowMore = () => {
+    setProductsToShow(productsToShow + 50);
+    setDisplayedProducts(products.slice(0, productsToShow + 50));
+  };
 
   const handleReset = () => {
-    setFilteredProducts(originalProducts);
+    setDisplayedProducts(products.slice(0, 50));
+    setProductsToShow(50);
   };
 
   const applyFilters = (
@@ -74,7 +76,7 @@ export default function ProductPage() {
     tags: string[],
     sortBy: string
   ) => {
-    let filtered = [...filteredProducts];
+    let filtered = [...products];
 
     if (platforms.length) {
       filtered = filtered.filter(product =>
@@ -113,15 +115,15 @@ export default function ProductPage() {
       );
     }
 
-    setFilteredProducts(filtered);
+    setDisplayedProducts(filtered.slice(0, productsToShow));
   };
 
   return (
     <>
       <ProductFilters onApplyFilters={applyFilters} onReset={handleReset} />
       <div className="w-full px-6 py-4 flex justify-center">
-        <div className="flex flex-wrap gap-4 justify-start ml-[5%]">
-          {filteredProducts.map((product) => (
+        <div className="flex flex-wrap gap-4 justify-center ml-[0%]">
+          {displayedProducts.map((product) => (
             <div className="w-[250px] flex-shrink-0" key={product.productId}>
               <ProductCard
                 name={product.name}
@@ -135,11 +137,19 @@ export default function ProductPage() {
                   </svg>
                 }]}
                 showBadge={true}
+                productId={product.productId} // Pass productId prop
               />
             </div>
           ))}
         </div>
       </div>
+      {productsToShow < products.length && (
+        <div className="w-full flex justify-center py-4">
+          <button onClick={handleShowMore} className="px-4 py-2 bg-foreground text-background rounded-lg">
+            Show more
+          </button>
+        </div>
+      )}
     </>
   );
 }
