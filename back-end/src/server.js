@@ -27,20 +27,6 @@ app.get('/test-query', async (req, res) => {
   }
 });
 
-app.post('/signup', (req, res) => {
-  // Implement sign-up logic here
-  try {
-    res.send('Sign-up endpoint');
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
-
-app.post('/signin', (req, res) => {
-  // Implement sign-in logic here
-  res.send('Sign-in endpoint');
-});
-
 app.listen(port, () => {
   // Callback
   console.log("Backend Nodejs is running on the port: " + port);
