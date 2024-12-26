@@ -1,15 +1,34 @@
-import { useState } from "react"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Trash, Ban } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Bell,
+  Filter,
+  Heart,
+  LogOut,
+  MessageSquare,
+  Settings,
+  Trash,
+  Ban,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -17,76 +36,112 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 interface User {
-  id: string
-  name: string
-  email: string
-  role: "Admin" | "User" | "Moderator"
-  status: "Active" | "Inactive" | "Banned"
+  id: number;
+  role: "admin" | "seller" | "buyer";
+  firstName: string;
+  lastName: string;
+  citizenId: string;
+  email: string;
+  phoneNumber: string;
+  userAddress: string;
+  businessName?: string;
+  businessDescription?: string;
+  businessAddress?: string;
+  userStatus: "banned" | "inactive" | "active";
 }
 
 // Sample data
 const users: User[] = [
   {
-    id: "001",
-    name: "John Doe",
+    id: 1,
+    role: "admin",
+    firstName: "John",
+    lastName: "Doe",
+    citizenId: "1234567890",
     email: "john@example.com",
-    role: "Admin",
-    status: "Active",
+    phoneNumber: "555-1234",
+    userAddress: "123 Main St, Anytown, USA",
+    userStatus: "active",
   },
   {
-    id: "002",
-    name: "Jane Smith",
+    id: 2,
+    role: "seller",
+    firstName: "Jane",
+    lastName: "Smith",
+    citizenId: "0987654321",
     email: "jane@example.com",
-    role: "User",
-    status: "Active",
+    phoneNumber: "555-5678",
+    userAddress: "456 Elm St, Anytown, USA",
+    userStatus: "inactive",
   },
   {
-    id: "003",
-    name: "Bob Johnson",
+    id: 3,
+    role: "buyer",
+    firstName: "Bob",
+    lastName: "Johnson",
+    citizenId: "5432109876",
     email: "bob@example.com",
-    role: "Moderator",
-    status: "Inactive",
+    phoneNumber: "555-9012",
+    userAddress: "789 Oak St, Anytown, USA",
+    userStatus: "banned",
   },
   {
-    id: "004",
-    name: "Alice Brown",
+    id: 4,
+    role: "buyer",
+    firstName: "Alice",
+    lastName: "Brown",
+    citizenId: "6789012345",
     email: "alice@example.com",
-    role: "User",
-    status: "Banned",
+    phoneNumber: "555-3456",
+    userAddress: "101 Pine St, Anytown, USA",
+    userStatus: "banned",
   },
   // Add more sample data as needed
-]
+];
 
 export const UserManagement = () => {
-  const [selectedRole, setSelectedRole] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("")
-  const [nameFilter, setNameFilter] = useState("")
-  const [emailFilter, setEmailFilter] = useState("")
-  const [userData, setUserData] = useState(users)
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
+  const [emailFilter, setEmailFilter] = useState("");
+  const [userData, setUserData] = useState(users);
 
   const filterData = userData.filter((user) => {
-    const matchesRole = selectedRole ? user.role.toLowerCase() === selectedRole.toLowerCase() : true
-    const matchesStatus = selectedStatus ? user.status.toLowerCase() === selectedStatus.toLowerCase() : true
-    const matchesName = nameFilter ? user.name.toLowerCase().includes(nameFilter.toLowerCase()) : true
-    const matchesEmail = emailFilter ? user.email.toLowerCase().includes(emailFilter.toLowerCase()) : true
+    const matchesRole = selectedRole
+      ? user.role.toLowerCase() === selectedRole.toLowerCase()
+      : true;
+    const matchesStatus = selectedStatus
+      ? user.userStatus.toLowerCase() === selectedStatus.toLowerCase()
+      : true;
+    const matchesName = nameFilter
+      ? user.firstName.toLowerCase().includes(nameFilter.toLowerCase())
+      : true;
+    const matchesEmail = emailFilter
+      ? user.email.toLowerCase().includes(emailFilter.toLowerCase())
+      : true;
 
-    return matchesRole && matchesStatus && matchesName && matchesEmail
-  })
+    return matchesRole && matchesStatus && matchesName && matchesEmail;
+  });
 
-  const handleDelete = (id: string) => {
-    setUserData(userData.filter(user => user.id !== id))
-  }
+  const handleDelete = (id: number) => {
+    setUserData(userData.filter((user) => user.id !== id));
+  };
 
-  const handleBanUnban = (id: string) => {
-    setUserData(userData.map(user => 
-      user.id === id 
-        ? { ...user, status: user.status === "Banned" ? "Active" : "Banned" } 
-        : user
-    ))
-  }
+  const handleBanUnban = (id: number) => {
+    setUserData(
+      userData.map((user) =>
+        user.id === id
+          ? {
+              ...user,
+              userStatus: user.userStatus === "banned" ? "active" : "banned",
+            }
+          : user
+      )
+    );
+  };
 
   return (
     <div className="flex h-screen bg-background w-full">
@@ -94,7 +149,9 @@ export const UserManagement = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-8">
-        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">User Management</h1>
+        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">
+          User Management
+        </h1>
 
         {/* Filters */}
         <div className="mb-6 flex items-center gap-4 rounded-lg bg-white p-4 border">
@@ -118,8 +175,8 @@ export const UserManagement = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="user">User</SelectItem>
-              <SelectItem value="moderator">Moderator</SelectItem>
+              <SelectItem value="seller">Seller</SelectItem>
+              <SelectItem value="buyer">Buyer</SelectItem>
             </SelectContent>
           </Select>
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -136,10 +193,10 @@ export const UserManagement = () => {
             variant="ghost"
             className="ml-auto text-red-500 hover:text-red-600"
             onClick={() => {
-              setSelectedRole("")
-              setSelectedStatus("")
-              setNameFilter("")
-              setEmailFilter("")
+              setSelectedRole("");
+              setSelectedStatus("");
+              setNameFilter("");
+              setEmailFilter("");
             }}
           >
             Reset Filter
@@ -163,20 +220,22 @@ export const UserManagement = () => {
               {filterData.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="text-center">{user.id}</TableCell>
-                  <TableCell>{user.name}</TableCell>
+                  <TableCell>
+                    {user.firstName} {user.lastName}
+                  </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
                     <span
                       className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
-                        user.status === "Active"
+                        user.userStatus === "active"
                           ? "bg-emerald-100 text-emerald-800"
-                          : user.status === "Inactive"
+                          : user.userStatus === "inactive"
                           ? "bg-gray-700 text-white"
                           : "bg-red-500 text-white"
                       }`}
                     >
-                      {user.status}
+                      {user.userStatus}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -191,12 +250,17 @@ export const UserManagement = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the user account.
+                              This action cannot be undone. This will
+                              permanently delete the user account.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(user.id)}>Delete</AlertDialogAction>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(user.id)}
+                            >
+                              Delete
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
@@ -210,15 +274,17 @@ export const UserManagement = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              {user.status === "Banned" 
-                                ? "This will unban the user account." 
+                              {user.userStatus === "banned"
+                                ? "This will unban the user account."
                                 : "This will ban the user account."}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleBanUnban(user.id)}>
-                              {user.status === "Banned" ? "Unban" : "Ban"}
+                            <AlertDialogAction
+                              onClick={() => handleBanUnban(user.id)}
+                            >
+                              {user.userStatus === "banned" ? "Unban" : "Ban"}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -232,6 +298,5 @@ export const UserManagement = () => {
         </div>
       </div>
     </div>
-  )
-}
-
+  );
+};

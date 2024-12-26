@@ -6,15 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { validatePersonalInfo } from "@/lib/validations";
+import { toast } from "sonner";
 
 export default function ProfileUpdating() {
   const [personalInfo, setPersonalInfo] = useState({
     firstName: "",
     lastName: "",
     citizenId: "",
-    city: "",
-    district: "",
+    email: "",
     phoneNumber: "",
+    userAddress: "",
   });
 
   const [password, setPassword] = useState({
@@ -31,9 +33,44 @@ export default function ProfileUpdating() {
     setPassword({ ...password, [e.target.name]: e.target.value });
   };
 
-  const handleUpdate = () => {
-    console.log("Updated personal info:", personalInfo);
-    // Here you would typically send this data to your backend using an API call
+  const handleUpdate = async () => {
+    const validation = validatePersonalInfo(personalInfo);
+
+    if (!validation.isValid) {
+      const firstError = Object.values(validation.errors)[0];
+      toast.error("Validation Error", {
+        description: firstError,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:6969/api/users/profile/1`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(personalInfo),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update profile");
+      }
+
+      await response.json();
+      toast.success("Profile Updated", {
+        description: "Your profile has been updated successfully",
+      });
+    } catch (error) {
+      toast.error("Update Failed", {
+        description:
+          error instanceof Error ? error.message : "Failed to update profile",
+      });
+    }
   };
 
   const handlePasswordUpdate = () => {
@@ -64,7 +101,9 @@ export default function ProfileUpdating() {
         <TabsContent value="personal">
           <Card className="bg-card text-card-foreground">
             <CardHeader>
-              <CardTitle className="text-card-foreground">Personal Information</CardTitle>
+              <CardTitle className="text-card-foreground">
+                Personal Information
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -95,6 +134,22 @@ export default function ProfileUpdating() {
                   />
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-card-foreground">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={personalInfo.email}
+                  onChange={handlePersonalInfoChange}
+                  required
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="citizenId" className="text-card-foreground">
                   Citizen Identification Number
@@ -108,34 +163,7 @@ export default function ProfileUpdating() {
                   className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="city" className="text-card-foreground">
-                    City/Province
-                  </Label>
-                  <Input
-                    id="city"
-                    name="city"
-                    value={personalInfo.city}
-                    onChange={handlePersonalInfoChange}
-                    required
-                    className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="district" className="text-card-foreground">
-                    District, Street, Number
-                  </Label>
-                  <Input
-                    id="district"
-                    name="district"
-                    value={personalInfo.district}
-                    onChange={handlePersonalInfoChange}
-                    required
-                    className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                  />
-                </div>
-              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="phoneNumber" className="text-card-foreground">
                   Phone Number
@@ -149,6 +177,21 @@ export default function ProfileUpdating() {
                   className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="userAddress" className="text-card-foreground">
+                  Address
+                </Label>
+                <Input
+                  id="userAddress"
+                  name="userAddress"
+                  value={personalInfo.userAddress}
+                  onChange={handlePersonalInfoChange}
+                  required
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
+                />
+              </div>
+
               <Button
                 onClick={handleUpdate}
                 className="w-full bg-primary hover:bg-primary-foreground text-primary-foreground py-3 text-lg font-semibold transition-colors duration-200 rounded-[30px]"
@@ -161,11 +204,16 @@ export default function ProfileUpdating() {
         <TabsContent value="password">
           <Card className="bg-card text-card-foreground">
             <CardHeader>
-              <CardTitle className="text-card-foreground">Change Password</CardTitle>
+              <CardTitle className="text-card-foreground">
+                Change Password
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="currentPassword" className="text-card-foreground">
+                <Label
+                  htmlFor="currentPassword"
+                  className="text-card-foreground"
+                >
                   Current Password
                 </Label>
                 <Input
@@ -193,7 +241,10 @@ export default function ProfileUpdating() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-card-foreground">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-card-foreground"
+                >
                   Confirm New Password
                 </Label>
                 <Input

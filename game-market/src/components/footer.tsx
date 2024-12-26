@@ -5,9 +5,13 @@ const currentYear = new Date().getFullYear();
 
 const footerData = data;
 
-export function Footer() {
+interface FooterProps {
+  className?: string;
+}
+
+export function Footer({ className }: FooterProps) {
   return (
-    <footer className="p-4 bg-card sm:p-6 dark:bg-card">
+    <footer className={className}>
       <div className="mx-auto max-w-screen">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0">

@@ -1,29 +1,19 @@
-import express from 'express';
-import { connectDB, queryDemo } from './config/connectDB.js';
+import express from "express";
+import { connectDB } from "./config/connectDB.js";
+import { handleSignUp, handleSignIn } from "./controllers/userController.js";
+import {
+  validateSignUp,
+  validateSignIn,
+} from "./middleware/validationMiddleware.js";
 
 const app = express();
-const port = 3000;
+const port = 6969;
 
 app.use(express.json());
 
-app.get('/test-query', async (req, res) => {
-  try {
-    await queryDemo();
-    res.send('Query executed successfully. Check the console for results.');
-  } catch (err) {
-    res.status(500).send('Query failed.');
-  }
-});
-
-app.post('/signup', (req, res) => {
-  // Implement sign-up logic here
-  res.send('Sign-up endpoint');
-});
-
-app.post('/signin', (req, res) => {
-  // Implement sign-in logic here
-  res.send('Sign-in endpoint');
-});
+// API Routes
+app.post("/api/signup", validateSignUp, handleSignUp);
+app.post("/api/signin", validateSignIn, handleSignIn);
 
 app.listen(port, async () => {
   await connectDB();

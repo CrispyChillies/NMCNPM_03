@@ -1,23 +1,13 @@
 import express from "express";
-import homeController from "../controllers/homeController";
-import userController from "../controllers/userController";
+import { handleSignUp, handleSignIn } from "../controllers/userController";
+import {
+  validateSignUp,
+  validateSignIn,
+} from "../middleware/validationMiddleware";
 
-let router = express.Router();
+const router = express.Router();
 
-let initWebRoutes = (app) => {
-    router.get('/', homeController.getHomePage);
-    router.get('/about', homeController.getAboutPage);
-    router.get('/signup', homeController.getSignUpPage);
-    router.post('/api/signup', userController.handleSignUp);
-    router.get('/signin', homeController.getSignInPage);
-    router.post('/api/signin', userController.handleSignIn);
+router.post("/api/signup", validateSignUp, handleSignUp);
+router.post("/api/signin", validateSignIn, handleSignIn);
 
-    // User management routes
-    router.get('/api/users', userController.getAllUsers);
-    router.put('/api/users/ban/:id', userController.banUser);
-    router.delete('/api/users/:id', userController.deleteUser);
-
-    return app.use("/", router);
-}
-
-module.exports = initWebRoutes;
+export default router;
