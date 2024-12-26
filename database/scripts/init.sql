@@ -1,12 +1,3 @@
--- 4. Create the Account Table (no foreign keys here)
-
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'gamemarket')
-BEGIN
-    CREATE DATABASE gamemarket;
-
--- Switch to the gamemarket database
-USE gamemarket;
-GO
 CREATE DATABASE gamemarket
 GO 
 
@@ -72,8 +63,9 @@ CREATE TABLE Cart (
     cartId INT NOT NULL,
     productId INT NOT NULL,
     quantity INT NOT NULL,
-    PRIMARY KEY (cartId, productId)
+    PRIMARY KEY (cartId, productId),
 );
+
 
 -- 8. Create the BecomeSellerRequest Table (no foreign keys here)
 CREATE TABLE BecomeSellerRequest (
@@ -108,9 +100,10 @@ ALTER TABLE ProductRequest ADD
 
 -- 10. Create the OrderDetail Table (no foreign keys here)
 CREATE TABLE OrderDetail (
-    orderDetailId INT IDENTITY(1,1) PRIMARY KEY,
+    orderDetailId INT NOT NULL,
     productId INT NOT NULL,
-    quantity INT NOT NULL
+    quantity INT NOT NULL,
+    PRIMARY KEY (orderDetailId, productId)
 );
 
 -- 11. Create the Order Table (no foreign keys here)
@@ -561,8 +554,8 @@ INSERT INTO [Product] ([productId], [sellerId], [name], [price], [description], 
 ('220', '96', 'Counter-Strike: Global Offensive', '48.05', 'Modern competitive shooter defining esports standards.', '20', 'xboxOne', 'action', 'new', 'https://steamcdn-a.akamaihd.net/steam/apps/730/header.jpg?t=1554409309', 'unavailable', '2024-10-02', 'comingSoon', '4.5');
 SET IDENTITY_INSERT Product OFF;
 
-SET IDENTITY_INSERT Cart ON;
 INSERT INTO [Cart] ([cartId], [productId], [quantity]) VALUES ('1', '37', '3'),
+('1', '38', '3'),
 ('2', '98', '5'),
 ('3', '90', '1'),
 ('4', '61', '1'),
@@ -662,7 +655,6 @@ INSERT INTO [Cart] ([cartId], [productId], [quantity]) VALUES ('1', '37', '3'),
 ('98', '27', '1'),
 ('99', '5', '4'),
 ('100', '43', '5');
-SET IDENTITY_INSERT Cart OFF;
 
 SET IDENTITY_INSERT BecomeSellerRequest ON;
 INSERT INTO [BecomeSellerRequest] ([requestId], [userId], [email], [phoneNumber], [businessAddress], [businessName], [productDescription], [address], [date], [status]) VALUES ('1', '1', 'request1@example.com', '359-718-8903x65391', 'PSC 1564, Box 3595, APO AA 79470', 'BusinessRequest1', 'Information common group easy people Congress spend. Officer in health whatever ever next. Guess save major ability think blue.', '854 Sanders Canyon, North Katieburgh, FM 64861', '2024-08-17', 'declined'),
@@ -905,13 +897,12 @@ INSERT INTO [ProductRequest] ([gameRequestId], [userId], [productId], [status], 
 ('220', '89', '220', 'rejected', '2024-11-21');
 SET IDENTITY_INSERT ProductRequest OFF;
 
-SET IDENTITY_INSERT OrderDetail ON;
 INSERT INTO [OrderDetail] ([orderDetailId], [productId], [quantity]) VALUES ('1', '62', '4'),
 ('2', '28', '2'),
-('3', '82', '1'),
-('4', '80', '5'),
-('5', '27', '1'),
-('6', '84', '2'),
+('2', '82', '1'),
+('3', '80', '5'),
+('3', '27', '1'),
+('3', '84', '2'),
 ('7', '39', '5'),
 ('8', '35', '3'),
 ('9', '56', '1'),
@@ -1006,7 +997,6 @@ INSERT INTO [OrderDetail] ([orderDetailId], [productId], [quantity]) VALUES ('1'
 ('98', '45', '2'),
 ('99', '72', '2'),
 ('100', '13', '1');
-SET IDENTITY_INSERT OrderDetail OFF;
 
 SET IDENTITY_INSERT [Order] ON;
 INSERT INTO [Order] ([orderId], [userId], [status], [date], [orderDetailId], [name], [address], [phoneNumber], [paymentMethod]) VALUES ('1', '74', 'completed', '2024-10-23', '1', 'Faith Rice', '128 Jones Hollow Apt. 362, Jameschester, FL 52700', '827-920-6228', 'mobile banking'),
@@ -1128,10 +1118,6 @@ ALTER TABLE Cart
 ADD CONSTRAINT fk_cart_product
 FOREIGN KEY (productId) REFERENCES Product(productId);
 
--- Foreign key from Users to Cart
-ALTER TABLE Users
-ADD CONSTRAINT fk_user_cart
-FOREIGN KEY (cartId) REFERENCES Cart(cartId);
 
 -- Foreign key from BecomeSellerRequest to Users
 ALTER TABLE BecomeSellerRequest
@@ -1158,11 +1144,5 @@ ALTER TABLE [Order]
 ADD CONSTRAINT fk_order_user
 FOREIGN KEY (userId) REFERENCES Users(id);
 
--- Foreign key from Order to OrderDetail
-ALTER TABLE [Order]
-ADD CONSTRAINT fk_order_orderdetail
-FOREIGN KEY (orderDetailId) REFERENCES OrderDetail(orderDetailId);
-
 GO 
 
-END
