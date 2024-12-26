@@ -5,14 +5,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function SignIn() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Handle sign in logic here
-    console.log('Sign in with', email, password)
+    console.log('Sign in with', username, password)
     navigate('/home')
   }
 
@@ -25,15 +25,15 @@ export default function SignIn() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4 rounded-md shadow-sm">
             <div>
-              <Label htmlFor="email-address">Email address</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="mt-1"
               />
             </div>
@@ -68,4 +68,3 @@ export default function SignIn() {
     </div>
   )
 }
-

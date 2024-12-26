@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function SignUp() {
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -12,7 +13,7 @@ export default function SignUp() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Handle sign up logic here
-    console.log('Sign up with', email, password, confirmPassword)
+    console.log('Sign up with', username, email, password, confirmPassword)
   }
 
   return (
@@ -23,6 +24,19 @@ export default function SignUp() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4 rounded-md shadow-sm">
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="mt-1"
+              />
+            </div>
             <div>
               <Label htmlFor="email-address">Email address</Label>
               <Input
@@ -80,4 +94,3 @@ export default function SignUp() {
     </div>
   )
 }
-
