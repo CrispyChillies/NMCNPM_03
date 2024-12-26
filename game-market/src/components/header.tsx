@@ -43,6 +43,8 @@ const urlToTitleMap = {
   ...flattenNavItems(projects),
   ...flattenNavItems(navSecondary),
   '/user/cart': 'Shopping Cart',
+  '/user/checkout': 'Checkout',
+  '/user/order-confirm': 'Order Confirmation',
 };
 
 interface HeaderProps {
