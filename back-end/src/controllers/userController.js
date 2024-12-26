@@ -76,16 +76,7 @@ export const handleSignIn = async (req, res) => {
 };
 
 export const handleSignUp = async (req, res) => {
-  const {
-    username,
-    password,
-    firstName,
-    lastName,
-    citizenId,
-    email,
-    phoneNumber,
-    userAddress,
-  } = req.body;
+  const { username, password, email } = req.body;
 
   try {
     const pool = await connectDB();
@@ -94,6 +85,20 @@ export const handleSignUp = async (req, res) => {
     await transaction.begin();
 
     try {
+      // Check if username already exists
+      const existingUser = await transaction
+        .request()
+        .input("username", sql.VarChar, username).query(`
+          SELECT id FROM Account WHERE username = @username
+        `);
+
+      if (existingUser.recordset.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Username already exists",
+        });
+      }
+
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -102,32 +107,25 @@ export const handleSignUp = async (req, res) => {
         .request()
         .input("username", sql.VarChar, username)
         .input("password", sql.VarChar, hashedPassword).query(`
-                    INSERT INTO Account (username, password)
-                    OUTPUT INSERTED.id
-                    VALUES (@username, @password)
-                `);
+          INSERT INTO Account (username, password)
+          OUTPUT INSERTED.id
+          VALUES (@username, @password)
+        `);
 
       const userId = accountResult.recordset[0].id;
 
-      // Insert into Users table
+      // Insert into Users table with minimal information
       await transaction
         .request()
         .input("id", sql.Int, userId)
-        .input("firstName", sql.VarChar, firstName)
-        .input("lastName", sql.VarChar, lastName)
-        .input("citizenId", sql.VarChar, citizenId)
-        .input("email", sql.VarChar, email)
-        .input("phoneNumber", sql.VarChar, phoneNumber)
-        .input("userAddress", sql.Text, userAddress).query(`
-                    INSERT INTO Users (
-                        id, role, firstName, lastName, citizenId, 
-                        email, phoneNumber, userAddress, userStatus
-                    )
-                    VALUES (
-                        @id, 'buyer', @firstName, @lastName, @citizenId,
-                        @email, @phoneNumber, @userAddress, 'active'
-                    )
-                `);
+        .input("email", sql.VarChar, email).query(`
+          INSERT INTO Users (
+            id, role, email, userStatus
+          )
+          VALUES (
+            @id, 'buyer', @email, 'active'
+          )
+        `);
 
       await transaction.commit();
 
