@@ -1,25 +1,55 @@
 export const validateSignUp = (req, res, next) => {
-  const { username, password, email } = req.body;
+  const {
+    username,
+    password,
+    firstName,
+    lastName,
+    citizenId,
+    email,
+    phoneNumber,
+    userAddress,
+  } = req.body;
 
-  if (!username || !password || !email) {
+  // Check if all required fields are present
+  if (
+    !username ||
+    !password ||
+    !firstName ||
+    !lastName ||
+    !citizenId ||
+    !email ||
+    !phoneNumber ||
+    !userAddress
+  ) {
     return res.status(400).json({
-      error: true,
-      message: "Username, password and email are required",
+      success: false,
+      message: "All fields are required",
     });
   }
 
-  if (password.length < 6) {
-    return res.status(400).json({
-      error: true,
-      message: "Password must be at least 6 characters long",
-    });
-  }
-
+  // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({
-      error: true,
-      message: "Please provide a valid email address",
+      success: false,
+      message: "Invalid email format",
+    });
+  }
+
+  // Validate password strength (at least 8 characters)
+  if (password.length < 8) {
+    return res.status(400).json({
+      success: false,
+      message: "Password must be at least 8 characters long",
+    });
+  }
+
+  // Validate phone number (basic format)
+  const phoneRegex = /^\+?[\d\s-]{10,}$/;
+  if (!phoneRegex.test(phoneNumber)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid phone number format",
     });
   }
 
@@ -31,7 +61,7 @@ export const validateSignIn = (req, res, next) => {
 
   if (!username || !password) {
     return res.status(400).json({
-      error: true,
+      success: false,
       message: "Username and password are required",
     });
   }
