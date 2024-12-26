@@ -15,9 +15,6 @@ app.get('/test-query', async (req, res) => {
   }
 });
 
-app.post("/api/signup", validateSignUp, handleSignUp);
-app.post("/api/signin", validateSignIn, handleSignIn);
-
 app.listen(port, async () => {
   await connectDB();
   console.log(`Server is running on http://localhost:${port}`);

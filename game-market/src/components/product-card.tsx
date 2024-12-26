@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { QuickLook } from "./quicklook";
 
 interface ProductCardProps {
   name: string;
@@ -17,6 +18,7 @@ interface ProductCardProps {
   }[];
   showBadge?: boolean;
   productId: number;
+  description: string;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -27,9 +29,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   image,
   badges,
   showBadge = true,
-  productId
+  productId,
+  description
 }) => {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isQuickLookOpen, setIsQuickLookOpen] = useState(false);
 
   const handleFavoriteClick = () => {
     setIsFavorite(!isFavorite);
@@ -40,14 +44,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     return `/user/game/${formattedName}-g${id}`;
   };
 
-  const handleCardClick = () => {
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent navigation when clicking the quick look button or closing the quick look popup
+    if ((e.target as HTMLElement).closest('.quick-look-button') || isQuickLookOpen) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     window.location.href = generateProductLink(name, productId);
   };
 
   return (
-    <Card className="overflow-hidden" onClick={handleCardClick}>
+    <Card className="overflow-hidden">
       <div className="h-48 w-full hover:scale-110 transition-transform overflow-hidden">
-        <img src={image} alt={name} className="mx-auto h-full w-full object-cover" />
+        <img src={image} alt={name} className="mx-auto h-full w-full object-cover" onClick={handleCardClick} />
       </div>
       
       <CardContent className="p-1 mt-1 mx-4 mb-4">
@@ -64,7 +74,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 quick-look-button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsQuickLookOpen(true);
+                    }}
+                  >
                     <span className="sr-only">Quick look</span>
                     <Eye className="h-4 w-4 text-foreground" />
                   </Button>
@@ -91,7 +110,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        <div className="text-primary font-semibold leading-tight text-foreground hover:underline dark:text-foreground product-name">
+        <div className="text-primary font-semibold leading-tight text-foreground hover:underline dark:text-foreground product-name" onClick={handleCardClick}>
           {name}
         </div>
 
@@ -127,6 +146,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </Button>
         </div>
       </CardContent>
+      <QuickLook
+        isOpen={isQuickLookOpen}
+        onClose={() => setIsQuickLookOpen(false)}
+        product={{
+          name,
+          price,
+          rating,
+          image,
+          description: description,
+          productId,
+        }}
+        onViewDetails={() => window.location.href = generateProductLink(name, productId)}
+      />
     </Card>
   );
 }
