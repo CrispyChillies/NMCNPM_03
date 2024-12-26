@@ -152,16 +152,6 @@ export const GameProductManagement = () => {
               <SelectItem value="others">Sandbox</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={selectedDeveloper} onValueChange={setSelectedDeveloper}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Developer" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="cd projekt red">CD Projekt Red</SelectItem>
-              <SelectItem value="ea sports">EA Sports</SelectItem>
-              <SelectItem value="mojang">Mojang</SelectItem>
-            </SelectContent>
-          </Select>
           <Input
             type="number"
             placeholder="Min Price"
@@ -200,7 +190,6 @@ export const GameProductManagement = () => {
                 <TableHead>Game</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Developers</TableHead>
-                <TableHead>Price</TableHead>
                 <TableHead>Release Date</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>

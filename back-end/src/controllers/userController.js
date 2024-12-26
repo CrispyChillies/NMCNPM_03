@@ -111,11 +111,24 @@ let deleteUser = async (req, res) => {
     }
 }
 
+let getAllOrders = async (req, res) => {
+    try {
+        await connectDB();
+        const result = await sql.query`SELECT orderId, name, address, date, status FROM [Order]`;
+        res.json(result);
+        console.log(result);
+    } catch (err) {
+        console.error('Failed to fetch orders: ', err);
+        res.status(500).send('Failed to fetch orders');
+    }
+}
+
 
 module.exports = {
     handleSignUp,
     handleSignIn,
     getAllUsers,
     banUser,
-    deleteUser
+    deleteUser,
+    getAllOrders
 }
