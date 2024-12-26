@@ -80,63 +80,55 @@ export const handleSignUp = async (req, res) => {
 
   try {
     const pool = await connectDB();
-    const transaction = new sql.Transaction(pool);
 
-    await transaction.begin();
+    // Check if username already exists
+    const existingUserResult = await pool
+      .request()
+      .input("username", sql.VarChar, username)
+      .query("SELECT id FROM Account WHERE username = @username");
 
-    try {
-      // Check if username already exists
-      const existingUser = await transaction
-        .request()
-        .input("username", sql.VarChar, username).query(`
-          SELECT id FROM Account WHERE username = @username
-        `);
-
-      if (existingUser.recordset.length > 0) {
-        return res.status(400).json({
-          success: false,
-          message: "Username already exists",
-        });
-      }
-
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Insert into Account table
-      const accountResult = await transaction
-        .request()
-        .input("username", sql.VarChar, username)
-        .input("password", sql.VarChar, hashedPassword).query(`
-          INSERT INTO Account (username, password)
-          OUTPUT INSERTED.id
-          VALUES (@username, @password)
-        `);
-
-      const userId = accountResult.recordset[0].id;
-
-      // Insert into Users table with minimal information
-      await transaction
-        .request()
-        .input("id", sql.Int, userId)
-        .input("email", sql.VarChar, email).query(`
-          INSERT INTO Users (
-            id, role, email, userStatus
-          )
-          VALUES (
-            @id, 'buyer', @email, 'active'
-          )
-        `);
-
-      await transaction.commit();
-
-      res.status(201).json({
-        success: true,
-        message: "User registered successfully",
+    if (
+      existingUserResult.recordset &&
+      existingUserResult.recordset.length > 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Username already exists",
       });
-    } catch (err) {
-      await transaction.rollback();
-      throw err;
     }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert into Account table
+    const accountResult = await pool
+      .request()
+      .input("username", sql.VarChar, username)
+      .input("password", sql.VarChar, hashedPassword).query(`
+        INSERT INTO Account (username, password)
+        OUTPUT INSERTED.id
+        VALUES (@username, @password)
+      `);
+
+    if (!accountResult.recordset || !accountResult.recordset[0]) {
+      throw new Error("Failed to create account");
+    }
+
+    const userId = accountResult.recordset[0].id;
+
+    // Insert into Users table
+    await pool
+      .request()
+      .input("id", sql.Int, userId)
+      .input("email", sql.VarChar, email).query(`
+        INSERT INTO Users (id, role, email, userStatus)
+        VALUES (@id, 'buyer', @email, 'active')
+      `);
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+    });
   } catch (err) {
     console.error("Sign-up error:", err);
     res.status(500).json({
