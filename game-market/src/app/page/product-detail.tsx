@@ -56,6 +56,15 @@ export default function ProductDetail() {
     console.log(`Submitted rating: ${rating}`);
     // Here you would typically send the rating to your backend
   };
+  const addToCart =()=>{
+    console.log(`Product ${productId}: ${product.name} added to cart `);
+    return(product?.productId);
+  };
+
+  const buyNow =()=>{
+    console.log(`Buy product ${productId}: ${product.name} now `);
+    return(product?.productId);
+  }
 
   if (loading) return <div className="flex justify-center p-8">Loading...</div>;
   if (error) return <div className="flex justify-center p-8 text-red-500">{error}</div>;
@@ -97,7 +106,7 @@ export default function ProductDetail() {
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2  ">
                 {displayTag(product.tag)}
                 {displayStatus(product.status)}
               </div>
@@ -146,10 +155,10 @@ export default function ProductDetail() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Button className="w-full" size="lg">
+                  <Button className="w-full" size="lg" onClick={addToCart}>
                     Add to cart
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg">
+                  <Button variant="outline" className="w-full" size="lg" onClick={buyNow}>
                     Buy Now
                   </Button>
                 </div>
