@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Link } from 'react-router-dom';
 
 interface ProductCardProps {
   name: string;
@@ -41,13 +40,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     return `/user/game/${formattedName}-g${id}`;
   };
 
+  const handleCardClick = () => {
+    window.location.href = generateProductLink(name, productId);
+  };
+
   return (
-    <Card className="overflow-hidden">
-      <Link to={generateProductLink(name, productId)}>
-        <div className="h-48 w-full hover:scale-110 transition-transform overflow-hidden">
-          <img src={image} alt={name} className="mx-auto h-full w-full object-cover" />
-        </div>
-      </Link>
+    <Card className="overflow-hidden" onClick={handleCardClick}>
+      <div className="h-48 w-full hover:scale-110 transition-transform overflow-hidden">
+        <img src={image} alt={name} className="mx-auto h-full w-full object-cover" />
+      </div>
       
       <CardContent className="p-1 mt-1 mx-4 mb-4">
         <div className="flex items-center justify-between gap-4">
@@ -90,9 +91,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        <Link to={generateProductLink(name, productId)} className="text-primary font-semibold leading-tight text-foreground hover:underline dark:text-foreground product-name">
+        <div className="text-primary font-semibold leading-tight text-foreground hover:underline dark:text-foreground product-name">
           {name}
-        </Link>
+        </div>
 
         <div className="mt-2 flex items-center gap-2">
           <div className="flex items-center">

@@ -42,6 +42,7 @@ export default function ProductDetail() {
     };
 
     fetchProduct();
+    window.scrollTo(0, 0);
   }, [productId]);
 
   const handleFavoriteClick = () => {
