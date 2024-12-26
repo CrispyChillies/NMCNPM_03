@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import viewEngine from "./config/viewEngine";
 import initWebRoutes from './route/web';
 import { connectDB, queryDemo } from "./config/connectDB";
+import { errorHandler, notFound } from "./middleware/errorMiddleware";
 import cors from 'cors';
 require('dotenv').config();
 
@@ -15,17 +16,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 viewEngine(app);
 initWebRoutes(app);
+app.use(notFound);
+app.use(errorHandler);
 
 let port = process.env.PORT || 6969;
-
-app.get('/test-query', async (req, res) => {
-  try {
-    await queryDemo();
-    res.send('Query executed successfully. Check the console for results.');
-  } catch (err) {
-    res.status(500).send('Query failed.');
-  }
-});
 
 app.listen(port, () => {
   // Callback

@@ -1,18 +1,16 @@
 CREATE DATABASE gamemarket
 GO 
-
 USE gamemarket
 GO    
 
 CREATE TABLE Account (
-    id INT IDENTITY(1,1) PRIMARY KEY,
+    id INT  PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 );
 
--- 5. Create the Users Table (no foreign keys here)
 CREATE TABLE Users (
-    id INT IDENTITY(1,1) PRIMARY KEY,
+    id INT  PRIMARY KEY,
     role VARCHAR(20) NOT NULL,
     firstName VARCHAR(255) NOT NULL,
     lastName VARCHAR(255) NOT NULL,
@@ -29,12 +27,11 @@ CREATE TABLE Users (
 
 -- Add CHECK constraints for enum fields in Users
 ALTER TABLE Users ADD
-    CONSTRAINT chk_role CHECK (role IN ('buyer','seller','admin')),
     CONSTRAINT chk_userStatus CHECK (userStatus IN ('active','inactive','banned'));
 
 -- 6. Create the Product Table (no foreign keys here)
 CREATE TABLE Product (
-    productId INT IDENTITY(1,1) PRIMARY KEY,
+    productId INT  PRIMARY KEY,
     sellerId INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
@@ -69,7 +66,7 @@ CREATE TABLE Cart (
 
 -- 8. Create the BecomeSellerRequest Table (no foreign keys here)
 CREATE TABLE BecomeSellerRequest (
-    requestId INT IDENTITY(1,1) PRIMARY KEY,
+    requestId INT  PRIMARY KEY,
     userId INT NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     phoneNumber VARCHAR(50) NOT NULL,
@@ -87,7 +84,7 @@ ALTER TABLE BecomeSellerRequest ADD
 
 -- 9. Create the ProductRequest Table (no foreign keys here)
 CREATE TABLE ProductRequest (
-    gameRequestId INT IDENTITY(1,1) PRIMARY KEY,
+    gameRequestId INT  PRIMARY KEY,
     userId INT NOT NULL,
     productId INT NOT NULL,
     status VARCHAR(20) NOT NULL,
@@ -108,7 +105,7 @@ CREATE TABLE OrderDetail (
 
 -- 11. Create the Order Table (no foreign keys here)
 CREATE TABLE [Order] (
-    orderId INT IDENTITY(1,1) PRIMARY KEY,
+    orderId INT  PRIMARY KEY,
     userId INT NOT NULL,
     status VARCHAR(20) NOT NULL,
     date DATE NOT NULL,
@@ -125,7 +122,6 @@ ALTER TABLE [Order] ADD
     CONSTRAINT chk_payment_method CHECK (paymentMethod IN ('mobile banking','cashOnDelivery'));
 GO      
 
-SET IDENTITY_INSERT Account ON;
 INSERT INTO [Account] ([id], [username], [password]) VALUES ('1', 'user1', '0b14d501a594442a01c6859541bcb3e8164d183d32937b851835442f69d5c94e'),
 ('2', 'user2', '6cf615d5bcaac778352a8f1f3360d23f02f34ec182e259897fd6ce485d7870d4'),
 ('3', 'user3', '5906ac361a137e2d286465cd6588ebb5ac3f5ae955001100bc41577c3d751764'),
@@ -226,112 +222,108 @@ INSERT INTO [Account] ([id], [username], [password]) VALUES ('1', 'user1', '0b14
 ('98', 'user98', '1a52ea1a2b0f7dbbc246387f37b6a1ee0bae2a7d3de65139e54dbd325a8cdf8d'),
 ('99', 'user99', '5f5b24ad65531525ddcccace0598dafaa386e30749babf12c7b0cda2af45c582'),
 ('100', 'user100', 'b3351ed9be23d5ad99cc73bdc1aed73913503f064534ead302d7485b72b072fe');
-SET IDENTITY_INSERT Account OFF;
 
-SET IDENTITY_INSERT Users ON;
-INSERT INTO [Users] ([id], [role], [firstName], [lastName], [citizenId], [email], [phoneNumber], [userAddress], [businessName], [businessDescription], [businessAddress], [userStatus], [cartId]) VALUES ('1', 'buyer', 'Melissa', 'Ellison', 'CITIZENID1', 'buyer1@example.com', '8644690976', 'PSC 9907, Box 7699, APO AP 25837', NULL, NULL, NULL, 'active', '1'),
-('2', 'buyer', 'Ashley', 'Palmer', 'CITIZENID2', 'buyer2@example.com', '631-999-1244x71053', '60739 Steven Mission Suite 207, Jenkinsview, PW 65437', NULL, NULL, NULL, 'active', '2'),
-('3', 'buyer', 'Jacob', 'Strickland', 'CITIZENID3', 'buyer3@example.com', '684.887.8004x71177', '36660 Jeffrey Rapid Suite 837, Lopezmouth, WA 07549', NULL, NULL, NULL, 'active', '3'),
-('4', 'buyer', 'Katherine', 'Kelley', 'CITIZENID4', 'buyer4@example.com', '321.978.8051x8593', 'USCGC Odom, FPO AE 44128', NULL, NULL, NULL, 'inactive', '4'),
-('5', 'buyer', 'William', 'Stevens', 'CITIZENID5', 'buyer5@example.com', '975-553-4398x4508', 'USNS Diaz, FPO AE 30529', NULL, NULL, NULL, 'banned', '5'),
-('6', 'buyer', 'Michelle', 'Mitchell', 'CITIZENID6', 'buyer6@example.com', '(983)604-2778', '32572 Sparks Islands Suite 796, Jamiebury, WY 97949', NULL, NULL, NULL, 'banned', '6'),
-('7', 'buyer', 'Sarah', 'Tran', 'CITIZENID7', 'buyer7@example.com', '374-690-3169x5666', '413 Brewer Plaza Apt. 468, Lake Tina, PW 54577', NULL, NULL, NULL, 'inactive', '7'),
-('8', 'buyer', 'Ronald', 'Harrison', 'CITIZENID8', 'buyer8@example.com', '001-626-385-0983x45986', '4197 Carrie Crest Suite 539, Smithport, NH 04999', NULL, NULL, NULL, 'banned', '8'),
-('9', 'buyer', 'James', 'Owens', 'CITIZENID9', 'buyer9@example.com', '(210)923-4323', '96232 Owen Station, Moraleston, GU 01353', NULL, NULL, NULL, 'active', '9'),
-('10', 'buyer', 'Richard', 'Golden', 'CITIZENID10', 'buyer10@example.com', '001-521-898-7472x570', '212 Martin Shore, North Crystal, VT 80835', NULL, NULL, NULL, 'banned', '10'),
-('11', 'buyer', 'Lisa', 'Meyer', 'CITIZENID11', 'buyer11@example.com', '+1-682-368-8978x082', '874 Jesse Forest, Michaelfurt, GU 10845', NULL, NULL, NULL, 'inactive', '11'),
-('12', 'buyer', 'Michael', 'Kaufman', 'CITIZENID12', 'buyer12@example.com', '+1-423-509-3378x504', 'USS Griffin, FPO AP 42311', NULL, NULL, NULL, 'active', '12'),
-('13', 'buyer', 'Jamie', 'Pope', 'CITIZENID13', 'buyer13@example.com', '9447627667', '81897 Tracy Path Suite 855, Andrewstad, PW 72704', NULL, NULL, NULL, 'active', '13'),
-('14', 'buyer', 'Daniel', 'Sparks', 'CITIZENID14', 'buyer14@example.com', '001-879-529-2549x826', 'USCGC Schultz, FPO AA 54072', NULL, NULL, NULL, 'active', '14'),
-('15', 'buyer', 'Catherine', 'Snyder', 'CITIZENID15', 'buyer15@example.com', '+1-792-897-8406x6212', '90395 Nichols Cliffs Suite 782, Coffeystad, WY 20291', NULL, NULL, NULL, 'inactive', '15'),
-('16', 'buyer', 'Michelle', 'Richardson', 'CITIZENID16', 'buyer16@example.com', '597-798-9858x611', '6618 Dominguez Burg, Gilbertborough, MH 58214', NULL, NULL, NULL, 'banned', '16'),
-('17', 'buyer', 'Erika', 'Leblanc', 'CITIZENID17', 'buyer17@example.com', '001-564-380-3282x95165', '181 Cortez Points Apt. 810, North Amytown, ND 16769', NULL, NULL, NULL, 'banned', '17'),
-('18', 'buyer', 'Samantha', 'Harris', 'CITIZENID18', 'buyer18@example.com', '001-376-479-4501x2542', 'PSC 7089, Box 5577, APO AP 89468', NULL, NULL, NULL, 'banned', '18'),
-('19', 'buyer', 'Gabrielle', 'Nguyen', 'CITIZENID19', 'buyer19@example.com', '(512)294-2991x571', '561 Thomas Fall, Port Sandratown, PW 14402', NULL, NULL, NULL, 'inactive', '19'),
-('20', 'buyer', 'Jamie', 'Powell', 'CITIZENID20', 'buyer20@example.com', '(794)662-5320x40347', '4910 Holt Estate, Tonychester, NJ 11798', NULL, NULL, NULL, 'banned', '20'),
-('21', 'buyer', 'Sheri', 'Bowers', 'CITIZENID21', 'buyer21@example.com', '001-235-717-2275x58207', '7445 Eric Meadow Apt. 715, Petersonburgh, IA 78101', NULL, NULL, NULL, 'banned', '21'),
-('22', 'buyer', 'John', 'Mcintyre', 'CITIZENID22', 'buyer22@example.com', '(429)323-3884x5069', '981 Matthew Mountains Apt. 671, Jonestown, ME 09062', NULL, NULL, NULL, 'banned', '22'),
-('23', 'buyer', 'Ashley', 'Brown', 'CITIZENID23', 'buyer23@example.com', '+1-592-289-7737x909', '7463 Rodriguez Common Suite 584, Port Kevin, NY 80479', NULL, NULL, NULL, 'active', '23'),
-('24', 'buyer', 'Elizabeth', 'Morales', 'CITIZENID24', 'buyer24@example.com', '001-382-944-8534x046', '63232 Thompson Terrace Apt. 666, Port Catherine, OR 34984', NULL, NULL, NULL, 'banned', '24'),
-('25', 'buyer', 'Katrina', 'Shaw', 'CITIZENID25', 'buyer25@example.com', '846-247-3438', '762 Dana Falls, South Justinborough, MP 08846', NULL, NULL, NULL, 'active', '25'),
-('26', 'buyer', 'Ashley', 'Sheppard', 'CITIZENID26', 'buyer26@example.com', '001-330-762-7706x94323', '5082 Nathan Hill Suite 121, Port Lisa, NY 26821', NULL, NULL, NULL, 'inactive', '26'),
-('27', 'buyer', 'Barbara', 'Collins', 'CITIZENID27', 'buyer27@example.com', '987-709-4300x09260', '081 Miller Stravenue, South Laurahaven, NC 36716', NULL, NULL, NULL, 'banned', '27'),
-('28', 'buyer', 'William', 'Ward', 'CITIZENID28', 'buyer28@example.com', '+1-562-416-8130x6477', '22508 Charles Ranch Suite 807, Robertmouth, OR 68932', NULL, NULL, NULL, 'banned', '28'),
-('29', 'buyer', 'Evan', 'Jensen', 'CITIZENID29', 'buyer29@example.com', '641.930.6800', '814 Jones Well, West Gina, NV 83182', NULL, NULL, NULL, 'inactive', '29'),
-('30', 'buyer', 'Emily', 'Pugh', 'CITIZENID30', 'buyer30@example.com', '773.607.9605x530', '402 Watson Causeway, Lake Steven, ME 31441', NULL, NULL, NULL, 'banned', '30'),
-('31', 'buyer', 'Katrina', 'Madden', 'CITIZENID31', 'buyer31@example.com', '356.325.6928x891', '76013 Phillips Meadows, Tomshire, AL 67140', NULL, NULL, NULL, 'active', '31'),
-('32', 'buyer', 'Anthony', 'Whitney', 'CITIZENID32', 'buyer32@example.com', '001-306-802-9902x779', '35646 Taylor Tunnel, Lake Amanda, NC 91381', NULL, NULL, NULL, 'banned', '32'),
-('33', 'buyer', 'Robert', 'Hernandez', 'CITIZENID33', 'buyer33@example.com', '560.344.0438x694', '44756 Rachael Glen, New Brenda, HI 49795', NULL, NULL, NULL, 'inactive', '33'),
-('34', 'buyer', 'Crystal', 'Walsh', 'CITIZENID34', 'buyer34@example.com', '866.865.3395x517', '733 Armstrong Prairie Apt. 867, Gibsonview, ME 15032', NULL, NULL, NULL, 'inactive', '34'),
-('35', 'buyer', 'Eric', 'Horton', 'CITIZENID35', 'buyer35@example.com', '001-761-751-7476', '6561 Campbell Valley Suite 626, Hamptonbury, SC 86340', NULL, NULL, NULL, 'active', '35'),
-('36', 'buyer', 'John', 'Nunez', 'CITIZENID36', 'buyer36@example.com', '001-851-642-7185x143', '9639 Alice Canyon, Ashleymouth, GA 18214', NULL, NULL, NULL, 'banned', '36'),
-('37', 'buyer', 'Anthony', 'Bond', 'CITIZENID37', 'buyer37@example.com', '672.537.3643x821', '343 David Prairie Suite 558, Caitlinchester, WA 76774', NULL, NULL, NULL, 'inactive', '37'),
-('38', 'buyer', 'Wayne', 'Moore', 'CITIZENID38', 'buyer38@example.com', '(524)481-2679x38149', 'PSC 0526, Box 0618, APO AE 38895', NULL, NULL, NULL, 'banned', '38'),
-('39', 'buyer', 'Roy', 'Howard', 'CITIZENID39', 'buyer39@example.com', '(406)486-6656x1598', '063 Hancock Run, Stevenmouth, TN 50791', NULL, NULL, NULL, 'active', '39'),
-('40', 'buyer', 'Douglas', 'Bryant', 'CITIZENID40', 'buyer40@example.com', '725-520-7124x29076', '116 Laura Gateway, Lake Barbaramouth, CO 44683', NULL, NULL, NULL, 'banned', '40'),
-('41', 'buyer', 'Christopher', 'Smith', 'CITIZENID41', 'buyer41@example.com', '467.577.6190', '402 Rhonda Skyway Apt. 549, Anthonyland, VI 16906', NULL, NULL, NULL, 'banned', '41'),
-('42', 'buyer', 'Sarah', 'Jones', 'CITIZENID42', 'buyer42@example.com', '+1-756-466-0842x660', '28910 Bryant Mills, Donnastad, MS 15450', NULL, NULL, NULL, 'banned', '42'),
-('43', 'buyer', 'Stephanie', 'Luna', 'CITIZENID43', 'buyer43@example.com', '287.946.2156x21714', 'USS Dunn, FPO AP 35087', NULL, NULL, NULL, 'active', '43'),
-('44', 'buyer', 'Noah', 'Jones', 'CITIZENID44', 'buyer44@example.com', '238-965-6891', '61123 Evans Roads Suite 850, New Kaylaport, IA 79077', NULL, NULL, NULL, 'active', '44'),
-('45', 'buyer', 'Kayla', 'Bailey', 'CITIZENID45', 'buyer45@example.com', '754.223.1138x83870', '4805 Caroline Overpass, Port Henrymouth, VT 71303', NULL, NULL, NULL, 'active', '45'),
-('46', 'buyer', 'Tanya', 'French', 'CITIZENID46', 'buyer46@example.com', '245.317.0343x7602', '8548 John Station Apt. 996, West Aprilland, DC 06010', NULL, NULL, NULL, 'banned', '46'),
-('47', 'buyer', 'Jeffrey', 'Monroe', 'CITIZENID47', 'buyer47@example.com', '(784)987-1177x6934', '343 Williams Islands Apt. 592, Lake Catherinefort, AR 38171', NULL, NULL, NULL, 'inactive', '47'),
-('48', 'buyer', 'Kimberly', 'Smith', 'CITIZENID48', 'buyer48@example.com', '737-206-7676x4678', '102 Kim Dale Suite 746, Thomasside, MT 01194', NULL, NULL, NULL, 'inactive', '48'),
-('49', 'buyer', 'Emily', 'Alvarez', 'CITIZENID49', 'buyer49@example.com', '210-927-6050x36335', '81572 Oneill Falls, East Jennifer, VI 82178', NULL, NULL, NULL, 'active', '49'),
-('50', 'buyer', 'Michelle', 'Jones', 'CITIZENID50', 'buyer50@example.com', '473-653-0873', '7214 Craig Radial Apt. 276, West Christopher, CT 44835', NULL, NULL, NULL, 'inactive', '50'),
-('51', 'buyer', 'Amy', 'Ingram', 'CITIZENID51', 'buyer51@example.com', '852.787.9110x6638', '225 Tamara Fort Apt. 782, New Brittany, TN 41838', NULL, NULL, NULL, 'banned', '51'),
-('52', 'buyer', 'Leon', 'Roberts', 'CITIZENID52', 'buyer52@example.com', '356.287.6167x6653', 'Unit 9386 Box 7544, DPO AP 42602', NULL, NULL, NULL, 'banned', '52'),
-('53', 'buyer', 'Jenny', 'Bryant', 'CITIZENID53', 'buyer53@example.com', '5557370698', '7370 Mccann Cove, New Sharon, MD 93684', NULL, NULL, NULL, 'active', '53'),
-('54', 'buyer', 'Angela', 'Hill', 'CITIZENID54', 'buyer54@example.com', '667.441.0897', '83286 Jason Fields, North Lindsay, DC 77240', NULL, NULL, NULL, 'inactive', '54'),
-('55', 'buyer', 'Rachel', 'Garcia', 'CITIZENID55', 'buyer55@example.com', '001-762-530-4253x4166', 'Unit 4709 Box 3642, DPO AA 25244', NULL, NULL, NULL, 'banned', '55'),
-('56', 'buyer', 'Scott', 'Hunter', 'CITIZENID56', 'buyer56@example.com', '758-261-1325', '93928 Shields Keys, South Shelley, SD 43652', NULL, NULL, NULL, 'inactive', '56'),
-('57', 'buyer', 'Ariel', 'Martinez', 'CITIZENID57', 'buyer57@example.com', '001-617-341-6619x637', '16057 Combs Forge, Simmonsside, AS 03491', NULL, NULL, NULL, 'inactive', '57'),
-('58', 'buyer', 'William', 'Hoffman', 'CITIZENID58', 'buyer58@example.com', '001-937-436-9882', '3238 David Wells, Port Jennifermouth, UT 87188', NULL, NULL, NULL, 'banned', '58'),
-('59', 'buyer', 'Cynthia', 'Ryan', 'CITIZENID59', 'buyer59@example.com', '962-404-9873x5510', '0339 Craig Lake Suite 094, Paultown, IA 85280', NULL, NULL, NULL, 'inactive', '59'),
-('60', 'buyer', 'Justin', 'Mooney', 'CITIZENID60', 'buyer60@example.com', '662-578-7049', '2322 Miller Mission Apt. 866, Port Michaelberg, WA 81451', NULL, NULL, NULL, 'banned', '60'),
-('61', 'buyer', 'Matthew', 'Lee', 'CITIZENID61', 'buyer61@example.com', '+1-764-604-3291', '6350 Joseph Rest, Tonyside, NV 53889', NULL, NULL, NULL, 'active', '61'),
-('62', 'buyer', 'Kristine', 'Rogers', 'CITIZENID62', 'buyer62@example.com', '840-290-5603x4018', '84620 Brown Groves Apt. 317, Tuckerhaven, MI 16681', NULL, NULL, NULL, 'banned', '62'),
-('63', 'buyer', 'Elizabeth', 'Sanchez', 'CITIZENID63', 'buyer63@example.com', '992-512-3130x2339', '9211 Holmes Mount Apt. 071, South Caitlinport, KY 99535', NULL, NULL, NULL, 'banned', '63'),
-('64', 'buyer', 'Shelly', 'Scott', 'CITIZENID64', 'buyer64@example.com', '+1-946-530-3333x238', '278 John Divide, Michelleton, CO 27485', NULL, NULL, NULL, 'active', '64'),
-('65', 'buyer', 'Kenneth', 'Franco', 'CITIZENID65', 'buyer65@example.com', '757.250.7380x0967', '50168 Emily Fall, South Kenneth, SC 24404', NULL, NULL, NULL, 'banned', '65'),
-('66', 'buyer', 'Brenda', 'Bowers', 'CITIZENID66', 'buyer66@example.com', '+1-401-273-6973x18769', '703 Jordan Roads Apt. 656, Lake Katherineshire, MH 29048', NULL, NULL, NULL, 'banned', '66'),
-('67', 'buyer', 'Chase', 'Lewis', 'CITIZENID67', 'buyer67@example.com', '+1-990-623-2095x73710', '3429 Richard Throughway Suite 119, New Molly, NH 85383', NULL, NULL, NULL, 'banned', '67'),
-('68', 'buyer', 'Chad', 'Washington', 'CITIZENID68', 'buyer68@example.com', '348.891.7466', '534 Pham Plaza, Jodichester, DC 39943', NULL, NULL, NULL, 'active', '68'),
-('69', 'buyer', 'Kimberly', 'Perez', 'CITIZENID69', 'buyer69@example.com', '(286)921-6505x01006', '57356 Kelly Island, Smithberg, NM 62723', NULL, NULL, NULL, 'active', '69'),
-('70', 'buyer', 'Ashley', 'Mcdonald', 'CITIZENID70', 'buyer70@example.com', '563-695-9806x07878', '32434 Cortez Grove Apt. 498, Leslieburgh, ME 50023', NULL, NULL, NULL, 'banned', '70'),
-('71', 'buyer', 'Gary', 'Barron', 'CITIZENID71', 'buyer71@example.com', '001-927-632-0467x08538', 'Unit 6532 Box 5391, DPO AE 04200', NULL, NULL, NULL, 'inactive', '71'),
-('72', 'buyer', 'Mark', 'Howard', 'CITIZENID72', 'buyer72@example.com', '552-905-3775x1848', '910 Kenneth Road, West Amandatown, WI 92178', NULL, NULL, NULL, 'inactive', '72'),
-('73', 'buyer', 'Wesley', 'Marshall', 'CITIZENID73', 'buyer73@example.com', '939-690-5836', '1534 Samuel Underpass, West Eric, AS 87139', NULL, NULL, NULL, 'active', '73'),
-('74', 'buyer', 'David', 'Joyce', 'CITIZENID74', 'buyer74@example.com', '(496)795-8536x087', '042 Pollard Parkways Apt. 037, Jasonfort, AL 63205', NULL, NULL, NULL, 'active', '74'),
-('75', 'buyer', 'Michelle', 'Nichols', 'CITIZENID75', 'buyer75@example.com', '001-770-785-7087x96896', '968 Kathleen Drive Suite 259, North Josephbury, OK 76802', NULL, NULL, NULL, 'inactive', '75'),
-('76', 'buyer', 'Ruth', 'Morris', 'CITIZENID76', 'buyer76@example.com', '4578621099', '78416 Reed Burgs Suite 130, Sharonmouth, NC 70285', NULL, NULL, NULL, 'banned', '76'),
-('77', 'buyer', 'Caroline', 'Johnson', 'CITIZENID77', 'buyer77@example.com', '+1-856-750-4331', '926 Steven Extensions Suite 824, Pamelahaven, GA 46249', NULL, NULL, NULL, 'banned', '77'),
-('78', 'buyer', 'Daniel', 'Wood', 'CITIZENID78', 'buyer78@example.com', '718.518.1670x75445', '816 Sherri Mission, Marcusberg, KY 19934', NULL, NULL, NULL, 'banned', '78'),
-('79', 'buyer', 'Sharon', 'Houston', 'CITIZENID79', 'buyer79@example.com', '960.683.8122', 'Unit 6063 Box 1161, DPO AA 78480', NULL, NULL, NULL, 'active', '79'),
-('80', 'buyer', 'Denise', 'Jones', 'CITIZENID80', 'buyer80@example.com', '+1-655-759-7468x2610', '4577 Michael Rue Suite 091, Scottborough, PR 13786', NULL, NULL, NULL, 'inactive', '80'),
-('81', 'seller', 'Brittany', 'French', 'CITIZENID81', 'seller81@example.com', '(622)900-8985', '7658 Garcia Neck Suite 372, Heatherton, FL 50368', 'Lara LLC', 'While similar seem remain serve. Subject pick perform end.', '666 Joshua Groves Apt. 629, North Sarah, NV 38239', 'active', '81'),
-('82', 'seller', 'Richard', 'Griffin', 'CITIZENID82', 'seller82@example.com', '001-811-383-9465x57471', 'USS Case, FPO AA 99627', 'Riley, Klein and Reed', 'More describe thank learn toward sound. Commercial health two.', '42269 Angela Isle, Hallberg, WV 21306', 'active', '82'),
-('83', 'seller', 'Hector', 'Howard', 'CITIZENID83', 'seller83@example.com', '507.610.3617x4680', '495 Gonzalez Crest, Michaelhaven, AR 62238', 'Neal and Sons', 'Wall nice blood or ball see become ever. Military let say in.', '152 Nicholas Circle Suite 891, Reyesburgh, MT 94213', 'banned', '83'),
-('84', 'seller', 'Anita', 'Williams', 'CITIZENID84', 'seller84@example.com', '5257767845', '6012 Wendy Landing, Brownview, WA 43871', 'Tucker-Miller', 'Her represent truth coach. Plant teacher respond better thank glass.', '6850 Pace Ville, South Stephen, TN 06603', 'active', '84'),
-('85', 'seller', 'Sarah', 'Jordan', 'CITIZENID85', 'seller85@example.com', '001-597-413-1771x1763', '153 Morales Lakes Suite 318, East Carrie, MO 05750', 'Martinez, Owens and Bishop', 'Hit interview my wide huge law.', '253 Davis Club Suite 033, Lake Toddbury, FL 27332', 'active', '85'),
-('86', 'seller', 'Clayton', 'Miller', 'CITIZENID86', 'seller86@example.com', '001-682-831-5650x392', '830 Hanson Plains Apt. 180, Port Patricia, PR 71925', 'Cobb and Sons', 'Imagine reality kid film join story focus. Analysis office while step.', '1115 Marcus Pass, Port Stephenmouth, OK 96536', 'inactive', '86'),
-('87', 'seller', 'Douglas', 'Byrd', 'CITIZENID87', 'seller87@example.com', '(277)779-3820x102', '68924 Johnson Ferry Suite 502, Garretttown, MS 48279', 'Blair-Freeman', 'Let good even. Forget nor keep watch.', 'USNS Knight, FPO AP 54466', 'active', '87'),
-('88', 'seller', 'Kayla', 'Saunders', 'CITIZENID88', 'seller88@example.com', '336.350.5749x53565', '7072 Morgan Spur Apt. 850, Carolborough, ND 19663', 'Sweeney Group', 'Citizen expert which. Energy painting name letter past. Skin different center improve.', '957 Joseph Forest, New Robertfurt, TX 36669', 'banned', '88'),
-('89', 'seller', 'Ricky', 'Williams', 'CITIZENID89', 'seller89@example.com', '001-600-724-0411', '357 Kathleen Village Suite 632, East Shawnmouth, SC 75335', 'Burns Group', 'Kid reduce behind on. Include act town rest thus law.', '342 Willis Lake Apt. 504, Ericchester, WI 48612', 'banned', '89'),
-('90', 'seller', 'Andres', 'Powell', 'CITIZENID90', 'seller90@example.com', '512-788-9642x3329', '261 Young Mall, New Scotttown, AR 08165', 'Griffin Group', 'Tree culture help commercial better blue few. Resource population message bar.', '607 Michael Branch, South Renee, WV 68359', 'active', '90'),
-('91', 'seller', 'Patrick', 'Morton', 'CITIZENID91', 'seller91@example.com', '001-302-647-4251x11248', '7118 Renee Plaza Apt. 996, Lesterburgh, AR 44676', 'Gonzales Inc', 'Seat for site. Yeah fly although brother later time become.', '2354 Vance Lights Apt. 090, West Brianborough, MO 72844', 'inactive', '91'),
-('92', 'seller', 'Derrick', 'Larson', 'CITIZENID92', 'seller92@example.com', '(632)513-7340x027', '75270 Jimenez Knolls Apt. 230, Hortonville, NM 86700', 'King-Carter', 'Myself through go voice play collection crime. Particular fact those sister.', '641 Rita Track Apt. 982, East Jonathan, OR 19771', 'inactive', '92'),
-('93', 'seller', 'Brittany', 'Mathews', 'CITIZENID93', 'seller93@example.com', '+1-788-565-9120x15334', '57827 Amanda Corners Suite 202, West Candiceshire, TN 03197', 'White and Sons', 'Present doctor pull computer security. Many thus discuss. Raise drive direction it health standard.', '06453 Khan Forks Suite 589, Jonesberg, CO 93404', 'active', '93'),
-('94', 'seller', 'Donald', 'Walker', 'CITIZENID94', 'seller94@example.com', '+1-897-435-8309x1530', '158 Watson Pines Apt. 997, Glennland, NM 40348', 'Rocha-Aguilar', 'Will me group two under manage. Subject memory government director wife.', '441 Kenneth Way, Edwardview, MD 62390', 'inactive', '94'),
-('95', 'seller', 'Charles', 'Holloway', 'CITIZENID95', 'seller95@example.com', '942.905.2295', '653 Timothy Vista Suite 419, Woodsville, MN 58567', 'Norman PLC', 'Ever whatever evidence drug international. Our describe recognize.', '064 Brandon Keys, South Derekborough, PA 00992', 'banned', '95'),
-('96', 'seller', 'Brian', 'Heath', 'CITIZENID96', 'seller96@example.com', '753.562.2396', '74686 Williams Islands Suite 499, Wrightport, NY 87177', 'Allen LLC', 'Run five apply bit that perhaps Democrat. Our take marriage pick where deep people.', '60029 Chandler Crossing, Browntown, ME 69882', 'inactive', '96'),
-('97', 'seller', 'Christopher', 'Shaw', 'CITIZENID97', 'seller97@example.com', '001-270-982-7107x887', '80438 Wright Meadows, West Amyview, WA 48144', 'Morales Group', 'Message Congress impact while sign fund protect.', '5978 Amanda Mountain, Brianland, DE 36010', 'active', '97'),
-('98', 'seller', 'James', 'Chavez', 'CITIZENID98', 'seller98@example.com', '(841)931-1861', '334 William Ford Suite 258, Lake James, NJ 92786', 'Mathis-Wright', 'Parent race purpose market on cold sometimes. Pretty brother expect. Situation try sure low speech.', '90106 Taylor Landing, North Carrieberg, MS 12181', 'active', '98'),
-('99', 'seller', 'Stephanie', 'Hall', 'CITIZENID99', 'seller99@example.com', '597-523-0214', '952 Barry Coves Apt. 305, Hodgeton, SD 35971', 'Webster and Sons', 'Forget effect there his. Congress red if market even.', '8318 Denise Circle Apt. 378, East Tylertown, WY 24914', 'active', '99'),
+INSERT INTO [Users] ([id], [role], [firstName], [lastName], [citizenId], [email], [phoneNumber], [userAddress], [businessName], [businessDescription], [businessAddress], [userStatus], [cartId]) VALUES ('1', 'user', 'Melissa', 'Ellison', 'CITIZENID1', 'user1@example.com', '8644690976', 'PSC 9907, Box 7699, APO AP 25837', NULL, NULL, NULL, 'active', '1'),
+('2', 'user', 'Ashley', 'Palmer', 'CITIZENID2', 'user2@example.com', '631-999-1244x71053', '60739 Steven Mission Suite 207, Jenkinsview, PW 65437', NULL, NULL, NULL, 'active', '2'),
+('3', 'user', 'Jacob', 'Strickland', 'CITIZENID3', 'user3@example.com', '684.887.8004x71177', '36660 Jeffrey Rapid Suite 837, Lopezmouth, WA 07549', NULL, NULL, NULL, 'active', '3'),
+('4', 'user', 'Katherine', 'Kelley', 'CITIZENID4', 'user4@example.com', '321.978.8051x8593', 'USCGC Odom, FPO AE 44128', NULL, NULL, NULL, 'inactive', '4'),
+('5', 'user', 'William', 'Stevens', 'CITIZENID5', 'user5@example.com', '975-553-4398x4508', 'USNS Diaz, FPO AE 30529', NULL, NULL, NULL, 'banned', '5'),
+('6', 'user', 'Michelle', 'Mitchell', 'CITIZENID6', 'user6@example.com', '(983)604-2778', '32572 Sparks Islands Suite 796, Jamiebury, WY 97949', NULL, NULL, NULL, 'banned', '6'),
+('7', 'user', 'Sarah', 'Tran', 'CITIZENID7', 'user7@example.com', '374-690-3169x5666', '413 Brewer Plaza Apt. 468, Lake Tina, PW 54577', NULL, NULL, NULL, 'inactive', '7'),
+('8', 'user', 'Ronald', 'Harrison', 'CITIZENID8', 'user8@example.com', '001-626-385-0983x45986', '4197 Carrie Crest Suite 539, Smithport, NH 04999', NULL, NULL, NULL, 'banned', '8'),
+('9', 'user', 'James', 'Owens', 'CITIZENID9', 'user9@example.com', '(210)923-4323', '96232 Owen Station, Moraleston, GU 01353', NULL, NULL, NULL, 'active', '9'),
+('10', 'user', 'Richard', 'Golden', 'CITIZENID10', 'user10@example.com', '001-521-898-7472x570', '212 Martin Shore, North Crystal, VT 80835', NULL, NULL, NULL, 'banned', '10'),
+('11', 'user', 'Lisa', 'Meyer', 'CITIZENID11', 'user11@example.com', '+1-682-368-8978x082', '874 Jesse Forest, Michaelfurt, GU 10845', NULL, NULL, NULL, 'inactive', '11'),
+('12', 'user', 'Michael', 'Kaufman', 'CITIZENID12', 'user12@example.com', '+1-423-509-3378x504', 'USS Griffin, FPO AP 42311', NULL, NULL, NULL, 'active', '12'),
+('13', 'user', 'Jamie', 'Pope', 'CITIZENID13', 'user13@example.com', '9447627667', '81897 Tracy Path Suite 855, Andrewstad, PW 72704', NULL, NULL, NULL, 'active', '13'),
+('14', 'user', 'Daniel', 'Sparks', 'CITIZENID14', 'user14@example.com', '001-879-529-2549x826', 'USCGC Schultz, FPO AA 54072', NULL, NULL, NULL, 'active', '14'),
+('15', 'user', 'Catherine', 'Snyder', 'CITIZENID15', 'user15@example.com', '+1-792-897-8406x6212', '90395 Nichols Cliffs Suite 782, Coffeystad, WY 20291', NULL, NULL, NULL, 'inactive', '15'),
+('16', 'user', 'Michelle', 'Richardson', 'CITIZENID16', 'user16@example.com', '597-798-9858x611', '6618 Dominguez Burg, Gilbertborough, MH 58214', NULL, NULL, NULL, 'banned', '16'),
+('17', 'user', 'Erika', 'Leblanc', 'CITIZENID17', 'user17@example.com', '001-564-380-3282x95165', '181 Cortez Points Apt. 810, North Amytown, ND 16769', NULL, NULL, NULL, 'banned', '17'),
+('18', 'user', 'Samantha', 'Harris', 'CITIZENID18', 'user18@example.com', '001-376-479-4501x2542', 'PSC 7089, Box 5577, APO AP 89468', NULL, NULL, NULL, 'banned', '18'),
+('19', 'user', 'Gabrielle', 'Nguyen', 'CITIZENID19', 'user19@example.com', '(512)294-2991x571', '561 Thomas Fall, Port Sandratown, PW 14402', NULL, NULL, NULL, 'inactive', '19'),
+('20', 'user', 'Jamie', 'Powell', 'CITIZENID20', 'user20@example.com', '(794)662-5320x40347', '4910 Holt Estate, Tonychester, NJ 11798', NULL, NULL, NULL, 'banned', '20'),
+('21', 'user', 'Sheri', 'Bowers', 'CITIZENID21', 'user21@example.com', '001-235-717-2275x58207', '7445 Eric Meadow Apt. 715, Petersonburgh, IA 78101', NULL, NULL, NULL, 'banned', '21'),
+('22', 'user', 'John', 'Mcintyre', 'CITIZENID22', 'user22@example.com', '(429)323-3884x5069', '981 Matthew Mountains Apt. 671, Jonestown, ME 09062', NULL, NULL, NULL, 'banned', '22'),
+('23', 'user', 'Ashley', 'Brown', 'CITIZENID23', 'user23@example.com', '+1-592-289-7737x909', '7463 Rodriguez Common Suite 584, Port Kevin, NY 80479', NULL, NULL, NULL, 'active', '23'),
+('24', 'user', 'Elizabeth', 'Morales', 'CITIZENID24', 'user24@example.com', '001-382-944-8534x046', '63232 Thompson Terrace Apt. 666, Port Catherine, OR 34984', NULL, NULL, NULL, 'banned', '24'),
+('25', 'user', 'Katrina', 'Shaw', 'CITIZENID25', 'user25@example.com', '846-247-3438', '762 Dana Falls, South Justinborough, MP 08846', NULL, NULL, NULL, 'active', '25'),
+('26', 'user', 'Ashley', 'Sheppard', 'CITIZENID26', 'user26@example.com', '001-330-762-7706x94323', '5082 Nathan Hill Suite 121, Port Lisa, NY 26821', NULL, NULL, NULL, 'inactive', '26'),
+('27', 'user', 'Barbara', 'Collins', 'CITIZENID27', 'user27@example.com', '987-709-4300x09260', '081 Miller Stravenue, South Laurahaven, NC 36716', NULL, NULL, NULL, 'banned', '27'),
+('28', 'user', 'William', 'Ward', 'CITIZENID28', 'user28@example.com', '+1-562-416-8130x6477', '22508 Charles Ranch Suite 807, Robertmouth, OR 68932', NULL, NULL, NULL, 'banned', '28'),
+('29', 'user', 'Evan', 'Jensen', 'CITIZENID29', 'user29@example.com', '641.930.6800', '814 Jones Well, West Gina, NV 83182', NULL, NULL, NULL, 'inactive', '29'),
+('30', 'user', 'Emily', 'Pugh', 'CITIZENID30', 'user30@example.com', '773.607.9605x530', '402 Watson Causeway, Lake Steven, ME 31441', NULL, NULL, NULL, 'banned', '30'),
+('31', 'user', 'Katrina', 'Madden', 'CITIZENID31', 'user31@example.com', '356.325.6928x891', '76013 Phillips Meadows, Tomshire, AL 67140', NULL, NULL, NULL, 'active', '31'),
+('32', 'user', 'Anthony', 'Whitney', 'CITIZENID32', 'user32@example.com', '001-306-802-9902x779', '35646 Taylor Tunnel, Lake Amanda, NC 91381', NULL, NULL, NULL, 'banned', '32'),
+('33', 'user', 'Robert', 'Hernandez', 'CITIZENID33', 'user33@example.com', '560.344.0438x694', '44756 Rachael Glen, New Brenda, HI 49795', NULL, NULL, NULL, 'inactive', '33'),
+('34', 'user', 'Crystal', 'Walsh', 'CITIZENID34', 'user34@example.com', '866.865.3395x517', '733 Armstrong Prairie Apt. 867, Gibsonview, ME 15032', NULL, NULL, NULL, 'inactive', '34'),
+('35', 'user', 'Eric', 'Horton', 'CITIZENID35', 'user35@example.com', '001-761-751-7476', '6561 Campbell Valley Suite 626, Hamptonbury, SC 86340', NULL, NULL, NULL, 'active', '35'),
+('36', 'user', 'John', 'Nunez', 'CITIZENID36', 'user36@example.com', '001-851-642-7185x143', '9639 Alice Canyon, Ashleymouth, GA 18214', NULL, NULL, NULL, 'banned', '36'),
+('37', 'user', 'Anthony', 'Bond', 'CITIZENID37', 'user37@example.com', '672.537.3643x821', '343 David Prairie Suite 558, Caitlinchester, WA 76774', NULL, NULL, NULL, 'inactive', '37'),
+('38', 'user', 'Wayne', 'Moore', 'CITIZENID38', 'user38@example.com', '(524)481-2679x38149', 'PSC 0526, Box 0618, APO AE 38895', NULL, NULL, NULL, 'banned', '38'),
+('39', 'user', 'Roy', 'Howard', 'CITIZENID39', 'user39@example.com', '(406)486-6656x1598', '063 Hancock Run, Stevenmouth, TN 50791', NULL, NULL, NULL, 'active', '39'),
+('40', 'user', 'Douglas', 'Bryant', 'CITIZENID40', 'user40@example.com', '725-520-7124x29076', '116 Laura Gateway, Lake Barbaramouth, CO 44683', NULL, NULL, NULL, 'banned', '40'),
+('41', 'user', 'Christopher', 'Smith', 'CITIZENID41', 'user41@example.com', '467.577.6190', '402 Rhonda Skyway Apt. 549, Anthonyland, VI 16906', NULL, NULL, NULL, 'banned', '41'),
+('42', 'user', 'Sarah', 'Jones', 'CITIZENID42', 'user42@example.com', '+1-756-466-0842x660', '28910 Bryant Mills, Donnastad, MS 15450', NULL, NULL, NULL, 'banned', '42'),
+('43', 'user', 'Stephanie', 'Luna', 'CITIZENID43', 'user43@example.com', '287.946.2156x21714', 'USS Dunn, FPO AP 35087', NULL, NULL, NULL, 'active', '43'),
+('44', 'user', 'Noah', 'Jones', 'CITIZENID44', 'user44@example.com', '238-965-6891', '61123 Evans Roads Suite 850, New Kaylaport, IA 79077', NULL, NULL, NULL, 'active', '44'),
+('45', 'user', 'Kayla', 'Bailey', 'CITIZENID45', 'user45@example.com', '754.223.1138x83870', '4805 Caroline Overpass, Port Henrymouth, VT 71303', NULL, NULL, NULL, 'active', '45'),
+('46', 'user', 'Tanya', 'French', 'CITIZENID46', 'user46@example.com', '245.317.0343x7602', '8548 John Station Apt. 996, West Aprilland, DC 06010', NULL, NULL, NULL, 'banned', '46'),
+('47', 'user', 'Jeffrey', 'Monroe', 'CITIZENID47', 'user47@example.com', '(784)987-1177x6934', '343 Williams Islands Apt. 592, Lake Catherinefort, AR 38171', NULL, NULL, NULL, 'inactive', '47'),
+('48', 'user', 'Kimberly', 'Smith', 'CITIZENID48', 'user48@example.com', '737-206-7676x4678', '102 Kim Dale Suite 746, Thomasside, MT 01194', NULL, NULL, NULL, 'inactive', '48'),
+('49', 'user', 'Emily', 'Alvarez', 'CITIZENID49', 'user49@example.com', '210-927-6050x36335', '81572 Oneill Falls, East Jennifer, VI 82178', NULL, NULL, NULL, 'active', '49'),
+('50', 'user', 'Michelle', 'Jones', 'CITIZENID50', 'user50@example.com', '473-653-0873', '7214 Craig Radial Apt. 276, West Christopher, CT 44835', NULL, NULL, NULL, 'inactive', '50'),
+('51', 'user', 'Amy', 'Ingram', 'CITIZENID51', 'user51@example.com', '852.787.9110x6638', '225 Tamara Fort Apt. 782, New Brittany, TN 41838', NULL, NULL, NULL, 'banned', '51'),
+('52', 'user', 'Leon', 'Roberts', 'CITIZENID52', 'user52@example.com', '356.287.6167x6653', 'Unit 9386 Box 7544, DPO AP 42602', NULL, NULL, NULL, 'banned', '52'),
+('53', 'user', 'Jenny', 'Bryant', 'CITIZENID53', 'user53@example.com', '5557370698', '7370 Mccann Cove, New Sharon, MD 93684', NULL, NULL, NULL, 'active', '53'),
+('54', 'user', 'Angela', 'Hill', 'CITIZENID54', 'user54@example.com', '667.441.0897', '83286 Jason Fields, North Lindsay, DC 77240', NULL, NULL, NULL, 'inactive', '54'),
+('55', 'user', 'Rachel', 'Garcia', 'CITIZENID55', 'user55@example.com', '001-762-530-4253x4166', 'Unit 4709 Box 3642, DPO AA 25244', NULL, NULL, NULL, 'banned', '55'),
+('56', 'user', 'Scott', 'Hunter', 'CITIZENID56', 'user56@example.com', '758-261-1325', '93928 Shields Keys, South Shelley, SD 43652', NULL, NULL, NULL, 'inactive', '56'),
+('57', 'user', 'Ariel', 'Martinez', 'CITIZENID57', 'user57@example.com', '001-617-341-6619x637', '16057 Combs Forge, Simmonsside, AS 03491', NULL, NULL, NULL, 'inactive', '57'),
+('58', 'user', 'William', 'Hoffman', 'CITIZENID58', 'user58@example.com', '001-937-436-9882', '3238 David Wells, Port Jennifermouth, UT 87188', NULL, NULL, NULL, 'banned', '58'),
+('59', 'user', 'Cynthia', 'Ryan', 'CITIZENID59', 'user59@example.com', '962-404-9873x5510', '0339 Craig Lake Suite 094, Paultown, IA 85280', NULL, NULL, NULL, 'inactive', '59'),
+('60', 'user', 'Justin', 'Mooney', 'CITIZENID60', 'user60@example.com', '662-578-7049', '2322 Miller Mission Apt. 866, Port Michaelberg, WA 81451', NULL, NULL, NULL, 'banned', '60'),
+('61', 'user', 'Matthew', 'Lee', 'CITIZENID61', 'user61@example.com', '+1-764-604-3291', '6350 Joseph Rest, Tonyside, NV 53889', NULL, NULL, NULL, 'active', '61'),
+('62', 'user', 'Kristine', 'Rogers', 'CITIZENID62', 'user62@example.com', '840-290-5603x4018', '84620 Brown Groves Apt. 317, Tuckerhaven, MI 16681', NULL, NULL, NULL, 'banned', '62'),
+('63', 'user', 'Elizabeth', 'Sanchez', 'CITIZENID63', 'user63@example.com', '992-512-3130x2339', '9211 Holmes Mount Apt. 071, South Caitlinport, KY 99535', NULL, NULL, NULL, 'banned', '63'),
+('64', 'user', 'Shelly', 'Scott', 'CITIZENID64', 'user64@example.com', '+1-946-530-3333x238', '278 John Divide, Michelleton, CO 27485', NULL, NULL, NULL, 'active', '64'),
+('65', 'user', 'Kenneth', 'Franco', 'CITIZENID65', 'user65@example.com', '757.250.7380x0967', '50168 Emily Fall, South Kenneth, SC 24404', NULL, NULL, NULL, 'banned', '65'),
+('66', 'user', 'Brenda', 'Bowers', 'CITIZENID66', 'user66@example.com', '+1-401-273-6973x18769', '703 Jordan Roads Apt. 656, Lake Katherineshire, MH 29048', NULL, NULL, NULL, 'banned', '66'),
+('67', 'user', 'Chase', 'Lewis', 'CITIZENID67', 'user67@example.com', '+1-990-623-2095x73710', '3429 Richard Throughway Suite 119, New Molly, NH 85383', NULL, NULL, NULL, 'banned', '67'),
+('68', 'user', 'Chad', 'Washington', 'CITIZENID68', 'user68@example.com', '348.891.7466', '534 Pham Plaza, Jodichester, DC 39943', NULL, NULL, NULL, 'active', '68'),
+('69', 'user', 'Kimberly', 'Perez', 'CITIZENID69', 'user69@example.com', '(286)921-6505x01006', '57356 Kelly Island, Smithberg, NM 62723', NULL, NULL, NULL, 'active', '69'),
+('70', 'user', 'Ashley', 'Mcdonald', 'CITIZENID70', 'user70@example.com', '563-695-9806x07878', '32434 Cortez Grove Apt. 498, Leslieburgh, ME 50023', NULL, NULL, NULL, 'banned', '70'),
+('71', 'user', 'Gary', 'Barron', 'CITIZENID71', 'user71@example.com', '001-927-632-0467x08538', 'Unit 6532 Box 5391, DPO AE 04200', NULL, NULL, NULL, 'inactive', '71'),
+('72', 'user', 'Mark', 'Howard', 'CITIZENID72', 'user72@example.com', '552-905-3775x1848', '910 Kenneth Road, West Amandatown, WI 92178', NULL, NULL, NULL, 'inactive', '72'),
+('73', 'user', 'Wesley', 'Marshall', 'CITIZENID73', 'user73@example.com', '939-690-5836', '1534 Samuel Underpass, West Eric, AS 87139', NULL, NULL, NULL, 'active', '73'),
+('74', 'user', 'David', 'Joyce', 'CITIZENID74', 'user74@example.com', '(496)795-8536x087', '042 Pollard Parkways Apt. 037, Jasonfort, AL 63205', NULL, NULL, NULL, 'active', '74'),
+('75', 'user', 'Michelle', 'Nichols', 'CITIZENID75', 'user75@example.com', '001-770-785-7087x96896', '968 Kathleen Drive Suite 259, North Josephbury, OK 76802', NULL, NULL, NULL, 'inactive', '75'),
+('76', 'user', 'Ruth', 'Morris', 'CITIZENID76', 'user76@example.com', '4578621099', '78416 Reed Burgs Suite 130, Sharonmouth, NC 70285', NULL, NULL, NULL, 'banned', '76'),
+('77', 'user', 'Caroline', 'Johnson', 'CITIZENID77', 'user77@example.com', '+1-856-750-4331', '926 Steven Extensions Suite 824, Pamelahaven, GA 46249', NULL, NULL, NULL, 'banned', '77'),
+('78', 'user', 'Daniel', 'Wood', 'CITIZENID78', 'user78@example.com', '718.518.1670x75445', '816 Sherri Mission, Marcusberg, KY 19934', NULL, NULL, NULL, 'banned', '78'),
+('79', 'user', 'Sharon', 'Houston', 'CITIZENID79', 'user79@example.com', '960.683.8122', 'Unit 6063 Box 1161, DPO AA 78480', NULL, NULL, NULL, 'active', '79'),
+('80', 'user', 'Denise', 'Jones', 'CITIZENID80', 'user80@example.com', '+1-655-759-7468x2610', '4577 Michael Rue Suite 091, Scottborough, PR 13786', NULL, NULL, NULL, 'inactive', '80'),
+('81', 'provider', 'Brittany', 'French', 'CITIZENID81', 'provider81@example.com', '(622)900-8985', '7658 Garcia Neck Suite 372, Heatherton, FL 50368', 'Lara LLC', 'While similar seem remain serve. Subject pick perform end.', '666 Joshua Groves Apt. 629, North Sarah, NV 38239', 'active', '81'),
+('82', 'provider', 'Richard', 'Griffin', 'CITIZENID82', 'provider82@example.com', '001-811-383-9465x57471', 'USS Case, FPO AA 99627', 'Riley, Klein and Reed', 'More describe thank learn toward sound. Commercial health two.', '42269 Angela Isle, Hallberg, WV 21306', 'active', '82'),
+('83', 'provider', 'Hector', 'Howard', 'CITIZENID83', 'provider83@example.com', '507.610.3617x4680', '495 Gonzalez Crest, Michaelhaven, AR 62238', 'Neal and Sons', 'Wall nice blood or ball see become ever. Military let say in.', '152 Nicholas Circle Suite 891, Reyesburgh, MT 94213', 'banned', '83'),
+('84', 'provider', 'Anita', 'Williams', 'CITIZENID84', 'provider84@example.com', '5257767845', '6012 Wendy Landing, Brownview, WA 43871', 'Tucker-Miller', 'Her represent truth coach. Plant teacher respond better thank glass.', '6850 Pace Ville, South Stephen, TN 06603', 'active', '84'),
+('85', 'provider', 'Sarah', 'Jordan', 'CITIZENID85', 'provider85@example.com', '001-597-413-1771x1763', '153 Morales Lakes Suite 318, East Carrie, MO 05750', 'Martinez, Owens and Bishop', 'Hit interview my wide huge law.', '253 Davis Club Suite 033, Lake Toddbury, FL 27332', 'active', '85'),
+('86', 'provider', 'Clayton', 'Miller', 'CITIZENID86', 'provider86@example.com', '001-682-831-5650x392', '830 Hanson Plains Apt. 180, Port Patricia, PR 71925', 'Cobb and Sons', 'Imagine reality kid film join story focus. Analysis office while step.', '1115 Marcus Pass, Port Stephenmouth, OK 96536', 'inactive', '86'),
+('87', 'provider', 'Douglas', 'Byrd', 'CITIZENID87', 'provider87@example.com', '(277)779-3820x102', '68924 Johnson Ferry Suite 502, Garretttown, MS 48279', 'Blair-Freeman', 'Let good even. Forget nor keep watch.', 'USNS Knight, FPO AP 54466', 'active', '87'),
+('88', 'provider', 'Kayla', 'Saunders', 'CITIZENID88', 'provider88@example.com', '336.350.5749x53565', '7072 Morgan Spur Apt. 850, Carolborough, ND 19663', 'Sweeney Group', 'Citizen expert which. Energy painting name letter past. Skin different center improve.', '957 Joseph Forest, New Robertfurt, TX 36669', 'banned', '88'),
+('89', 'provider', 'Ricky', 'Williams', 'CITIZENID89', 'provider89@example.com', '001-600-724-0411', '357 Kathleen Village Suite 632, East Shawnmouth, SC 75335', 'Burns Group', 'Kid reduce behind on. Include act town rest thus law.', '342 Willis Lake Apt. 504, Ericchester, WI 48612', 'banned', '89'),
+('90', 'provider', 'Andres', 'Powell', 'CITIZENID90', 'provider90@example.com', '512-788-9642x3329', '261 Young Mall, New Scotttown, AR 08165', 'Griffin Group', 'Tree culture help commercial better blue few. Resource population message bar.', '607 Michael Branch, South Renee, WV 68359', 'active', '90'),
+('91', 'provider', 'Patrick', 'Morton', 'CITIZENID91', 'provider91@example.com', '001-302-647-4251x11248', '7118 Renee Plaza Apt. 996, Lesterburgh, AR 44676', 'Gonzales Inc', 'Seat for site. Yeah fly although brother later time become.', '2354 Vance Lights Apt. 090, West Brianborough, MO 72844', 'inactive', '91'),
+('92', 'provider', 'Derrick', 'Larson', 'CITIZENID92', 'provider92@example.com', '(632)513-7340x027', '75270 Jimenez Knolls Apt. 230, Hortonville, NM 86700', 'King-Carter', 'Myself through go voice play collection crime. Particular fact those sister.', '641 Rita Track Apt. 982, East Jonathan, OR 19771', 'inactive', '92'),
+('93', 'provider', 'Brittany', 'Mathews', 'CITIZENID93', 'provider93@example.com', '+1-788-565-9120x15334', '57827 Amanda Corners Suite 202, West Candiceshire, TN 03197', 'White and Sons', 'Present doctor pull computer security. Many thus discuss. Raise drive direction it health standard.', '06453 Khan Forks Suite 589, Jonesberg, CO 93404', 'active', '93'),
+('94', 'provider', 'Donald', 'Walker', 'CITIZENID94', 'provider94@example.com', '+1-897-435-8309x1530', '158 Watson Pines Apt. 997, Glennland, NM 40348', 'Rocha-Aguilar', 'Will me group two under manage. Subject memory government director wife.', '441 Kenneth Way, Edwardview, MD 62390', 'inactive', '94'),
+('95', 'provider', 'Charles', 'Holloway', 'CITIZENID95', 'provider95@example.com', '942.905.2295', '653 Timothy Vista Suite 419, Woodsville, MN 58567', 'Norman PLC', 'Ever whatever evidence drug international. Our describe recognize.', '064 Brandon Keys, South Derekborough, PA 00992', 'banned', '95'),
+('96', 'provider', 'Brian', 'Heath', 'CITIZENID96', 'provider96@example.com', '753.562.2396', '74686 Williams Islands Suite 499, Wrightport, NY 87177', 'Allen LLC', 'Run five apply bit that perhaps Democrat. Our take marriage pick where deep people.', '60029 Chandler Crossing, Browntown, ME 69882', 'inactive', '96'),
+('97', 'provider', 'Christopher', 'Shaw', 'CITIZENID97', 'provider97@example.com', '001-270-982-7107x887', '80438 Wright Meadows, West Amyview, WA 48144', 'Morales Group', 'Message Congress impact while sign fund protect.', '5978 Amanda Mountain, Brianland, DE 36010', 'active', '97'),
+('98', 'provider', 'James', 'Chavez', 'CITIZENID98', 'provider98@example.com', '(841)931-1861', '334 William Ford Suite 258, Lake James, NJ 92786', 'Mathis-Wright', 'Parent race purpose market on cold sometimes. Pretty brother expect. Situation try sure low speech.', '90106 Taylor Landing, North Carrieberg, MS 12181', 'active', '98'),
+('99', 'provider', 'Stephanie', 'Hall', 'CITIZENID99', 'provider99@example.com', '597-523-0214', '952 Barry Coves Apt. 305, Hodgeton, SD 35971', 'Webster and Sons', 'Forget effect there his. Congress red if market even.', '8318 Denise Circle Apt. 378, East Tylertown, WY 24914', 'active', '99'),
 ('100', 'admin', 'Yolanda', 'Shelton', 'CITIZENID100', 'admin100@example.com', '777.744.1000x8277', '96980 Sanchez Locks, Laurenborough, WI 76667', NULL, NULL, NULL, 'inactive', '100');
-SET IDENTITY_INSERT Users OFF;
 
-SET IDENTITY_INSERT Product ON;
 INSERT INTO [Product] ([productId], [sellerId], [name], [price], [description], [stock], [platform], [genre], [condition], [image], [status], [releaseDay], [tag], [rating]) VALUES ('1', '85', 'Dota 2', '34.56', 'Colorful narrative with strategic elements. Engaging community worldwide.', '32', 'playstation4', 'action', 'new', 'https://steamcdn-a.akamaihd.net/steam/apps/570/header.jpg?t=1554408611', 'available', '2023-03-15', 'bestSellers', '4.5'),
 ('2', '94', 'Dota 2', '58.30', 'A renowned competitive title. Thrilling battles await every season.', '66', 'xboxOne', 'action', 'good', 'https://steamcdn-a.akamaihd.net/steam/apps/570/header.jpg?t=1554408611', 'available', '2023-10-03', 'comingSoon', '4.2'),
 ('3', '81', 'Dota 2', '22.45', 'Team-based strategy with deep mechanics. Endless replayability.', '12', 'nintendoSwitch', 'action', 'fair', 'https://steamcdn-a.akamaihd.net/steam/apps/570/header.jpg?t=1554408611', 'available', '2024-02-12', 'specialOffers', '4.7'),
@@ -552,8 +544,6 @@ INSERT INTO [Product] ([productId], [sellerId], [name], [price], [description], 
 ('218', '90', 'Robocraft', '22.50', 'Build custom robots and engage in creative combat.', '11', 'nintendoSwitch', 'action', 'fair', 'https://steamcdn-a.akamaihd.net/steam/apps/301520/header.jpg?t=1553776646', 'unavailable', '2024-03-30', 'specialOffers', '4.1'),
 ('219', '82', 'Counter-Strike', '33.15', 'The classic tactical FPS that started a revolution.', '45', 'playstation4', 'action', 'good', 'https://steamcdn-a.akamaihd.net/steam/apps/10/header.jpg?t=1528733245', 'unavailable', '2023-05-08', 'bestSellers', '4.4'),
 ('220', '96', 'Counter-Strike: Global Offensive', '48.05', 'Modern competitive shooter defining esports standards.', '20', 'xboxOne', 'action', 'new', 'https://steamcdn-a.akamaihd.net/steam/apps/730/header.jpg?t=1554409309', 'unavailable', '2024-10-02', 'comingSoon', '4.5');
-SET IDENTITY_INSERT Product OFF;
-
 INSERT INTO [Cart] ([cartId], [productId], [quantity]) VALUES ('1', '37', '3'),
 ('1', '38', '3'),
 ('2', '98', '5'),
@@ -656,7 +646,6 @@ INSERT INTO [Cart] ([cartId], [productId], [quantity]) VALUES ('1', '37', '3'),
 ('99', '5', '4'),
 ('100', '43', '5');
 
-SET IDENTITY_INSERT BecomeSellerRequest ON;
 INSERT INTO [BecomeSellerRequest] ([requestId], [userId], [email], [phoneNumber], [businessAddress], [businessName], [productDescription], [address], [date], [status]) VALUES ('1', '1', 'request1@example.com', '359-718-8903x65391', 'PSC 1564, Box 3595, APO AA 79470', 'BusinessRequest1', 'Information common group easy people Congress spend. Officer in health whatever ever next. Guess save major ability think blue.', '854 Sanders Canyon, North Katieburgh, FM 64861', '2024-08-17', 'declined'),
 ('2', '2', 'request2@example.com', '721.740.7315', '0458 Johnson Branch Suite 712, New Jennifer, IA 53662', 'BusinessRequest2', 'Area necessary special.
 Writer away sport represent hit look form. Threat pull read her move watch these. Win nation lot late.', '000 Zamora Port Apt. 092, Jensenside, VI 50285', '2024-05-12', 'pending'),
@@ -672,9 +661,7 @@ Example man when enter become miss tend. Along yes voice.', '828 Todd Junctions,
 ('11', '85', 'request11@example.com', '001-601-905-1753x5488', '8164 Brock Forges, Fosterview, WY 53064', 'BusinessRequest11', 'Affect shoulder after often in especially leg. Pretty too rule feeling idea ever back. Project television the last. Event phone price often.', '0245 Whitaker Ranch Apt. 416, East Williamshire, LA 20592', '2024-02-12', 'accepted'),
 ('12', '88', 'request12@example.com', '267-701-7490x80536', '49565 Nicole Square, New Alan, TN 76752', 'BusinessRequest12', 'Deep officer interview upon offer industry sing. Never think cover eight.
 Red film authority crime throw. Trial center PM at half sense.', '488 Austin Loaf Apt. 854, Debbieland, MI 32869', '2024-03-15', 'accepted');
-SET IDENTITY_INSERT BecomeSellerRequest OFF;
 
-SET IDENTITY_INSERT ProductRequest ON;
 INSERT INTO [ProductRequest] ([gameRequestId], [userId], [productId], [status], [requestDate]) VALUES ('1', '97', '1', 'accepted', '2024-06-19'),
 ('2', '80', '2', 'accepted', '2024-12-04'),
 ('3', '82', '3', 'accepted', '2024-03-28'),
@@ -895,8 +882,6 @@ INSERT INTO [ProductRequest] ([gameRequestId], [userId], [productId], [status], 
 ('218', '81', '218', 'rejected', '2024-12-06'),
 ('219', '96', '219', 'rejected', '2024-05-29'),
 ('220', '89', '220', 'rejected', '2024-11-21');
-SET IDENTITY_INSERT ProductRequest OFF;
-
 INSERT INTO [OrderDetail] ([orderDetailId], [productId], [quantity]) VALUES ('1', '62', '4'),
 ('2', '28', '2'),
 ('2', '82', '1'),
@@ -998,7 +983,6 @@ INSERT INTO [OrderDetail] ([orderDetailId], [productId], [quantity]) VALUES ('1'
 ('99', '72', '2'),
 ('100', '13', '1');
 
-SET IDENTITY_INSERT [Order] ON;
 INSERT INTO [Order] ([orderId], [userId], [status], [date], [orderDetailId], [name], [address], [phoneNumber], [paymentMethod]) VALUES ('1', '74', 'completed', '2024-10-23', '1', 'Faith Rice', '128 Jones Hollow Apt. 362, Jameschester, FL 52700', '827-920-6228', 'mobile banking'),
 ('2', '40', 'pending', '2024-06-17', '2', 'Tyler Grant', 'USNV Taylor, FPO AE 74042', '896-922-0241', 'cashOnDelivery'),
 ('3', '13', 'cancelled', '2024-09-30', '3', 'Matthew Maddox', '655 Jason Field, Chrisside, SD 46910', '+1-248-445-5479', 'mobile banking'),
@@ -1099,7 +1083,6 @@ INSERT INTO [Order] ([orderId], [userId], [status], [date], [orderDetailId], [na
 ('98', '24', 'cancelled', '2024-11-24', '98', 'Ethan Robinson', '91458 Kelley Ports Suite 936, Wattsberg, MI 17644', '(610)737-9357x7382', 'cashOnDelivery'),
 ('99', '65', 'cancelled', '2024-05-10', '99', 'Rodney Roberts', '54407 Dennis Canyon Suite 031, New Timothy, SC 78216', '(434)446-5821x90436', 'cashOnDelivery'),
 ('100', '21', 'completed', '2024-04-07', '100', 'Timothy Hernandez', '31568 Wright Land, Lake Amandaland, SD 95045', '+1-929-392-8439x09563', 'mobile banking');
-SET IDENTITY_INSERT [Order] OFF;
 
 GO   
 
@@ -1144,5 +1127,80 @@ ALTER TABLE [Order]
 ADD CONSTRAINT fk_order_user
 FOREIGN KEY (userId) REFERENCES Users(id);
 
+
+
+
 GO 
+
+CREATE SEQUENCE AccountID_Sequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE UserID_Sequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE ProductID_Sequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE CartID_Sequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE BecomeSellerRequestID_Sequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE ProductRequestID_Sequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE OrderDetailID_Sequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE OrderID_Sequence START WITH 1 INCREMENT BY 1;
+
+-- Adjust AccountID_Sequence
+DECLARE @maxAccountID INT;
+DECLARE @sql NVARCHAR(100);
+SELECT @maxAccountID = ISNULL(MAX(id), 0) FROM Account;
+SET @sql = 'ALTER SEQUENCE AccountID_Sequence RESTART WITH ' + CAST(@maxAccountID + 1 AS NVARCHAR(50));
+EXEC(@sql);
+
+-- Adjust UserID_Sequence
+--DECLARE @maxUserID INT;
+--SELECT @maxUserID = ISNULL(MAX(id), 0) FROM Users;
+--SET @sql = 'ALTER SEQUENCE UserID_Sequence RESTART WITH ' + CAST(@maxUserID + 1 AS NVARCHAR(50));
+--EXEC(@sql);
+
+-- Adjust ProductID_Sequence
+DECLARE @maxProductID INT;
+SELECT @maxProductID = ISNULL(MAX(productId), 0) FROM Product;
+SET @sql = 'ALTER SEQUENCE ProductID_Sequence RESTART WITH ' + CAST(@maxProductID + 1 AS NVARCHAR(50));
+EXEC(@sql);
+
+-- Adjust BecomeSellerRequestID_Sequence
+DECLARE @maxBSR_ID INT;
+SELECT @maxBSR_ID = ISNULL(MAX(requestId), 0) FROM BecomeSellerRequest;
+SET @sql = 'ALTER SEQUENCE BecomeSellerRequestID_Sequence RESTART WITH ' + CAST(@maxBSR_ID + 1 AS NVARCHAR(50));
+EXEC(@sql);
+
+-- Adjust ProductRequestID_Sequence
+DECLARE @maxProductRequestID INT;
+SELECT @maxProductRequestID = ISNULL(MAX(gameRequestId), 0) FROM ProductRequest;
+SET @sql = 'ALTER SEQUENCE ProductRequestID_Sequence RESTART WITH ' + CAST(@maxProductRequestID + 1 AS NVARCHAR(50));
+EXEC(@sql);
+
+-- Adjust OrderID_Sequence
+DECLARE @maxOrderID INT;
+SELECT @maxOrderID = ISNULL(MAX(orderId), 0) FROM [Order];
+SET @sql = 'ALTER SEQUENCE OrderID_Sequence RESTART WITH ' + CAST(@maxOrderID + 1 AS NVARCHAR(50));
+EXEC(@sql);
+
+
+-- Account Table
+ALTER TABLE Account
+ADD CONSTRAINT DF_AccountID DEFAULT NEXT VALUE FOR AccountID_Sequence FOR id;
+
+-- Users Table
+--ALTER TABLE Users
+--ADD CONSTRAINT DF_UserID DEFAULT NEXT VALUE FOR UserID_Sequence FOR id;
+
+-- Product Table
+ALTER TABLE Product
+ADD CONSTRAINT DF_ProductID DEFAULT NEXT VALUE FOR ProductID_Sequence FOR productId;
+
+-- BecomeSellerRequest Table
+ALTER TABLE BecomeSellerRequest
+ADD CONSTRAINT DF_BecomeSellerRequestID DEFAULT NEXT VALUE FOR BecomeSellerRequestID_Sequence FOR requestId;
+
+-- ProductRequest Table
+ALTER TABLE ProductRequest
+ADD CONSTRAINT DF_ProductRequestID DEFAULT NEXT VALUE FOR ProductRequestID_Sequence FOR gameRequestId;
+
+-- Order Table
+ALTER TABLE [Order]
+ADD CONSTRAINT DF_OrderID DEFAULT NEXT VALUE FOR OrderID_Sequence FOR orderId;
+
 
