@@ -8,6 +8,8 @@ import {
   validateSignUp,
   validateSignIn,
 } from "../middleware/validationMiddleware";
+import { createOrder,  getLatestUserOrder} from "../controllers/orderController.js";
+import { handlePaymentCallback } from "../controllers/paymentController.js";
 
 let router = express.Router();
 
@@ -21,6 +23,9 @@ let initWebRoutes = (app) => {
     router.get("/api/cart", verifyToken, checkUserRole, viewCart); // Add this line
     router.delete("/api/cart/:productId", verifyToken, checkUserRole, removeFromCart); // Update this line
     router.put("/api/cart/:productId", verifyToken, checkUserRole, updateCartQuantity); // Update this line
+    router.post("/api/order", verifyToken, checkUserRole, createOrder);
+    router.post("/api/payment/callback", handlePaymentCallback);
+    router.get("/api/latest_order", verifyToken, checkUserRole, getLatestUserOrder); // Changed from POST to GET
     return app.use("/", router);
 }
 
