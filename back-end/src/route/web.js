@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { getProducts, getProductById, getAllProducts, getTotalProducts, getCountPendingOrder, getTotalSales } from "../controllers/productController.js";
-import { handleSignUp, handleSignIn, getAllUsers, banUser, unbanUser, getAllOrders, acceptUserRequestProductUpload, getUserRequests, declineUserRequestProductUpload, getUserPendingBecomeSellerRequests, acceptUserRequestBecomeSeller, declineUserRequestBecomeSeller, getTotalUsers } from "../controllers/userController";
+import { getProducts, getProductById, getAllProducts, getTotalProducts, getCountPendingOrder, getTotalSales, deleteProductById } from "../controllers/productController.js";
+import { handleSignUp, handleSignIn, getAllUsers, banUser, unbanUser, getAllOrders, acceptUserRequestProductUpload, getUserRequests, declineUserRequestProductUpload, getUserPendingBecomeSellerRequests, acceptUserRequestBecomeSeller, declineUserRequestBecomeSeller, getTotalUsers, deleteUser, deleteUserById } from "../controllers/userController";
 import {
   validateSignUp,
   validateSignIn,
@@ -22,7 +22,7 @@ let initWebRoutes = (app) => {
     router.put('/api/users/ban/:id', banUser);
     router.put('/api/users/unban/:id', unbanUser);
     router.get('/api/users/total', getTotalUsers);
-    // router.delete('/api/users/:id', deleteUser);
+    router.delete('/api/users/delete/:id', deleteUserById);
 
     // Product Upload Request management routes
     router.get('/api/users/request-pending', getUserRequests)
@@ -37,7 +37,7 @@ let initWebRoutes = (app) => {
     // Game management routes
     router.get('/api/products', getAllProducts); // Add the new route
     router.get('/api/products/total', getTotalProducts); // Add this line
-
+    router.put('/api/products/delete/:id', deleteProductById); // Add this line
 
     // Order management routes
     router.get('/api/orders', getAllOrders); // Add the new route

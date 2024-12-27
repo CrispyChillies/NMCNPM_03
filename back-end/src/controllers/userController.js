@@ -93,7 +93,7 @@ export const getAllUsers = async (req, res) => {
   try {
     await connectDB();
     const result =
-      await sql.query`SELECT id, firstName + ' ' + lastName AS name, email, role, userStatus as status FROM Users`;
+      await sql.query`SELECT id, firstName + ' ' + lastName AS name, phoneNumber, email, role, userStatus as status FROM Users`;
     res.json(result);
     console.log(result);
   } catch (err) {
@@ -267,48 +267,46 @@ export const declineUserRequestBecomeSeller = async (req, res) => {
   }
 }
 
-// let deleteUser = async (req, res) => {
-//   let { id } = req.params;
+export const deleteUserById= async (req, res) => {
+  let { id } = req.params;
 
-//   try {
-//       await connectDB();
+  try {
+      await connectDB();
       
-//       // Disable foreign key constraints
-//       await sql.query`ALTER TABLE Users NOCHECK CONSTRAINT fk_user_cart`;
-//       await sql.query`ALTER TABLE ProductRequest NOCHECK CONSTRAINT fk_productrequest_product`;
-//       await sql.query`ALTER TABLE OrderDetail NOCHECK CONSTRAINT fk_orderdetail_product`;
-//       await sql.query`ALTER TABLE [Order] NOCHECK CONSTRAINT fk_order_user`;
-
-//       // Delete related records in the Cart table where the user is referenced
-//       await sql.query`DELETE FROM Cart WHERE userId = ${id}`;
+      await sql.query`
+        DELETE FROM BecomeSellerRequest
+        WHERE userId = ${id}
+        DELETE FROM [Order]
+        where userId = ${id}
+        DELETE FROM Cart
+        where productId IN (
+        select productId from Product
+        where sellerId = ${id}
+        )
+        DELETE FROM ProductRequest
+        where productId IN (
+        select productId from Product
+        where sellerId = ${id}
+        )
+        DELETE FROM OrderDetail
+        where productId IN (
+        select productId from Product
+        where sellerId = ${id}
+        )
+        DELETE FROM Product
+        where sellerId = ${id}
+        DELETE FROM ProductRequest
+        where userId = ${id}
+        DELETE FROM Users
+        WHERE id = ${id}
+      `;
       
-//       // Delete related records in the Cart table where the product is referenced
-//       await sql.query`DELETE FROM Cart WHERE productId IN (SELECT id FROM Product WHERE sellerId = ${id})`;
-      
-//       // Delete related records in the ProductRequest table
-//       await sql.query`DELETE FROM ProductRequest WHERE userId = ${id}`;
-      
-//       // Delete related records in the Product table
-//       await sql.query`DELETE FROM Product WHERE sellerId = ${id}`;
-      
-//       // Delete related records in the Account table
-//       await sql.query`DELETE FROM Account WHERE userId = ${id}`;
-      
-//       // Delete the user
-//       await sql.query`DELETE FROM Users WHERE id = ${id}`;
-
-//       // Enable foreign key constraints
-//       await sql.query`ALTER TABLE Users CHECK CONSTRAINT fk_user_cart`;
-//       await sql.query`ALTER TABLE ProductRequest CHECK CONSTRAINT fk_productrequest_product`;
-//       await sql.query`ALTER TABLE OrderDetail CHECK CONSTRAINT fk_orderdetail_product`;
-//       await sql.query`ALTER TABLE [Order] CHECK CONSTRAINT fk_order_user`;
-      
-//       res.send('User deleted successfully');
-//   } catch (err) {
-//       console.error('Failed to delete user: ', err);
-//       res.status(500).send('Failed to delete user');
-//   }
-// }
+      res.send('User deleted successfully');
+  } catch (err) {
+      console.error('Failed to delete user: ', err);
+      res.status(500).send('Failed to delete user');
+  }
+}
 
 export const updatePersonalInfo = async (req, res) => {
   const { firstName, lastName, citizenId, email, phoneNumber, userAddress } =

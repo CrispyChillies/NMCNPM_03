@@ -39,6 +39,7 @@ interface Game {
   genre: string
   price: number
   releaseDay: string
+  status: "available" | "unavailable"
 }
 
 // Sample data
@@ -160,10 +161,8 @@ export const GameProductManagement = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="rpg">RPG</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-              <SelectItem value="sandbox">Sandbox</SelectItem>
-              <SelectItem value="action">Sandbox</SelectItem>
-              <SelectItem value="others">Sandbox</SelectItem>
+              <SelectItem value="others">Others</SelectItem>
+              <SelectItem value="action">Action</SelectItem>
             </SelectContent>
           </Select>
           <Input
@@ -205,6 +204,7 @@ export const GameProductManagement = () => {
                 <TableHead>Category</TableHead>
                 <TableHead>Prices</TableHead>
                 <TableHead>Release Date</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -218,11 +218,21 @@ export const GameProductManagement = () => {
                   <TableCell>${game.price.toFixed(2)}</TableCell>
                   <TableCell>{formatDate(game.releaseDay)}</TableCell>
                   <TableCell>
+                  <span
+                      className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
+                        game.status === "available"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : game.status === "unavailable"
+                          ? "bg-yellow-100 text-yellow-800" : 
+                          "bg-red-500 text-white"
+                      }`}
+                    >
+                      {game.status} 
+                    </span>
+                  </TableCell>
+                  <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="icon"> 
-                        {/* onClick={() => handleEdit(game.id)}> */}
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="outline" size="icon">

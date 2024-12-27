@@ -24,6 +24,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  phoneNumber: string;
   role: "Admin" | "User" | "Moderator";
   status: "active" | "inactive" | "banned";
 }
@@ -61,7 +62,7 @@ export const UserManagement = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:6969/api/users/${id}`);
+      await axios.delete(`http://localhost:6969/api/users/delete/${id}`);
       setUserData(userData.filter(user => user.id !== id));
       console.log(`Deleted user with id: ${id}`);
     } catch (error) {
@@ -166,6 +167,7 @@ export const UserManagement = () => {
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead>User</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Phone Number</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
@@ -177,6 +179,7 @@ export const UserManagement = () => {
                   <TableCell className="text-center">{user.id}</TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phoneNumber}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
                     <span
