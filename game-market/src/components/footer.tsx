@@ -8,7 +8,7 @@ const footerData = data;
 export function Footer() {
   return (
     <footer className="p-4 bg-card sm:p-6 dark:bg-card">
-      <div className="mx-auto max-w-screen">
+      <div className="mx-auto max-w-screen mt-20">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0">
             <a href="/" className="flex items-center">

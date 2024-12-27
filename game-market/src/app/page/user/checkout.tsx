@@ -93,17 +93,16 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
+  const handleBackToCart = () => {
+    navigate("/user/cart");
+  };
+
   return (
-    <div className="min-h-screen bg-white text-black mt-10 mx-4">
-      {error && (
-        <div className="max-w-6xl mx-auto mb-4 p-4 bg-red-100 text-red-700 rounded">
-          {error}
-        </div>
-      )}
+    <div className="min-h-screen bg-white text-black mt-8 mx-4">
       <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2">
         {/* Customer Information Form */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Shipping Information</h2>
+          <h2 className="text-xl font-bold ml-6 text-black">Address</h2>
           <div className="grid gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -169,12 +168,20 @@ const CheckoutPage: React.FC = () => {
               </div>
             </RadioGroup>
           </div>
+
+          <Button 
+            className="w-full mt-4" 
+            size="lg"
+            onClick={handleBackToCart}
+          >
+            Back to Cart
+          </Button>
         </div>
 
         {/* Order Summary */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Order Summary</h2>
-          <Card>
+          <h2 className="text-xl font-bold ml-6 text-black">Order Summary</h2>
+          <Card className="bg-white text-black">
             <CardHeader>
               <CardTitle>Items</CardTitle>
             </CardHeader>
@@ -186,9 +193,9 @@ const CheckoutPage: React.FC = () => {
                     className="flex items-center justify-between space-x-4 py-2"
                   >
                     <div className="flex items-center space-x-4">
-                      <div className="h-16 w-16 rounded-md overflow-hidden">
-                        <img
-                          src={item.image}
+                      <div className="h-16 w-24 rounded-md overflow-hidden">
+                        <img 
+                          src={item.image} 
                           alt={item.name}
                           className="h-full w-full object-cover"
                         />

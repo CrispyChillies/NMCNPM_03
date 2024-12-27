@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { QuickLook } from "./quicklook";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import axios from 'axios';
 
 interface ProductCardProps {
@@ -35,6 +36,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isQuickLookOpen, setIsQuickLookOpen] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
 
   const handleFavoriteClick = () => {
     setIsFavorite(!isFavorite);
@@ -66,11 +69,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         }
       });
       if (response.data.success) {
-        alert('Product added to cart successfully!');
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 800);
       }
     } catch (error) {
       console.error('Error adding product to cart:', error);
-      alert('Failed to add product to cart.');
+      if (error.response && error.response.data && error.response.data.message === "Quantity exceeds available stock") {
+        setShowErrorPopup(true);
+      } else {
+        alert('Failed to add product to cart.');
+      }
     }
   };
 
@@ -182,6 +190,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         }}
         onViewDetails={() => window.location.href = generateProductLink(name, productId)}
       />
+      <Dialog open={showSuccessPopup} onOpenChange={setShowSuccessPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Product Added to Cart</DialogTitle>
+          </DialogHeader>
+          <p>The product has been added to your cart successfully.</p>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={showErrorPopup} onOpenChange={setShowErrorPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Stock Limit Reached</DialogTitle>
+          </DialogHeader>
+          <p>The quantity exceeds the available stock.</p>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

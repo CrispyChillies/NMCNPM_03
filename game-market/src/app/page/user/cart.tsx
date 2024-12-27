@@ -12,12 +12,14 @@ interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  stock: number;
 }
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ [key: number]: string | null }>({});
+  const [stockUpdate, setStockUpdate] = useState<{ [key: number]: string | null }>({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,11 +32,21 @@ export default function CartPage() {
           }
         });
         if (response.data.success) {
-          setCartItems(response.data.cartItems);
+          const updatedCartItems = response.data.cartItems.map((item: CartItem) => {
+            if (item.quantity > item.stock) {
+              setStockUpdate(prevStockUpdate => ({
+                ...prevStockUpdate,
+                [item.productId]: `Stock has decreased. Updated quantity to ${item.stock}.`
+              }));
+              return { ...item, quantity: item.stock };
+            }
+            return item;
+          });
+          setCartItems(updatedCartItems);
         }
       } catch (error) {
         console.error('Error fetching cart items:', error);
-        setError('Failed to load cart items. Please try again.');
+        setError({ general: 'Failed to load cart items. Please try again.' });
       } finally {
         setIsLoading(false);
       }
@@ -55,7 +67,7 @@ export default function CartPage() {
       }
     } catch (error) {
       console.error('Error removing item from cart:', error);
-      setError('Failed to remove item. Please try again.');
+      setError(prevError => ({ ...prevError, [productId]: 'Failed to remove item. Please try again.' }));
     }
   };
 
@@ -69,20 +81,23 @@ export default function CartPage() {
       });
       if (response.data.success) {
         setCartItems(cartItems.map(item => item.productId === productId ? { ...item, quantity: newQuantity } : item));
+        setError(prevError => ({ ...prevError, [productId]: null }));
+        setStockUpdate(prevStockUpdate => ({ ...prevStockUpdate, [productId]: null }));
       }
     } catch (error) {
       console.error('Error updating item quantity:', error);
-      setError('Failed to update quantity. Please try again.');
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(prevError => ({ ...prevError, [productId]: error.response.data.message }));
+        setStockUpdate(prevStockUpdate => ({ ...prevStockUpdate, [productId]: null }));
+        if (error.response.data.availableStock !== undefined) {
+          setCartItems(cartItems.map(item => item.productId === productId ? { ...item, quantity: error.response.data.availableStock } : item));
+        }
+      } else {
+        setError(prevError => ({ ...prevError, [productId]: 'Failed to update quantity. Please try again.' }));
+      }
     }
   };
-
-  const handleInputChange = (productId: number, value: string) => {
-    const newQuantity = parseInt(value, 10);
-    if (!isNaN(newQuantity)) {
-      handleQuantityChange(productId, newQuantity);
-    }
-  };
-
+  
   const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleCheckout = () => {
@@ -99,10 +114,10 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto my-8 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-primary">Shopping Cart</h1>
-      {error && (
+      <h1 className="text-xl font-bold ml-6 mb-8 text-primary">Shopping Cart</h1>
+      {error.general && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-          <span className="block sm:inline">{error}</span>
+          <span className="block sm:inline">{error.general}</span>
         </div>
       )}
       {cartItems.length === 0 ? (
@@ -130,6 +145,12 @@ export default function CartPage() {
                     <div className="flex-grow">
                       <h3 className="font-semibold text-lg mb-1">{item.name}</h3>
                       <p className="text-primary font-medium">${item.price.toFixed(2)}</p>
+                      {error[item.productId] && (
+                        <p className="text-red-500 text-sm mt-1">{error[item.productId]}</p>
+                      )}
+                      {stockUpdate[item.productId] && (
+                        <p className="text-yellow-500 text-sm mt-1">{stockUpdate[item.productId]}</p>
+                      )}
                     </div>
                     <div className="flex items-center space-x-3">
                       <Button
