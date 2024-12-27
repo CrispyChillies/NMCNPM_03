@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { QuickLook } from "./quicklook";
+import axios from 'axios';
 
 interface ProductCardProps {
   name: string;
@@ -52,6 +53,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       return;
     }
     window.location.href = generateProductLink(name, productId);
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      const response = await axios.post('http://localhost:6969/api/cart', {
+        productId,
+        quantity: 1
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming the token is stored in localStorage
+        }
+      });
+      if (response.data.success) {
+        alert('Product added to cart successfully!');
+      }
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      alert('Failed to add product to cart.');
+    }
   };
 
   return (
@@ -140,7 +160,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             ${price.toLocaleString()}
           </p>
 
-          <Button className="inline-flex items-center gap-2 bg-primary text-primary-foreground">
+          <Button
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground"
+            onClick={handleAddToCart}
+          >
             <ShoppingCart className="h-5 w-5" />
             Add to cart
           </Button>
