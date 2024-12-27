@@ -1,15 +1,16 @@
-import { useState } from "react"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Trash, Ban } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Filter, Trash, Ban } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -17,75 +18,86 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 interface User {
-  id: string
-  name: string
-  email: string
-  role: "Admin" | "User" | "Moderator"
-  status: "Active" | "Inactive" | "Banned"
+  id: string;
+  name: string;
+  email: string;
+  role: "Admin" | "User" | "Moderator";
+  status: "active" | "inactive" | "banned";
 }
 
-// Sample data
-const users: User[] = [
-  {
-    id: "001",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "Admin",
-    status: "Active",
-  },
-  {
-    id: "002",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "User",
-    status: "Active",
-  },
-  {
-    id: "003",
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    role: "Moderator",
-    status: "Inactive",
-  },
-  {
-    id: "004",
-    name: "Alice Brown",
-    email: "alice@example.com",
-    role: "User",
-    status: "Banned",
-  },
-  // Add more sample data as needed
-]
-
 export const UserManagement = () => {
-  const [selectedRole, setSelectedRole] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("")
-  const [nameFilter, setNameFilter] = useState("")
-  const [emailFilter, setEmailFilter] = useState("")
-  const [userData, setUserData] = useState(users)
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
+  const [emailFilter, setEmailFilter] = useState("");
+  const [userData, setUserData] = useState<User[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get<{ recordsets: User[][] }>('http://localhost:6969/api/users');
+        console.log(response.data); // Log the response data
+        setUserData(response.data.recordsets[0]); // Assuming the first recordset contains the user data
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const filterData = userData.filter((user) => {
-    const matchesRole = selectedRole ? user.role.toLowerCase() === selectedRole.toLowerCase() : true
-    const matchesStatus = selectedStatus ? user.status.toLowerCase() === selectedStatus.toLowerCase() : true
-    const matchesName = nameFilter ? user.name.toLowerCase().includes(nameFilter.toLowerCase()) : true
-    const matchesEmail = emailFilter ? user.email.toLowerCase().includes(emailFilter.toLowerCase()) : true
+    const matchesRole = selectedRole ? user.role.toLowerCase() === selectedRole.toLowerCase() : true;
+    const matchesStatus = selectedStatus ? user.status.toLowerCase() === selectedStatus.toLowerCase() : true;
+    const matchesName = nameFilter ? user.name.toLowerCase().includes(nameFilter.toLowerCase()) : true;
+    const matchesEmail = emailFilter ? user.email.toLowerCase().includes(emailFilter.toLowerCase()) : true;
 
-    return matchesRole && matchesStatus && matchesName && matchesEmail
-  })
+    return matchesRole && matchesStatus && matchesName && matchesEmail;
+  });
 
-  const handleDelete = (id: string) => {
-    setUserData(userData.filter(user => user.id !== id))
-  }
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`http://localhost:6969/api/users/${id}`);
+      setUserData(userData.filter(user => user.id !== id));
+      console.log(`Deleted user with id: ${id}`);
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      setError('Failed to delete user');
+    }
+  };
 
-  const handleBanUnban = (id: string) => {
-    setUserData(userData.map(user => 
-      user.id === id 
-        ? { ...user, status: user.status === "Banned" ? "Active" : "Banned" } 
-        : user
-    ))
+  const handleBan = async (id: string) => {
+    try {
+      await axios.put(`http://localhost:6969/api/users/ban/${id}`);
+      setUserData(userData.map(user => 
+        user.id === id 
+          ? { ...user, status: user.status === "banned" ? "active" : "banned" } 
+          : user
+      ));
+      console.log(`Toggled ban status for user with id: ${id}`);
+    } catch (error) {
+      console.error('Failed to ban/unban user:', error);
+      setError('Failed to ban/unban user');
+    }
+  };
+
+  const handleUnban = async (id: string) => {
+    try {
+      await axios.put(`http://localhost:6969/api/users/unban/${id}`);
+      setUserData(userData.map(user => 
+        user.id === id 
+          ? { ...user, status: "active" } 
+          : user
+      ));
+      console.log(`Unbanned user with id: ${id}`);
+    } catch (error) {
+      console.error('Failed to unban user:', error);
+      setError('Failed to unban user');
+    }
   }
 
   return (
@@ -136,10 +148,10 @@ export const UserManagement = () => {
             variant="ghost"
             className="ml-auto text-red-500 hover:text-red-600"
             onClick={() => {
-              setSelectedRole("")
-              setSelectedStatus("")
-              setNameFilter("")
-              setEmailFilter("")
+              setSelectedRole("");
+              setSelectedStatus("");
+              setNameFilter("");
+              setEmailFilter("");
             }}
           >
             Reset Filter
@@ -169,9 +181,9 @@ export const UserManagement = () => {
                   <TableCell>
                     <span
                       className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
-                        user.status === "Active"
+                        user.status === "active"
                           ? "bg-emerald-100 text-emerald-800"
-                          : user.status === "Inactive"
+                          : user.status === "inactive"
                           ? "bg-gray-700 text-white"
                           : "bg-red-500 text-white"
                       }`}
@@ -210,15 +222,15 @@ export const UserManagement = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              {user.status === "Banned" 
+                              {user.status === "banned" 
                                 ? "This will unban the user account." 
                                 : "This will ban the user account."}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleBanUnban(user.id)}>
-                              {user.status === "Banned" ? "Unban" : "Ban"}
+                            <AlertDialogAction onClick={() => {user.status === "banned" ? handleUnban(user.id) : handleBan(user.id)}}>
+                              {user.status === "banned" ? "Unban" : "Ban"}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -232,6 +244,5 @@ export const UserManagement = () => {
         </div>
       </div>
     </div>
-  )
-}
-
+  );
+};

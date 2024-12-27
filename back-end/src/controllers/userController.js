@@ -102,17 +102,45 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+export const getTotalUsers = async (req, res) => {
+  try {
+    await connectDB();
+    const result = await sql.query`SELECT COUNT(*) as totalUsers FROM Users`;
+    res.json(result.recordset[0]);
+    console.log(result);
+  } catch (err) {
+    console.error("Failed to fetch total users: ", err);
+    res.status(500).send("Failed to fetch total users");
+  }
+}
+
 export const banUser = async (req, res) => {
   let { id } = req.params;
   try {
     await connectDB();
     await sql.query`UPDATE Users SET userStatus = 'banned' WHERE id = ${id}`;
     res.send("User banned successfully");
+    console.log("User banned successfully");
   } catch (err) {
     console.error("Failed to ban user: ", err);
     res.status(500).send("Failed to ban user");
+    console.log("Failed to ban user");
   }
 };
+
+export const unbanUser = async (req, res) => {
+  let { id } = req.params;
+  try {
+    await connectDB();
+    await sql.query`UPDATE Users SET userStatus = 'active' WHERE id = ${id}`;
+    res.send("User unbanned successfully");
+    console.log("User unbanned successfully");
+  } catch (err) {
+    console.error("Failed to unban user: ", err);
+    res.status(500).send("Failed to unban user");
+    console.log("Failed to unban user");
+  }
+}
 
 export const getAllOrders = async (req, res) => {
   try {
@@ -126,6 +154,118 @@ export const getAllOrders = async (req, res) => {
   }
 }
 
+
+export const getUserRequests = async (req, res) => {
+  try {
+    await connectDB();
+    const result = await sql.query`
+    select gameRequestId, Users.firstName + ' ' + Users.lastName as userId , requestDate, ProductRequest.[status], [name],[description],price, genre, [image]   from ProductRequest
+    JOIN Product
+    on ProductRequest.productId = Product.productId
+    JOIN Users
+    on ProductRequest.userId = Users.id`;
+    res.json(result);
+  } catch (err) {
+    console.error('Failed to fetch user requests: ', err);
+    res.status(500).send('Failed to fetch user requests');
+  }
+}
+
+export const acceptUserRequestProductUpload = async (req, res) => {
+  let { id } = req.params;
+  try {
+    await connectDB();
+    
+    // Update the ProductRequest table
+    await sql.query`UPDATE ProductRequest SET status = 'accepted' WHERE gameRequestId = ${id}`;
+    
+    // Get the productId from the ProductRequest table
+    const result = await sql.query`SELECT productId FROM ProductRequest WHERE gameRequestId = ${id}`;
+    const productId = result.recordset[0].productId;
+    console.log('productId: ', productId);
+    
+    // Update the Product table
+    await sql.query`UPDATE Product SET status = 'available' WHERE productId = ${productId}`;
+    
+    res.send('Product request accepted and product status updated successfully');
+  } catch (err) {
+    console.error('Failed to accept product request: ', err);
+    res.status(500).send('Failed to accept product request');
+  }
+}
+
+export const declineUserRequestProductUpload = async (req, res) => {
+  let { id } = req.params;
+  try {
+    await connectDB();
+    
+    // Update the ProductRequest table
+    await sql.query`UPDATE ProductRequest SET status = 'rejected' WHERE gameRequestId = ${id}`;
+    
+    res.send('Product request declined successfully');
+    console.log('Product request declined successfully');
+  } catch (err) {
+    console.error('Failed to decline product request: ', err);
+    res.status(500).send('Failed to decline product request');
+    console.log('Failed to decline product request');
+  }
+}
+
+export const getUserPendingBecomeSellerRequests = async (req, res) => {
+  try {
+    await connectDB();
+    const result = await sql.query`
+    select requestId, Users.firstName + ' ' + Users.lastName as name, Users.email, Users.phoneNumber, BecomeSellerRequest.businessName, BecomeSellerRequest.productDescription, BecomeSellerRequest.address, [date], [status]  from BecomeSellerRequest
+    JOIN Users
+    On BecomeSellerRequest.userId = Users.id`;
+    res.json(result);
+  } catch (err) {
+    console.error('Failed to fetch user requests: ', err);
+    res.status(500).send('Failed to fetch user requests');
+  }
+}
+
+export const acceptUserRequestBecomeSeller = async (req, res) => {
+  let { id } = req.params;
+  try {
+    await connectDB();
+    
+    // Update the BecomeSellerRequest table
+    await sql.query`UPDATE BecomeSellerRequest SET status = 'accepted' WHERE requestId = ${id}`;
+    
+    // Get the userId from the BecomeSellerRequest table
+    const result = await sql.query`SELECT userId FROM BecomeSellerRequest WHERE requestId = ${id}`;
+    const userId = result.recordset[0].userId;
+    console.log('userId: ', userId);
+    
+    // Update the Users table
+    await sql.query`UPDATE Users SET role = 'provider' WHERE id = ${userId}`;
+    
+    res.send('Become seller request accepted and user role updated successfully');
+    console.log('Become seller request accepted and user role updated successfully');
+  } catch (err) {
+    console.error('Failed to accept become seller request: ', err);
+    res.status(500).send('Failed to accept become seller request');
+    console.log('Failed to accept become seller request');
+  }
+}
+
+export const declineUserRequestBecomeSeller = async (req, res) => {
+  let { id } = req.params;
+  try {
+    await connectDB();
+    
+    // Update the BecomeSellerRequest table
+    await sql.query`UPDATE BecomeSellerRequest SET status = 'declined' WHERE requestId = ${id}`;
+    
+    res.send('Become seller request declined successfully');
+    console.log('Become seller request declined successfully');
+  } catch (err) {
+    console.error('Failed to decline become seller request: ', err);
+    res.status(500).send('Failed to decline become seller request');
+    console.log('Failed to decline become seller request');
+  }
+}
 
 // let deleteUser = async (req, res) => {
 //   let { id } = req.params;

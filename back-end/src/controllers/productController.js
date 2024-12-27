@@ -52,3 +52,43 @@ export const getAllProducts = async (req, res) => {
       res.status(500).send('Failed to fetch games');
   }
 }
+
+export const getTotalProducts = async (req, res) => {
+  try {
+      await connectDB();
+      const result = await sql.query`SELECT COUNT(*) as numbProducts FROM Product`;
+      res.json(result);
+  } catch (err) {
+      console.error('Failed to fetch total games: ', err);
+      res.status(500).send('Failed to fetch total games');
+  }
+}
+
+export const getCountPendingOrder = async (req, res) => {
+  try {
+      await connectDB();
+      const result = await sql.query`SELECT Count(*) as numbUsers FROM [Order] WHERE status = 'pending'`;
+      res.json(result);
+  } catch (err) {
+      console.error('Failed to fetch pending orders: ', err);
+      res.status(500).send('Failed to fetch pending orders');
+  }
+}
+
+export const getTotalSales = async (req, res) => {
+  try {
+      await connectDB();
+      const result = await sql.query`select SUM(Product.price) as totalSale from [Order]
+                                    JOIN OrderDetail
+                                    ON [Order].orderDetailId = OrderDetail.orderDetailId
+                                    JOIN Product
+                                    ON [Product].productId = OrderDetail.productId
+                                    where [Order].[status] = 'completed'`;
+      res.json(result);
+      console.log(result);
+  } catch (err) {
+      console.error('Failed to fetch total sales: ', err);
+      res.status(500).send('Failed to fetch total sales');
+      console.log(result);
+  }
+}

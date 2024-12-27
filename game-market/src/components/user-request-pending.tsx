@@ -1,14 +1,15 @@
-import { useState } from "react"
-import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Eye, Check, X, XCircle } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState, useEffect } from "react";
+import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Eye, Check, X, XCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import axios from 'axios';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -16,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -25,95 +26,96 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+} from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface UserRequest {
-  id: string
-  user: string
-  date: string
-  status: string
-  topics: string
-  productName: string
-  productDescription: string
-  price: number
-  category: string
-  imageUrl: string
+  gameRequestId: string;
+  userId: string;
+  requestDate: string;
+  status: string;
+  name: string;
+  description: string;
+  price: number;
+  genre: string;
+  image: string;
 }
 
-// Sample data
-const userRequests: UserRequest[] = [
-  {
-    id: "001",
-    user: "John Doe",
-    date: "2023-06-01",
-    status: "Pending",
-    topics: "Electronics",
-    productName: "Smartphone X",
-    productDescription: "Latest model with advanced features",
-    price: 599.99,
-    category: "Mobile Phones",
-    imageUrl: "/placeholder.svg"
-  },
-  {
-    id: "002",
-    user: "Jane Smith",
-    date: "2023-06-02",
-    status: "Pending",
-    topics: "Furniture",
-    productName: "Leather Sofa",
-    productDescription: "Comfortable 3-seater sofa",
-    price: 899.99,
-    category: "Living Room",
-    imageUrl: "/placeholder.svg"
-  },
-  // Add more sample data as needed
-]
-
 export default function UserRequestPending() {
-  const [requests, setRequests] = useState(userRequests)
-  const [selectedStatus, setSelectedStatus] = useState("")
-  const [selectedTopic, setSelectedTopic] = useState("")
-  const [userFilter, setUserFilter] = useState("")
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
-  const [selectedRequest, setSelectedRequest] = useState<UserRequest | null>(null)
-  const [declineReason, setDeclineReason] = useState("")
-  const [customDeclineReason, setCustomDeclineReason] = useState("")
+  const [requests, setRequests] = useState<UserRequest[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
+  const [userFilter, setUserFilter] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState<UserRequest | null>(null);
+  const [declineReason, setDeclineReason] = useState("");
+  const [customDeclineReason, setCustomDeclineReason] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserRequests = async () => {
+      try {
+        const response = await axios.get< {recordsets:UserRequest[][]}>('http://localhost:6969/api/users/request-pending');
+        setRequests(response.data.recordsets[0]);
+      } catch (error) {
+        console.error("Failed to fetch user requests:", error);
+        setError("Failed to fetch user requests");
+      }
+    };
+
+    fetchUserRequests();
+  }, []);
 
   const filterData = requests.filter((request) => {
-    const matchesStatus = selectedStatus ? request.status.toLowerCase() === selectedStatus.toLowerCase() : true
-    const matchesTopic = selectedTopic ? request.topics.toLowerCase() === selectedTopic.toLowerCase() : true
-    const matchesUser = userFilter ? request.user.toLowerCase().includes(userFilter.toLowerCase()) : true
-    const matchesStartDate = startDate ? new Date(request.date) >= new Date(startDate) : true
-    const matchesEndDate = endDate ? new Date(request.date) <= new Date(endDate) : true
+    const matchesStatus = selectedStatus ? request.status.toLowerCase() === selectedStatus.toLowerCase() : true;
+    const matchesUser = userFilter ? request.userId.toLowerCase().includes(userFilter.toLowerCase()) : true;
+    const matchesStartDate = startDate ? new Date(request.requestDate) >= new Date(startDate) : true;
+    const matchesEndDate = endDate ? new Date(request.requestDate) <= new Date(endDate) : true;
 
-    return matchesStatus && matchesTopic && matchesUser && matchesStartDate && matchesEndDate
-  })
+    return matchesStatus && matchesUser && matchesStartDate && matchesEndDate;
+  });
 
-  const handleAccept = (id: string) => {
-    setRequests(requests.map(request => 
-      request.id === id ? { ...request, status: 'Accepted' } : request
-    ))
-  }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // Format the date as "MM/DD/YYYY"
+  };
 
-  const handleDecline = (id: string) => {
-    const reason = declineReason === 'Other' ? customDeclineReason : declineReason
-    setRequests(requests.map(request => 
-      request.id === id ? { ...request, status: 'Declined' } : request
-    ))
-    // Here you would typically send the reason to the user
-    console.log(`Request ${id} declined. Reason: ${reason}`)
-    setDeclineReason("")
-    setCustomDeclineReason("")
-  }
+  const handleAccept = async (id: string) => {
+    try {
+      await axios.put(`http://localhost:6969/api/users/request-product-upload/${id}`);
+      setRequests(requests.map(request => 
+        request.gameRequestId === id ? { ...request, status: 'Accepted' } : request
+      ));
+      console.log(`Accepted request with id: ${id}`);
+    } catch (error) {
+      console.error('Failed to accept request:', error);
+      setError('Failed to accept request');
+    }
+  };
+
+  const handleDecline = async (id: string) => {
+    const reason = declineReason === 'Other' ? customDeclineReason : declineReason;
+    try {
+      await axios.put(`http://localhost:6969/api/users/decline-request-product-upload/${id}`);
+      setRequests(requests.map(request => 
+        request.gameRequestId === id ? { ...request, status: 'rejected' } : request
+      ));
+      console.log(`Request ${id} declined. Reason: ${reason}`);
+      setDeclineReason("");
+      setCustomDeclineReason("");
+    } catch (error) {
+      console.error('Failed to decline request:', error);
+      setError('Failed to decline request');
+    }
+  };
 
   return (
     <div className="flex h-screen bg-background">
@@ -140,10 +142,10 @@ export default function UserRequestPending() {
             <SelectContent>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="accepted">Accepted</SelectItem>
-              <SelectItem value="declined">Declined</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+          {/* <Select value={selectedTopic} onValueChange={setSelectedTopic}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Topic" />
             </SelectTrigger>
@@ -152,7 +154,7 @@ export default function UserRequestPending() {
               <SelectItem value="furniture">Furniture</SelectItem>
               <SelectItem value="clothing">Clothing</SelectItem>
             </SelectContent>
-          </Select>
+          </Select> */}
           <Input
             type="date"
             placeholder="Start Date"
@@ -171,11 +173,11 @@ export default function UserRequestPending() {
             variant="ghost"
             className="ml-auto text-red-500 hover:text-red-600"
             onClick={() => {
-              setSelectedStatus("")
-              setSelectedTopic("")
-              setUserFilter("")
-              setStartDate("")
-              setEndDate("")
+              setSelectedStatus("");
+              setSelectedTopic("");
+              setUserFilter("");
+              setStartDate("");
+              setEndDate("");
             }}
           >
             Reset Filter
@@ -191,18 +193,29 @@ export default function UserRequestPending() {
                 <TableHead>User</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Topics</TableHead>
+                {/* <TableHead>Topics</TableHead> */}
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filterData.map((request) => (
-                <TableRow key={request.id}>
-                  <TableCell className="text-center">{request.id}</TableCell>
-                  <TableCell>{request.user}</TableCell>
-                  <TableCell>{request.date}</TableCell>
-                  <TableCell>{request.status}</TableCell>
-                  <TableCell>{request.topics}</TableCell>
+                <TableRow key={request.gameRequestId}>
+                  <TableCell className="text-center">{request.gameRequestId}</TableCell>
+                  <TableCell>{request.userId}</TableCell>
+                  <TableCell>{formatDate(request.requestDate)}</TableCell>
+                  <TableCell>
+                  <span
+                      className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
+                        request.status.toLowerCase() === "accepted"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : request.status.toLowerCase() === "rejected"
+                          ? "bg-red-500 text-white"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {request.status}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Dialog>
@@ -219,18 +232,18 @@ export default function UserRequestPending() {
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
-                            <img src={request.imageUrl} alt={request.productName} className="w-full h-48 object-cover rounded-lg" />
+                            <img src={request.image} alt={request.name} className="w-full h-48 object-cover rounded-lg" />
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="name" className="text-right">
                                 Name
                               </Label>
-                              <Input id="name" value={request.productName} className="col-span-3" readOnly />
+                              <Input id="name" value={request.name} className="col-span-3" readOnly />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="description" className="text-right">
                                 Description
                               </Label>
-                              <Textarea id="description" value={request.productDescription} className="col-span-3" readOnly />
+                              <Textarea id="description" value={request.description} className="col-span-3" readOnly />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="price" className="text-right">
@@ -242,7 +255,7 @@ export default function UserRequestPending() {
                               <Label htmlFor="category" className="text-right">
                                 Category
                               </Label>
-                              <Input id="category" value={request.category} className="col-span-3" readOnly />
+                              <Input id="category" value={request.genre} className="col-span-3" readOnly />
                             </div>
                           </div>
                           <DialogClose asChild>
@@ -252,7 +265,7 @@ export default function UserRequestPending() {
                           </DialogClose>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="icon" className="bg-green-500 hover:bg-green-600 text-white" onClick={() => handleAccept(request.id)}>
+                      <Button variant="outline" size="icon" className="bg-green-500 hover:bg-green-600 text-white" onClick={() => handleAccept(request.gameRequestId)}>
                         <Check className="h-4 w-4" />
                       </Button>
                       <Popover>
@@ -294,7 +307,7 @@ export default function UserRequestPending() {
                                 onChange={(e) => setCustomDeclineReason(e.target.value)}
                               />
                             )}
-                            <Button onClick={() => handleDecline(request.id)}>Submit</Button>
+                            <Button onClick={() => handleDecline(request.gameRequestId)}>Submit</Button>
                           </div>
                         </PopoverContent>
                       </Popover>
@@ -307,6 +320,5 @@ export default function UserRequestPending() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

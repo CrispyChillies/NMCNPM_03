@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Eye, Check, X, XCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -36,7 +37,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 interface SellerRequest {
-  id: string
+  requestId: string
   name: string
   email: string
   phoneNumber: string
@@ -49,28 +50,28 @@ interface SellerRequest {
 
 // Sample data
 const sellerRequests: SellerRequest[] = [
-  {
-    id: "001",
-    name: "John Doe",
-    email: "john@example.com",
-    phoneNumber: "+1234567890",
-    businessName: "John's Electronics",
-    productDescription: "Selling high-quality electronics and gadgets",
-    address: "123 Main St, Anytown, USA",
-    date: "2023-06-01",
-    status: "Pending"
-  },
-  {
-    id: "002",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phoneNumber: "+1987654321",
-    businessName: "Jane's Furniture Emporium",
-    productDescription: "Handcrafted furniture and home decor",
-    address: "456 Oak Ave, Somewhere, USA",
-    date: "2023-06-02",
-    status: "Pending"
-  },
+  // {
+  //   id: "001",
+  //   name: "John Doe",
+  //   email: "john@example.com",
+  //   phoneNumber: "+1234567890",
+  //   businessName: "John's Electronics",
+  //   productDescription: "Selling high-quality electronics and gadgets",
+  //   address: "123 Main St, Anytown, USA",
+  //   date: "2023-06-01",
+  //   status: "Pending"
+  // },
+  // {
+  //   id: "002",
+  //   name: "Jane Smith",
+  //   email: "jane@example.com",
+  //   phoneNumber: "+1987654321",
+  //   businessName: "Jane's Furniture Emporium",
+  //   productDescription: "Handcrafted furniture and home decor",
+  //   address: "456 Oak Ave, Somewhere, USA",
+  //   date: "2023-06-02",
+  //   status: "Pending"
+  // },
   // Add more sample data as needed
 ]
 
@@ -82,6 +83,7 @@ export default function BecomeSellerPending() {
   const [endDate, setEndDate] = useState("")
   const [declineReason, setDeclineReason] = useState("")
   const [customDeclineReason, setCustomDeclineReason] = useState("")
+  const [error, setError] = useState<string | null>(null);
 
   const filterData = requests.filter((request) => {
     const matchesStatus = selectedStatus ? request.status.toLowerCase() === selectedStatus.toLowerCase() : true
@@ -92,22 +94,53 @@ export default function BecomeSellerPending() {
     return matchesStatus && matchesName && matchesStartDate && matchesEndDate
   })
 
-  const handleAccept = (id: string) => {
-    setRequests(requests.map(request => 
-      request.id === id ? { ...request, status: 'Accepted' } : request
-    ))
-  }
+  useEffect(() => {
+    const fetchUserRequests = async () => {
+      try {
+        const response = await axios.get<{ recordsets: SellerRequest[][]}>('http://localhost:6969/api/users/become-seller-requests');
+        setRequests(response.data.recordsets[0]);
+      } catch (error) {
+        console.error("Failed to fetch user requests:", error);
+        setError("Failed to fetch user requests");
+      }
+    };
 
-  const handleDecline = (id: string) => {
-    const reason = declineReason === 'Other' ? customDeclineReason : declineReason
-    setRequests(requests.map(request => 
-      request.id === id ? { ...request, status: 'Declined' } : request
-    ))
-    // Here you would typically send the reason to the user
-    console.log(`Request ${id} declined. Reason: ${reason}`)
-    setDeclineReason("")
-    setCustomDeclineReason("")
-  }
+    fetchUserRequests();
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // Format the date as "MM/DD/YYYY"
+  };
+
+  const handleAccept = async (id: string) => {
+    try {
+      await axios.put(`http://localhost:6969/api/users/become-seller-requests/${id}`);
+      setRequests(requests.map(request => 
+        request.requestId === id ? { ...request, status: 'accepted' } : request
+      ));
+      console.log(`Accepted request with id: ${id}`);
+    } catch (error) {
+      console.error('Failed to accept request:', error);
+      setError('Failed to accept request');
+    }
+  };
+  
+  const handleDecline = async (id: string) => {
+    const reason = declineReason === 'Other' ? customDeclineReason : declineReason;
+    try {
+      await axios.put(`http://localhost:6969/api/users/decline-become-seller-requests/${id}`);
+      setRequests(requests.map(request => 
+        request.requestId === id ? { ...request, status: 'declined' } : request
+      ));
+      console.log(`Request ${id} declined. Reason: ${reason}`);
+      setDeclineReason("");
+      setCustomDeclineReason("");
+    } catch (error) {
+      console.error('Failed to decline request:', error);
+      setError('Failed to decline request');
+    }
+  };
 
   return (
     <div className="flex h-screen bg-background">
@@ -178,12 +211,24 @@ export default function BecomeSellerPending() {
             </TableHeader>
             <TableBody>
               {filterData.map((request) => (
-                <TableRow key={request.id}>
-                  <TableCell className="text-center">{request.id}</TableCell>
+                <TableRow key={request.requestId}>
+                  <TableCell className="text-center">{request.requestId}</TableCell>
                   <TableCell>{request.name}</TableCell>
                   <TableCell>{request.businessName}</TableCell>
-                  <TableCell>{request.date}</TableCell>
-                  <TableCell>{request.status}</TableCell>
+                  <TableCell>{formatDate(request.date)}</TableCell>
+                  <TableCell>
+                  <span
+                      className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
+                        request.status.toLowerCase() === "accepted"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : request.status.toLowerCase() === "declined"
+                          ? "bg-red-500 text-white"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {request.status}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Dialog>
@@ -244,7 +289,7 @@ export default function BecomeSellerPending() {
                           </DialogClose>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="icon" className="bg-green-500 hover:bg-green-600 text-white" onClick={() => handleAccept(request.id)}>
+                      <Button variant="outline" size="icon" className="bg-green-500 hover:bg-green-600 text-white" onClick={() => handleAccept(request.requestId)}>
                         <Check className="h-4 w-4" />
                       </Button>
                       <Popover>
@@ -286,7 +331,7 @@ export default function BecomeSellerPending() {
                                 onChange={(e) => setCustomDeclineReason(e.target.value)}
                               />
                             )}
-                            <Button onClick={() => handleDecline(request.id)}>Submit</Button>
+                            <Button onClick={() => handleDecline(request.requestId)}>Submit</Button>
                           </div>
                         </PopoverContent>
                       </Popover>
