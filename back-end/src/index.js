@@ -1,19 +1,14 @@
 import express from "express";
 import { connectDB } from "./config/connectDB.js";
-import { handleSignUp, handleSignIn } from "./controllers/userController.js";
-import {
-  validateSignUp,
-  validateSignIn,
-} from "./middleware/validationMiddleware.js";
+import router from "./route/web.js";
 
 const app = express();
 const port = 6969;
 
 app.use(express.json());
 
-// API Routes
-app.post("/api/signup", validateSignUp, handleSignUp);
-app.post("/api/signin", validateSignIn, handleSignIn);
+// Use the router
+app.use(router);
 
 app.listen(port, async () => {
   await connectDB();

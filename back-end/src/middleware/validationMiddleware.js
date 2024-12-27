@@ -1,15 +1,15 @@
 export const validateSignUp = (req, res, next) => {
   const { username, password, email } = req.body;
 
-  // Check if all required fields are present
+  // 1) Check if all required fields are present
   if (!username || !password || !email) {
     return res.status(400).json({
       success: false,
-      message: "Username, password and email are required",
+      message: "Username, password, and email are required",
     });
   }
 
-  // Validate email format
+  // 2) Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({
@@ -18,7 +18,7 @@ export const validateSignUp = (req, res, next) => {
     });
   }
 
-  // Validate password strength (at least 8 characters)
+  // 3) Validate password strength (at least 8 characters)
   if (password.length < 8) {
     return res.status(400).json({
       success: false,
