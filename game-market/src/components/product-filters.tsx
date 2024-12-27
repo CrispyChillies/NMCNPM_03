@@ -9,33 +9,46 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface ProductFiltersProps {
-  onApplyFilters: (platforms: string[], genres: string[], conditions: string[], sortBy: string) => void;
+  onApplyFilters: (platforms: string[], genres: string[], conditions: string[], status: string[], tags: string[], sortBy: string) => void;
+  onReset: () => void;
 }
 
 const platforms = [
-  "PlayStation 5",
-  "PlayStation 4",
-  "Xbox Series X",
-  "Xbox One",
-  "Nintendo Switch",
-  "PC",
+  "playstation5",
+  "playstation4", 
+  "xboxSeriesX",
+  "xboxOne",
+  "nintendoSwitch",
+  "pc"
 ];
 
 const genres = [
   "Action",
-  "RPG",
+  "RPG", 
   "FPS",
   "Adventure",
   "Sports",
   "Racing",
-  "Strategy",
+  "Strategy"
 ];
 
 const conditions = [
-  "New",
-  "Like New",
-  "Good",
-  "Fair"
+  "new",
+  "likeNew", 
+  "good",
+  "fair"
+];
+
+const statuses = [
+  "available",
+  "unavailable" 
+];
+
+const tags = [
+  "bestSellers",
+  "newReleases",
+  "comingSoon", 
+  "specialOffers"
 ];
 
 type SortOption = {
@@ -49,29 +62,39 @@ const SORT_OPTIONS: SortOption[] = [
   { value: 'price-asc', label: 'Price: Low to High' },
 ];
 
-export function ProductFilters({ onApplyFilters }: ProductFiltersProps) {
+export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps) {
   const [selectedSort, setSelectedSort] = useState('rating-desc');
   const [tempPlatforms, setTempPlatforms] = useState<string[]>([]);
   const [tempGenres, setTempGenres] = useState<string[]>([]);
   const [tempConditions, setTempConditions] = useState<string[]>([]);
+  const [tempStatuses, setTempStatuses] = useState<string[]>([]);
+  const [tempTags, setTempTags] = useState<string[]>([]);
 
   const handleApplyFilters = () => {
-    // Apply both filters and current sort
-    onApplyFilters(tempPlatforms, tempGenres, tempConditions, selectedSort);
+    onApplyFilters(
+      tempPlatforms,
+      tempGenres, 
+      tempConditions,
+      tempStatuses,
+      tempTags,
+      selectedSort
+    );
   };
 
   const handleResetFilters = () => {
     setTempPlatforms([]);
     setTempGenres([]);
     setTempConditions([]);
+    setTempStatuses([]);
+    setTempTags([]);
     setSelectedSort('rating-desc');
-    onApplyFilters([], [], [], 'rating-desc');
+    onReset(); // Call parent reset handler
   };
 
   const handleSortChange = (value: string) => {
     setSelectedSort(value);
     // Only apply sort, using empty arrays for filters
-    onApplyFilters([], [], [], value);
+    onApplyFilters([], [], [], [], [], value);
   };
 
   return (
@@ -171,6 +194,30 @@ export function ProductFilters({ onApplyFilters }: ProductFiltersProps) {
                 }}
               >
                 {condition}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              Tags ({tempTags.length})
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {tags.map((tag) => (
+              <DropdownMenuCheckboxItem
+                key={tag}
+                checked={tempTags.includes(tag)}
+                onCheckedChange={(checked) => {
+                  setTempTags(checked
+                    ? [...tempTags, tag]
+                    : tempTags.filter(t => t !== tag)
+                  );
+                }}
+              >
+                {tag}
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>

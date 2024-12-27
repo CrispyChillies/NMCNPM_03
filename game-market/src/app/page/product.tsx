@@ -1,311 +1,110 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ProductCard } from '@/components/product-card';
-import { ProductFilters } from '@/components/product-filters'
-import { CreditCard, Truck } from 'lucide-react';
+import { ProductFilters } from '@/components/product-filters';
 
 interface Product {
-  id: number;
+  productId: number;
+  sellerId: number;
   name: string;
   price: number;
-  category: string;
-  rating: number;
-  reviews: number;
-  discount?: string;
+  description: string;
+  stock: number;
+  platform: string;
+  genre: string;
+  condition: string;
   image: string;
-  badges: {
-    label: string;
-    icon: React.ReactNode;
-  }[];
-  platforms?: string[];
-  genres?: string[];
-  condition?: string;
+  status: string;
+  releaseDay: string;
+  tag: string;
+  rating: number;
 }
 
+interface ProductCardProps {
+  name: string
+  price: number
+  rating: number
+  image: string
+  reviews?: number     // Make optional
+  badges?: {           // Make optional
+    label: string
+    icon: React.ReactNode
+  }[]
+  discount?: string
+  showBadge?: boolean
+}
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: 'The Witcher 3',
-    price: 39.99,
-    category: 'RPG',
-    rating: 4.9,
-    reviews: 1000,
-    discount: '20% OFF',
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Best Seller', icon: <Truck className='h-4 w-4' /> },
-      { label: 'Top Rated', icon: <CreditCard className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'PC'],
-    genres: ['Action', 'RPG'],
-    condition: 'New',
-  },
-  {
-    id: 2,
-    name: 'FIFA 22',
-    price: 59.99,
-    category: 'Sports',
-    rating: 4.5,
-    reviews: 500,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'New', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 5', 'Xbox Series X', 'PC'],
-    genres: ['Sports'],
-    condition: 'New',
-  },
-  {
-    id: 3,
-    name: 'Call of Duty: Vanguard',
-    price: 69.99,
-    category: 'FPS',
-    rating: 4.7,
-    reviews: 800,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'New', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 5', 'Xbox Series X', 'PC'],
-    genres: ['FPS'],
-    condition: 'New',
-  },
-  {
-    id: 4,
-    name: 'Red Dead Redemption 2',
-    price: 49.99,
-    category: 'Action',
-    rating: 4.8,
-    reviews: 900,
-    discount: '10% OFF',
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Best Seller', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'PC'],
-    genres: ['Action', 'Adventure'],
-    condition: 'New',
-  },
-  {
-    id: 5,
-    name: 'Cyberpunk 2077',
-    price: 59.99,
-    category: 'RPG',
-    rating: 4.3,
-    reviews: 600,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'New', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'PC'],
-    genres: ['Action', 'RPG'],
-    condition: 'New',
-  },
-  {
-    id: 6,
-    name: 'Minecraft',
-    price: 26.95,
-    category: 'Sandbox',
-    rating: 4.6,
-    reviews: 700,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Top Rated', icon: <CreditCard className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'Nintendo Switch', 'PC'],
-    genres: ['Sandbox'],
-    condition: 'New',
-  },
-  {
-    id: 7,
-    name: 'Assassin\'s Creed Valhalla',
-    price: 49.99,
-    category: 'Action',
-    rating: 4.4,
-    reviews: 400,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'New', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 5', 'Xbox Series X', 'PC'],
-    genres: ['Action', 'RPG'],
-    condition: 'New',
-  },
-  {
-    id: 8,
-    name: 'Halo Infinite',
-    price: 59.99,
-    category: 'FPS',
-    rating: 4.6,
-    reviews: 500,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Top Rated', icon: <CreditCard className='h-4 w-4' /> },
-    ],
-    platforms: ['Xbox Series X', 'PC'],
-    genres: ['FPS'],
-    condition: 'New',
-  },
-  {
-    id: 9,
-    name: 'Fortnite',
-    price: 0,
-    category: 'Battle Royale',
-    rating: 4.2,
-    reviews: 1000,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Best Seller', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'PC', 'Nintendo Switch'],
-    genres: ['Battle Royale'],
-    condition: 'New',
-  },
-  {
-    id: 10,
-    name: 'Among Us',
-    price: 4.99,
-    category: 'Party',
-    rating: 4.1,
-    reviews: 300,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'New', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PC', 'Mobile'],
-    genres: ['Party'],
-    condition: 'New',
-  },
-  {
-    id: 11,
-    name: 'Genshin Impact',
-    price: 0,
-    category: 'RPG',
-    rating: 4.5,
-    reviews: 700,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Top Rated', icon: <CreditCard className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'PC', 'Mobile'],
-    genres: ['Action', 'RPG'],
-    condition: 'New',
-  },
-  {
-    id: 12,
-    name: 'Apex Legends',
-    price: 0,
-    category: 'Battle Royale',
-    rating: 4.3,
-    reviews: 600,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Best Seller', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'PC'],
-    genres: ['Battle Royale'],
-    condition: 'New',
-  },
-  {
-    id: 13,
-    name: 'Valorant',
-    price: 0,
-    category: 'FPS',
-    rating: 4.4,
-    reviews: 800,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Top Rated', icon: <CreditCard className='h-4 w-4' /> },
-    ],
-    platforms: ['PC'],
-    genres: ['FPS'],
-    condition: 'New',
-  },
-  {
-    id: 14,
-    name: 'League of Legends',
-    price: 0,
-    category: 'MOBA',
-    rating: 4.7,
-    reviews: 900,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Best Seller', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PC'],
-    genres: ['MOBA'],
-    condition: 'New',
-  },
-  {
-    id: 15,
-    name: 'Overwatch',
-    price: 39.99,
-    category: 'FPS',
-    rating: 4.5,
-    reviews: 700,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Top Rated', icon: <CreditCard className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'PC'],
-    genres: ['FPS'],
-    condition: 'New',
-  },
-  {
-    id: 16,
-    name: 'The Sims 4',
-    price: 19.99,
-    category: 'Simulation',
-    rating: 4.3,
-    reviews: 500,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Best Seller', icon: <Truck className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'PC'],
-    genres: ['Simulation'],
-    condition: 'New',
-  },
-  {
-    id: 17,
-    name: 'Stardew Valley',
-    price: 14.99,
-    category: 'Simulation',
-    rating: 4.8,
-    reviews: 600,
-    image: 'https://i0.wp.com/safezonegames.com/wp-content/uploads/2023/03/Sword-Art.webp?fit=1920%2C1080&ssl=1',
-    badges: [
-      { label: 'Top Rated', icon: <CreditCard className='h-4 w-4' /> },
-    ],
-    platforms: ['PlayStation 4', 'Xbox One', 'Nintendo Switch', 'PC'],
-    genres: ['Simulation', 'RPG'],
-    condition: 'New',
-  },
-];
+export default function ProductPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
+  const [productsToShow, setProductsToShow] = useState(50);
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get('query');
 
-export default function Page() {
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`http://localhost:6969/api/game${query ? `?query=${query}` : ''}`);
+        const data = await response.json();
+        setProducts(data);
+        setDisplayedProducts(data.slice(0, productsToShow));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
 
-  const applyFilters = (platforms: string[], genres: string[], conditions: string[], sortBy: string) => {
+    fetchProducts();
+  }, [query, productsToShow]);
+
+  const handleShowMore = () => {
+    setProductsToShow(productsToShow + 50);
+    setDisplayedProducts(products.slice(0, productsToShow + 50));
+  };
+
+  const handleReset = () => {
+    setDisplayedProducts(products.slice(0, 50));
+    setProductsToShow(50);
+  };
+
+  const applyFilters = (
+    platforms: string[], 
+    genres: string[], 
+    conditions: string[],
+    statuses: string[],
+    tags: string[],
+    sortBy: string
+  ) => {
     let filtered = [...products];
 
-    if (platforms.length > 0) {
+    if (platforms.length) {
       filtered = filtered.filter(product =>
-        platforms.some(platform => product.platforms?.includes(platform))
+        platforms.includes(product.platform)
       );
     }
 
-    if (genres.length > 0) {
+    if (genres.length) {
       filtered = filtered.filter(product =>
-        genres.some(genre => product.genres?.includes(genre))
+        genres.includes(product.genre)
       );
     }
 
-    if (conditions.length > 0) {
+    if (conditions.length) {
       filtered = filtered.filter(product =>
-        conditions.some(condition => product.condition === condition)
+        conditions.includes(product.condition)
+      );
+    }
+
+    if (statuses.length) {
+      filtered = filtered.filter(product =>
+        statuses.includes(product.status)
+      );
+    }
+
+    if (tags.length) {
+      filtered = filtered.filter(product =>
+        tags.includes(product.tag)
       );
     }
 
@@ -316,32 +115,41 @@ export default function Page() {
       );
     }
 
-    setFilteredProducts(filtered);
+    setDisplayedProducts(filtered.slice(0, productsToShow));
   };
 
   return (
     <>
-      <ProductFilters
-        onApplyFilters={applyFilters}
-      />
+      <ProductFilters onApplyFilters={applyFilters} onReset={handleReset} />
       <div className="w-full px-6 py-4 flex justify-center">
-        <div className="flex flex-wrap gap-4 justify-start ml-[5%]">
-          {filteredProducts.map((product) => (
-            <div className="w-[250px] flex-shrink-0">
+        <div className="flex flex-wrap gap-4 justify-center ml-[0%]">
+          {displayedProducts.map((product) => (
+            <div className="w-[250px] flex-shrink-0" key={product.productId}>
               <ProductCard
-                key={product.id}
                 name={product.name}
                 price={product.price}
                 rating={product.rating}
-                reviews={product.reviews}
-                discount={product.discount}
                 image={product.image}
-                badges={product.badges}
+                badges={[{
+                  label: "Free Shipping",
+                  icon: <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                  </svg>
+                }]}
+                showBadge={true}
+                productId={product.productId} // Pass productId prop
               />
             </div>
           ))}
         </div>
       </div>
+      {productsToShow < products.length && (
+        <div className="w-full flex justify-center py-4">
+          <button onClick={handleShowMore} className="px-4 py-2 bg-foreground text-background rounded-lg">
+            Show more
+          </button>
+        </div>
+      )}
     </>
   );
 }

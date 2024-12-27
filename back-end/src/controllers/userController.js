@@ -1,115 +1,61 @@
-import sql from "mssql2";
+import sql from "mssql";
 import bcrypt from "bcrypt";
+import { connectDB } from "../config/connectDB";
 import jwt from "jsonwebtoken";
-import { connectDB } from "../config/connectDB.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const handleSignUp = async (req, res) => {
-  const { username, password, email } = req.body;
-
+  let { username, password, email } = req.body;
   try {
-    const pool = await connectDB();
-
-    // 1) Check if username exists
-    const existingUserResult = await pool
-      .request()
-      .input("username", sql.VarChar, username).query(`
-        SELECT id FROM dbo.Account 
-        WHERE username = @username
-      `);
-
-    if (existingUserResult.recordset?.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Username already exists",
-      });
-    }
-
-    // 2) Check if email exists
-    const existingEmailResult = await pool
-      .request()
-      .input("email", sql.VarChar, email).query(`
-        SELECT id FROM dbo.Users 
-        WHERE email = @email
-      `);
-
-    if (existingEmailResult.recordset?.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Email already exists",
-      });
-    }
-
-    // 3) Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // 4) Begin transaction
-    const transaction = new sql.Transaction(pool);
+    let dbConn = await connectDB();
+    const transaction = new sql.Transaction(dbConn);
     await transaction.begin();
-
     try {
-      // 4a) Insert into Account table
-      const accountResult = await transaction
-        .request()
-        .input("username", sql.VarChar, username)
-        .input("password", sql.VarChar, hashedPassword).query(`
-          INSERT INTO dbo.Account (username, password)
-          VALUES (@username, @password);
-          SELECT CAST(SCOPE_IDENTITY() as int) AS id;
-        `);
-
-      if (!accountResult.recordset?.[0]?.id) {
-        throw new Error("Failed to create account");
-      }
-      const userId = accountResult.recordset[0].id;
-
-      // 4b) Insert into Users table using same id
-      // Because the Users table is also IDENTITY, turn IDENTITY_INSERT ON
-      await transaction.request().query(`
-        SET IDENTITY_INSERT dbo.Users ON;
-      `);
-
-      await transaction
-        .request()
-        .input("userId", sql.Int, userId)
-        .input("email", sql.VarChar, email).query(`
-          INSERT INTO dbo.Users (
-            id, role, firstName, lastName, 
-            citizenId, email, phoneNumber, 
-            userAddress, userStatus
-          )
-          VALUES (
-            @userId, 
-            'buyer', 
-            'Default', 
-            'User', 
-            CONCAT('CID', @userId), 
-            @email, 
-            'Not Set', 
-            'Not Set', 
-            'active'
-          );
-        `);
-
-      await transaction.request().query(`
-        SET IDENTITY_INSERT dbo.Users OFF;
-      `);
-
-      // 4c) Commit transaction
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const request = new sql.Request(transaction);
+      request.input("username", sql.VarChar, username);
+      request.input("password", sql.VarChar, hashedPassword);
+      const accountResult = await request.query(`
+        INSERT INTO Account (username, password)
+        VALUES (@username, @password);
+        SELECT id FROM Account WHERE username = @username;`);
+      const accountId = accountResult.recordset[0].id;
+      request.input("accountId", sql.Int, accountId);
+      request.input("email", sql.VarChar, email);
+      const uniqueCitizenId = `CID${accountId}`; // Generate a unique citizenId based on accountId
+      request.input("citizenId", sql.VarChar, uniqueCitizenId);
+      await request.query(`
+        INSERT INTO Users (
+          id, role, firstName, lastName, citizenId, 
+          email, phoneNumber, userAddress, userStatus, cartId
+        )
+        VALUES (
+          @accountId, 
+          'user', 
+          'DEFAULT_FIRST_NAME', 
+          'DEFAULT_LAST_NAME',
+          @citizenId, 
+          @email, 
+          'DEFAULT_PHONE', 
+          'DEFAULT_ADDRESS', 
+          'active',
+          @accountId
+        )`);
       await transaction.commit();
-
-      // 5) Respond with success
-      res.status(201).json({
-        success: true,
-        message: "User registered successfully",
-        userId: userId,
-      });
+      res.json({ success: true, message: "User signed up successfully" });
     } catch (err) {
-      // Rollback on error
       await transaction.rollback();
-      throw err;
+      console.error("Transaction error: ", err);
+      res.status(500).json({
+        success: false,
+        message: "Sign-up failed",
+        error: err.message,
+      });
     }
   } catch (err) {
-    console.error("Sign-up error:", err);
+    console.error("Sign-up failed: ", err);
     res.status(500).json({
       success: false,
       message: "Sign-up failed",
@@ -120,74 +66,108 @@ export const handleSignUp = async (req, res) => {
 
 export const handleSignIn = async (req, res) => {
   const { username, password } = req.body;
-
   try {
-    const pool = await connectDB();
-
-    // 1) Get user from Account table
-    const userResult = await pool
-      .request()
-      .input("username", sql.VarChar, username).query(`
-        SELECT a.id, a.username, a.password, u.role, u.userStatus
-        FROM dbo.Account a
-        LEFT JOIN dbo.Users u ON a.id = u.id
-        WHERE a.username = @username
-      `);
-
-    if (!userResult.recordset || userResult.recordset.length === 0) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid username or password",
-      });
+    let dbConn = await connectDB();
+    const request = new sql.Request(dbConn);
+    request.input("username", sql.VarChar, username);
+    const result = await request.query(`
+      SELECT Account.id, Account.password, Users.role 
+      FROM Account 
+      JOIN Users ON Account.id = Users.id 
+      WHERE Account.username = @username
+    `);
+    if (result.recordset.length === 0) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid username or password" });
     }
-
-    const user = userResult.recordset[0];
-
-    // 2) Check if user is banned or inactive
-    if (user.userStatus === "banned" || user.userStatus === "inactive") {
-      return res.status(403).json({
-        success: false,
-        message: "Account is not active",
-      });
+    const user = result.recordset[0];
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid username or password" });
     }
-
-    // 3) Verify password
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid username or password",
-      });
-    }
-
-    // 4) Generate JWT token
     const token = jwt.sign(
-      {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-      },
+      { id: user.id, username: username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: "1h" }
     );
-
-    // 5) Respond with success
-    res.status(200).json({
-      success: true,
-      message: "Sign-in successful",
-      token: token,
-      user: {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-      },
-    });
+    res.json({ success: true, message: "Sign-in successful", token: token });
+    console.log(token);
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decode);
   } catch (err) {
-    console.error("Sign-in error:", err);
-    res.status(500).json({
-      success: false,
-      message: "Sign-in failed",
-      error: err.message,
-    });
+    console.error("Sign-in failed: ", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Sign-in failed", error: err.message });
+  }
+};
+
+let getAllUsers = async (req, res) => {
+  try {
+    await connectDB();
+    const result =
+      await sql.query`SELECT id, firstName + ' ' + lastName AS name, email, role, userStatus as status FROM Users`;
+    res.json(result);
+    console.log(result);
+  } catch (err) {
+    console.error("Failed to fetch users: ", err);
+    res.status(500).send("Failed to fetch users");
+  }
+};
+
+let banUser = async (req, res) => {
+  let { id } = req.params;
+  try {
+    await connectDB();
+    await sql.query`UPDATE Account SET status = 'banned' WHERE id = ${id}`;
+    res.send("User banned successfully");
+  } catch (err) {
+    console.error("Failed to ban user: ", err);
+    res.status(500).send("Failed to ban user");
+  }
+};
+
+let deleteUser = async (req, res) => {
+  let { id } = req.params;
+  try {
+    await connectDB();
+    await sql.query`DELETE FROM Account WHERE id = ${id}`;
+    res.send("User deleted successfully");
+  } catch (err) {
+    console.error("Failed to delete user: ", err);
+    res.status(500).send("Failed to delete user");
+  }
+};
+
+let updatePersonalInfo = async (req, res) => {
+  const { firstName, lastName, citizenId, email, phoneNumber, userAddress } =
+    req.body;
+  const userId = req.body.userId; // Should come from auth token in production
+  try {
+    await connectDB();
+    const result = await sql.query`
+            UPDATE Users 
+            SET firstName = ${firstName},
+                lastName = ${lastName},
+                citizenId = ${citizenId},
+                email = ${email},
+                phoneNumber = ${phoneNumber},
+                userAddress = ${userAddress}
+            WHERE id = ${userId}
+        `;
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({ message: "Profile updated successfully" });
+  } catch (err) {
+    console.error("Failed to update profile: ", err);
+    if (err.message.includes("UNIQUE")) {
+      res.status(400).json({ error: "Email or Citizen ID already exists" });
+    } else {
+      res.status(500).json({ error: "Failed to update profile" });
+    }
   }
 };

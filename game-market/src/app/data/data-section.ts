@@ -19,7 +19,6 @@ import {
   ClipboardList,
   Users,
   BarChart,
-  Component,
   DollarSign,
   Gift,
   HandCoins,
@@ -46,7 +45,7 @@ export const featureSection = [
       {
         title: "Favorites",
         description: "View and manage your favorite games. Keep track of games you love and easily access them for quick play.",
-        url: "/user/favorite",
+        url: "/user/game/favorite",
         icon: React.createElement(Heart, { className: "h-8 w-8" }),
       },
     ],

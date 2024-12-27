@@ -1,14 +1,13 @@
 import express from "express";
-import { connectDB } from "./config/connectDB.js";
-import router from "./route/web.js";
+import { connectDB, queryDemo } from "./config/connectDB.js";
 
 const app = express();
-const port = 6969;
+const port = 3000;
 
 app.use(express.json());
 
-// Use the router
-app.use(router);
+app.post("/api/signup", validateSignUp, handleSignUp);
+app.post("/api/signin", validateSignIn, handleSignIn);
 
 app.listen(port, async () => {
   await connectDB();

@@ -56,24 +56,14 @@ export default function ProductUploading() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Add loading state
-    toast.loading("Uploading game details...");
-
-    try {
-      // Simulate API call - replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Here you would typically send data to your backend
-      console.log("Submitting game details:", gameDetails);
-
-      toast.success("Upload Successful", {
-        description: "Game disc details have been uploaded successfully!",
-      });
-
-      // Reset form
+    // Here you would typically send this data to your backend
+    console.log("Submitting game details:", gameDetails);
+    // Simulating an API call with setTimeout
+    setTimeout(() => {
+      toast.success("Game disc details uploaded successfully!");
+      // Reset form after successful submission
       setGameDetails({
         name: "",
         initialStock: "",
@@ -90,11 +80,7 @@ export default function ProductUploading() {
         genres: "",
         owners: "",
       });
-    } catch (error) {
-      toast.error("Upload Failed", {
-        description: "Failed to upload game details. Please try again.",
-      });
-    }
+    }, 1000);
   };
 
   return (

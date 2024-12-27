@@ -1,13 +1,24 @@
 import express from "express";
-import { handleSignUp, handleSignIn } from "../controllers/userController.js";
+import cors from "cors";
+import {
+  getProducts,
+  getProductById,
+} from "../controllers/productController.js";
+import { handleSignUp, handleSignIn } from "../controllers/userController";
 import {
   validateSignUp,
   validateSignIn,
 } from "../middleware/validationMiddleware.js";
 
-const router = express.Router();
+let router = express.Router();
 
-router.post("/api/signup", validateSignUp, handleSignUp);
-router.post("/api/signin", validateSignIn, handleSignIn);
+let initWebRoutes = (app) => {
+  app.use(cors()); // Enable CORS
+  router.get("/api/game", getProducts);
+  router.get("/api/game/:productId", getProductById); // Add this line
+  router.post("/api/signup", validateSignUp, handleSignUp);
+  router.post("/api/signin", validateSignIn, handleSignIn);
+  return app.use("/", router);
+};
 
-export default router;
+module.exports = initWebRoutes;
