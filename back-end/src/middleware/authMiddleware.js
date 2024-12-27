@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+
 export const verifyToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -19,6 +20,7 @@ export const verifyToken = (req, res, next) => {
     });
   }
 };
+
 export const checkRole = (roles) => {
   return (req, res, next) => {
     if (!req.user) {
