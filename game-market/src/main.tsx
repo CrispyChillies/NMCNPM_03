@@ -77,7 +77,7 @@ createRoot(document.querySelector('.root')!).render(
                       <Route path="/user/game/all" element={<Product />} />
                       <Route path="/user/game/:productId" element={<ProductDetail />} />
                       <Route path="/user/game/category" element={<Section />} />
-                      <Route path="/user/game/favorite" element={<Section />} />
+                      <Route path="/user/game/favorite" element={<ProtectedRoute component={Section} roles={['user']} />} />
                       <Route path="/user/account/payment" element={<ProtectedRoute component={Section} roles={['user']} />} />
                       <Route path="/user/account/profile" element={<ProtectedRoute component={ProfileUpdating} roles={['user', 'admin', 'provider']} />} />
                       <Route path="/user/account/address" element={<ProtectedRoute component={Section} roles={['user', 'provider']} />} />
