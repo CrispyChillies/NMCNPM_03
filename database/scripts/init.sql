@@ -118,7 +118,7 @@ CREATE TABLE [Order] (
 
 -- CHECK constraints for Order enums
 ALTER TABLE [Order] ADD
-    CONSTRAINT chk_order_status CHECK (status IN ('pending','completed','cancelled')),
+    CONSTRAINT chk_order_status CHECK (status IN ('pending','completed','cancelled', 'paid')),
     CONSTRAINT chk_payment_method CHECK (paymentMethod IN ('mobile banking','cashOnDelivery'));
 GO      
 

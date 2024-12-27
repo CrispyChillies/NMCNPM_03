@@ -13,43 +13,38 @@ interface ProductFiltersProps {
   onReset: () => void;
 }
 
-const platforms = [
-  "playstation5",
-  "playstation4", 
-  "xboxSeriesX",
-  "xboxOne",
-  "nintendoSwitch",
-  "pc"
-];
+const platformMapping = {
+  "PlayStation 5": "playstation5",
+  "PlayStation 4": "playstation4",
+  "Xbox Series X": "xboxSeriesX",
+  "Xbox One": "xboxOne",
+  "Nintendo Switch": "nintendoSwitch",
+  "PC": "pc"
+};
 
-const genres = [
-  "Action",
-  "RPG", 
-  "FPS",
-  "Adventure",
-  "Sports",
-  "Racing",
-  "Strategy"
-];
+const genreMapping = {
+  "Action": "action",
+  "RPG": "rpg",
+  "FPS": "fps",
+  "Adventure": "adventure",
+  "Sports": "sports",
+  "Racing": "racing",
+  "Strategy": "strategy"
+};
 
-const conditions = [
-  "new",
-  "likeNew", 
-  "good",
-  "fair"
-];
+const conditionMapping = {
+  "New": "new",
+  "Like New": "likeNew",
+  "Good": "good",
+  "Fair": "fair"
+};
 
-const statuses = [
-  "available",
-  "unavailable" 
-];
-
-const tags = [
-  "bestSellers",
-  "newReleases",
-  "comingSoon", 
-  "specialOffers"
-];
+const tagMapping = {
+  "Best Sellers": "bestSellers",
+  "New Releases": "newReleases",
+  "Coming Soon": "comingSoon",
+  "Special Offers": "specialOffers"
+};
 
 type SortOption = {
   value: string;
@@ -71,12 +66,16 @@ export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps)
   const [tempTags, setTempTags] = useState<string[]>([]);
 
   const handleApplyFilters = () => {
+    const platformValues = tempPlatforms.map(platform => platformMapping[platform]);
+    const genreValues = tempGenres.map(genre => genreMapping[genre]);
+    const conditionValues = tempConditions.map(condition => conditionMapping[condition]);
+    const tagValues = tempTags.map(tag => tagMapping[tag]);
     onApplyFilters(
-      tempPlatforms,
-      tempGenres, 
-      tempConditions,
+      platformValues,
+      genreValues, 
+      conditionValues,
       tempStatuses,
-      tempTags,
+      tagValues,
       selectedSort
     );
   };
@@ -131,7 +130,7 @@ export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps)
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            {platforms.map((platform) => (
+            {Object.keys(platformMapping).map((platform) => (
               <DropdownMenuCheckboxItem
                 key={platform}
                 checked={tempPlatforms.includes(platform)}
@@ -156,7 +155,7 @@ export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps)
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            {genres.map((genre) => (
+            {Object.keys(genreMapping).map((genre) => (
               <DropdownMenuCheckboxItem
                 key={genre}
                 checked={tempGenres.includes(genre)}
@@ -181,7 +180,7 @@ export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps)
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            {conditions.map((condition) => (
+            {Object.keys(conditionMapping).map((condition) => (
               <DropdownMenuCheckboxItem
                 key={condition}
                 checked={tempConditions.includes(condition)}
@@ -206,7 +205,7 @@ export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps)
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {tags.map((tag) => (
+            {Object.keys(tagMapping).map((tag) => (
               <DropdownMenuCheckboxItem
                 key={tag}
                 checked={tempTags.includes(tag)}

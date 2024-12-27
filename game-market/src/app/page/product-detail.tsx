@@ -7,6 +7,59 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+const PLATFORM_MAPPING = {
+  "playstation5": "PlayStation 5",
+  "playstation4": "PlayStation 4", 
+  "xboxSeriesX": "Xbox Series X",
+  "xboxOne": "Xbox One",
+  "nintendoSwitch": "Nintendo Switch",
+  "pc": "PC"
+};
+
+const GENRE_MAPPING = {
+  "action": "Action",
+  "rpg": "RPG",
+  "fps": "FPS", 
+  "adventure": "Adventure",
+  "sports": "Sports",
+  "racing": "Racing",
+  "strategy": "Strategy"
+};
+
+const CONDITION_MAPPING = {
+  "new": "New",
+  "likeNew": "Like New",
+  "good": "Good", 
+  "fair": "Fair"
+};
+
+const TAG_MAPPING = {
+  "bestSellers": "Best Sellers",
+  "newReleases": "New Releases",
+  "comingSoon": "Coming Soon",
+  "specialOffers": "Special Offers"
+};
+
+const STATUS_MAPPING = {
+  "available": "Available",
+  "outOfStock": "Out of Stock",
+  "preOrder": "Pre-order",
+  "comingSoon": "Coming Soon"
+};
+
+const getDisplayValue = (value: string, mapping: Record<string, string>) => {
+  return mapping[value] || value;
+};
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
 interface Product {
   productId: number;
   sellerId: number;
@@ -84,7 +137,7 @@ export default function ProductDetail() {
               </div>
               <p className="text-lg font-medium text-foreground">{product.rating}</p>
               <Separator orientation="vertical" className="h-6" />
-              <Badge variant="secondary">{product.condition}</Badge>
+              <Badge variant="secondary">{getDisplayValue(product.condition, CONDITION_MAPPING)}</Badge>
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">${product.price.toLocaleString()}</p>
@@ -109,27 +162,27 @@ export default function ProductDetail() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Platform</p>
-                  <p className="text-base text-foreground">{product.platform}</p>
+                  <p className="text-base text-foreground">{getDisplayValue(product.platform, PLATFORM_MAPPING)}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Genre</p>
-                  <p className="text-base text-foreground">{product.genre}</p>
+                  <p className="text-base text-foreground">{getDisplayValue(product.genre, GENRE_MAPPING)}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Status</p>
-                  <p className="text-base text-foreground">{product.status}</p>
+                  <p className="text-base text-foreground">{getDisplayValue(product.status, STATUS_MAPPING)}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Release Day</p>
-                  <p className="text-base text-foreground">{product.releaseDay}</p>
+                  <p className="text-base text-foreground">{formatDate(product.releaseDay)}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Tag</p>
-                  <p className="text-base text-foreground">{product.tag}</p>
+                  <p className="text-base text-foreground">{getDisplayValue(product.tag, TAG_MAPPING)}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Stock</p>
-                  <p className="text-base text-foreground">{product.stock} available</p>
+                  <p className="text-base text-foreground">{product.stock}</p>
                 </div>
               </div>
             </TabsContent>
