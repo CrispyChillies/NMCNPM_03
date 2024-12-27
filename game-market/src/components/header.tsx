@@ -1,5 +1,5 @@
-import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Bell, Search, ShoppingCart, User, HandCoins, Settings, LogOut } from 'lucide-react';
+import { useLocation, Link} from 'react-router-dom';
+import { Bell, Search, ShoppingCart, User, HandCoins, Settings, LogOut, LogIn } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,13 +58,12 @@ interface HeaderProps {
 
 export function Header({ user, userType }: HeaderProps) {
   const location = useLocation();
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [productName, setProductName] = useState('');
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    navigate(`/user/game/all?query=${searchQuery}`);
+    window.location.href = `/user/game/all?query=${searchQuery}`;
   };
 
   useEffect(() => {
@@ -125,6 +124,11 @@ export function Header({ user, userType }: HeaderProps) {
     );
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  };
+
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b px-4">
       <div className="flex items-center gap-4">
@@ -174,36 +178,48 @@ export function Header({ user, userType }: HeaderProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {userType === "user" && (
+            {userType !== "guest" && (
               <>
+                {userType === "user" && (
+                  <>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <HandCoins />
+                        Become a Seller
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <HandCoins />
-                    Become a Seller
+                    <User />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Bell />
+                    <span>Notifications</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings />
+                    <span>Settings</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
               </>
             )}
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User />
-                <span>Profile</span>
+            {userType === "guest" && (
+              <DropdownMenuItem asChild>
+                <a href="/sign-in">
+                  <LogIn />
+                  Sign in
+                </a>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                <span>Notifications</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings />
-                <span>Settings</span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -7,6 +7,7 @@ import {
   LogOut,
   Settings,
   User,
+  LogIn,
 } from "lucide-react"
 
 import {
@@ -42,6 +43,11 @@ export function NavUser({
   userType: string,
 }) {
   const { isMobile } = useSidebar()
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  };
 
   return (
     <SidebarMenu>
@@ -86,36 +92,48 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {userType === "user" && (
+            {userType !== "guest" && (
               <>
+                {userType === "user" && (
+                  <>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <HandCoins />
+                        Become a Seller
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <HandCoins />
-                    Become a Seller
+                    <User />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Bell />
+                    Notifications
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings />
+                    Settings
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
               </>
             )}
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User />
-                Profile
+            {userType === "guest" && (
+              <DropdownMenuItem asChild>
+                <a href="/sign-in">
+                  <LogIn />
+                  Sign in
+                </a>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings />
-                Settings
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
