@@ -25,6 +25,10 @@ const CheckoutPage: React.FC = () => {
     navigate("/user/order-confirm", { state: { orderNumber, items: cartItems } });
   };
 
+  const handleBackToCart = () => {
+    navigate("/user/cart");
+  };
+
   return (
     <div className="min-h-screen bg-white text-black mt-8 mx-4">
       <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2">
@@ -104,6 +108,14 @@ const CheckoutPage: React.FC = () => {
               </div>
             </RadioGroup>
           </div>
+
+          <Button 
+            className="w-full mt-4" 
+            size="lg"
+            onClick={handleBackToCart}
+          >
+            Back to Cart
+          </Button>
         </div>
 
         {/* Order Summary */}
