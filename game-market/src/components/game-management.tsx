@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect , useState } from "react"
-import axios from 'axios';
+import { useState } from "react"
 import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Trash, Edit, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,48 +33,49 @@ import {
 // import { useRouter } from 'next/navigation'
 
 interface Game {
-  productId: string
+  id: string
   name: string
-  genre: string
+  category: string
+  developers: string
   price: number
-  releaseDay: string
+  releaseDate: string
 }
 
 // Sample data
 const games: Game[] = [
-  // {
-  //   id: "001",
-  //   name: "The Witcher 3",
-  //   category: "RPG",
-  //   developers: "CD Projekt Red",
-  //   price: 39.99,
-  //   releaseDate: "2015-05-19",
-  // },
-  // {
-  //   id: "002",
-  //   name: "FIFA 22",
-  //   category: "Sports",
-  //   developers: "EA Sports",
-  //   price: 59.99,
-  //   releaseDate: "2021-10-01",
-  // },
-  // {
-  //   id: "003",
-  //   name: "Minecraft",
-  //   category: "Sandbox",
-  //   developers: "Mojang",
-  //   price: 26.95,
-  //   releaseDate: "2011-11-18",
-  // },
-  // {
-  //   id: "004",
-  //   name: "Cyberpunk 2077",
-  //   category: "RPG",
-  //   developers: "CD Projekt Red",
-  //   price: 59.99,
-  //   releaseDate: "2020-12-10",
-  // },
-  // // Add more sample data as needed
+  {
+    id: "001",
+    name: "The Witcher 3",
+    category: "RPG",
+    developers: "CD Projekt Red",
+    price: 39.99,
+    releaseDate: "2015-05-19",
+  },
+  {
+    id: "002",
+    name: "FIFA 22",
+    category: "Sports",
+    developers: "EA Sports",
+    price: 59.99,
+    releaseDate: "2021-10-01",
+  },
+  {
+    id: "003",
+    name: "Minecraft",
+    category: "Sandbox",
+    developers: "Mojang",
+    price: 26.95,
+    releaseDate: "2011-11-18",
+  },
+  {
+    id: "004",
+    name: "Cyberpunk 2077",
+    category: "RPG",
+    developers: "CD Projekt Red",
+    price: 59.99,
+    releaseDate: "2020-12-10",
+  },
+  // Add more sample data as needed
 ]
 
 export const GameProductManagement = () => {
@@ -88,31 +88,18 @@ export const GameProductManagement = () => {
   // const router = useRouter()
 
   const filterData = gameData.filter((game) => {
-    const matchesCategory = selectedCategory ? game.genre.toLowerCase() === selectedCategory.toLowerCase() : true
-    // const matchesDeveloper = selectedDeveloper ? game.developers.toLowerCase() === selectedDeveloper.toLowerCase() : true
+    const matchesCategory = selectedCategory ? game.category.toLowerCase() === selectedCategory.toLowerCase() : true
+    const matchesDeveloper = selectedDeveloper ? game.developers.toLowerCase() === selectedDeveloper.toLowerCase() : true
     const matchesName = nameFilter ? game.name.toLowerCase().includes(nameFilter.toLowerCase()) : true
     const matchesMinPrice = minPrice ? game.price >= parseFloat(minPrice) : true
     const matchesMaxPrice = maxPrice ? game.price <= parseFloat(maxPrice) : true
 
-    return matchesCategory && matchesName && matchesMinPrice && matchesMaxPrice
+    return matchesCategory && matchesDeveloper && matchesName && matchesMinPrice && matchesMaxPrice
   })
 
   const handleDelete = (id: string) => {
-    setGameData(gameData.filter(game => game.productId !== id))
+    setGameData(gameData.filter(game => game.id !== id))
   }
-
-  useEffect(() => {
-    const fetchGames = async () => {
-      try {
-        const response = await axios.get('http://localhost:6969/api/games');
-        setGameData(response.data);
-      } catch (error) {
-        console.error('Failed to fetch games:', error);
-      }
-    };
-
-    fetchGames();
-  }, []);
 
   // const handleEdit = (id: string) => {
   //   router.push(`/edit-game/${id}`)
@@ -128,7 +115,7 @@ export const GameProductManagement = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-8">
-        <h1 className="mb-8 text-3xl font-bold text-foreground">Game Product Management</h1>
+        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">Game Product Management</h1>
 
         {/* Filters */}
         <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-white p-4 border">
@@ -148,8 +135,16 @@ export const GameProductManagement = () => {
               <SelectItem value="rpg">RPG</SelectItem>
               <SelectItem value="sports">Sports</SelectItem>
               <SelectItem value="sandbox">Sandbox</SelectItem>
-              <SelectItem value="action">Sandbox</SelectItem>
-              <SelectItem value="others">Sandbox</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={selectedDeveloper} onValueChange={setSelectedDeveloper}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Developer" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="cd projekt red">CD Projekt Red</SelectItem>
+              <SelectItem value="ea sports">EA Sports</SelectItem>
+              <SelectItem value="mojang">Mojang</SelectItem>
             </SelectContent>
           </Select>
           <Input
@@ -190,19 +185,20 @@ export const GameProductManagement = () => {
                 <TableHead>Game</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Developers</TableHead>
+                <TableHead>Price</TableHead>
                 <TableHead>Release Date</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filterData.map((game) => (
-                <TableRow key={game.productId}>
-                  <TableCell className="text-center">{game.productId}</TableCell>
+                <TableRow key={game.id}>
+                  <TableCell className="text-center">{game.id}</TableCell>
                   <TableCell>{game.name}</TableCell>
-                  <TableCell>{game.genre}</TableCell>
-                  {/* <TableCell>{game.developers}</TableCell> */}
+                  <TableCell>{game.category}</TableCell>
+                  <TableCell>{game.developers}</TableCell>
                   <TableCell>${game.price.toFixed(2)}</TableCell>
-                  <TableCell>{game.releaseDay}</TableCell>
+                  <TableCell>{game.releaseDate}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button variant="outline" size="icon"> 
@@ -224,7 +220,7 @@ export const GameProductManagement = () => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(game.productId)}>Delete</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleDelete(game.id)}>Delete</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

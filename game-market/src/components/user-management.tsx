@@ -1,11 +1,8 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-
+import { useState } from "react"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Trash, Ban } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-
 import {
   Select,
   SelectContent,
@@ -27,66 +24,48 @@ interface User {
   name: string
   email: string
   role: "Admin" | "User" | "Moderator"
-  status: "active" | "inactive" | "banned"
+  status: "Active" | "Inactive" | "Banned"
 }
 
 // Sample data
 const users: User[] = [
-  // {
-  //   id: "001",
-  //   name: "John Doe",
-  //   email: "john@example.com",
-  //   role: "Admin",
-  //   status: "Active",
-  // },
-  // {
-  //   id: "002",
-  //   name: "Jane Smith",
-  //   email: "jane@example.com",
-  //   role: "User",
-  //   status: "Active",
-  // },
-  // {
-  //   id: "003",
-  //   name: "Bob Johnson",
-  //   email: "bob@example.com",
-  //   role: "Moderator",
-  //   status: "Inactive",
-  // },
-  // {
-  //   id: "004",
-  //   name: "Alice Brown",
-  //   email: "alice@example.com",
-  //   role: "User",
-  //   status: "Banned",
-  // },
-  // // Add more sample data as needed
+  {
+    id: "001",
+    name: "John Doe",
+    email: "john@example.com",
+    role: "Admin",
+    status: "Active",
+  },
+  {
+    id: "002",
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "User",
+    status: "Active",
+  },
+  {
+    id: "003",
+    name: "Bob Johnson",
+    email: "bob@example.com",
+    role: "Moderator",
+    status: "Inactive",
+  },
+  {
+    id: "004",
+    name: "Alice Brown",
+    email: "alice@example.com",
+    role: "User",
+    status: "Banned",
+  },
+  // Add more sample data as needed
 ]
 
 export const UserManagement = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
   const [selectedRole, setSelectedRole] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("")
   const [nameFilter, setNameFilter] = useState("")
   const [emailFilter, setEmailFilter] = useState("")
   const [userData, setUserData] = useState(users)
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://localhost:6969/api/users');
-        setUsers(response.data);
-        setUserData(response.data);
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
-        setError('Failed to fetch users');
-      }
-    };
-
-    fetchUsers();
-  }, []);
 
   const filterData = userData.filter((user) => {
     const matchesRole = selectedRole ? user.role.toLowerCase() === selectedRole.toLowerCase() : true
@@ -97,29 +76,17 @@ export const UserManagement = () => {
     return matchesRole && matchesStatus && matchesName && matchesEmail
   })
 
-  const handleDelete = async (id: string) => {
-    try {
-      await axios.delete(`http://localhost:6969/api/users/${id}`);
-      setUserData(userData.filter(user => user.id !== id));
-    } catch (error) {
-      console.error('Failed to delete user:', error);
-      setError('Failed to delete user');
-    }
-  };
+  const handleDelete = (id: string) => {
+    setUserData(userData.filter(user => user.id !== id))
+  }
 
-  const handleBanUnban = async (id: string) => {
-    try {
-      await axios.put(`http://localhost:6969/api/users/ban/${id}`);
-      setUserData(userData.map(user => 
-        user.id === id 
-          ? { ...user, status: user.status === "banned" ? "active" : "banned" } 
-          : user
-      ));
-    } catch (error) {
-      console.error('Failed to ban/unban user:', error);
-      setError('Failed to ban/unban user');
-    }
-  };
+  const handleBanUnban = (id: string) => {
+    setUserData(userData.map(user => 
+      user.id === id 
+        ? { ...user, status: user.status === "Banned" ? "Active" : "Banned" } 
+        : user
+    ))
+  }
 
   return (
     <div className="flex h-screen bg-background w-full">
@@ -127,7 +94,7 @@ export const UserManagement = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-8">
-        <h1 className="mb-8 text-3xl font-bold text-foreground">User Management</h1>
+        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">User Management</h1>
 
         {/* Filters */}
         <div className="mb-6 flex items-center gap-4 rounded-lg bg-white p-4 border">
@@ -175,7 +142,7 @@ export const UserManagement = () => {
               setEmailFilter("")
             }}
           >
-            Reset Filter  
+            Reset Filter
           </Button>
         </div>
 
@@ -202,9 +169,9 @@ export const UserManagement = () => {
                   <TableCell>
                     <span
                       className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
-                        user.status === "active"
+                        user.status === "Active"
                           ? "bg-emerald-100 text-emerald-800"
-                          : user.status === "inactive"
+                          : user.status === "Inactive"
                           ? "bg-gray-700 text-white"
                           : "bg-red-500 text-white"
                       }`}
@@ -243,7 +210,7 @@ export const UserManagement = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              {user.status === "banned" 
+                              {user.status === "Banned" 
                                 ? "This will unban the user account." 
                                 : "This will ban the user account."}
                             </AlertDialogDescription>
@@ -251,7 +218,7 @@ export const UserManagement = () => {
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction onClick={() => handleBanUnban(user.id)}>
-                              {user.status === "banned" ? "Unban" : "Ban"}
+                              {user.status === "Banned" ? "Unban" : "Ban"}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

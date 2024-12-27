@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Bell, Filter, Heart, LogOut, MessageSquare, Settings } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import axios from 'axios';
 import {
   Select,
   SelectContent,
@@ -17,53 +16,67 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { format } from "path";
 
 interface Order {
   id: string
   name: string
   address: string
   date: string
-  status: "completed" | "pending" | "rejected"
+  type: string
+  status: "Completed" | "Processing" | "Rejected"
 }
 
 // sample data
 const orders: Order[] = [
- 
+  {
+    id: "001",
+    name: "John Wick",
+    address: "009, ABC st, D1",
+    date: "10/0/24",
+    type: "Sports",
+    status: "Completed",
+  },
+  {
+    id: "002",
+    name: "John Wick",
+    address: "009, ABC st, D1",
+    date: "10/0/24",
+    type: "Sports",
+    status: "Processing",
+  },
+  {
+    id: "003",
+    name: "John Wick",
+    address: "009, ABC st, D1",
+    date: "10/0/24",
+    type: "Sports",
+    status: "Rejected",
+  },
+  {
+    id: "004",
+    name: "John Wick",
+    address: "009, ABC st, D1",
+    date: "10/0/24",
+    type: "Electronics",
+    status: "Rejected", 
+  },
+  // Add more sample data as needed
 ]
 
 export const OrderList = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [selectedDate, setSelectedDate] = useState("");
-  // const [selectedType, setSelectedType] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await axios.get('http://localhost:6969/api/orders');
-        const formattedOrders = response.data.map((order: Order) => ({
-          ...order,
-          date: new Date(order.date).toLocaleDateString() // Format the date
-        }));
-        setOrders(formattedOrders);
-      } catch (error) {
-        console.error('Failed to fetch orders:', error);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+  const [selectedDate, setSelectedDate] = useState("")
+  const [selectedType, setSelectedType] = useState("")
+  const [selectedStatus, setSelectedStatus] = useState("")
 
   const filterData = orders.filter((order) => {
     const matchesDate = selectedDate ? order.date.toLowerCase() === selectedDate.toLowerCase() : true
+    const matchesType = selectedType ? order.type.toLowerCase() === selectedType.toLowerCase() : true
     const matchesStatus = selectedStatus ? order.status.toLowerCase() === selectedStatus.toLowerCase() : true
 
     console.log(`Order Status: ${order.status}, Selected Status: ${selectedStatus}`)
 
-    return matchesDate && matchesStatus
+    return matchesDate && matchesType && matchesStatus
   })
-
 
   return (
     <div className="flex h-screen bg-background">
@@ -71,7 +84,7 @@ export const OrderList = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-8">
-        <h1 className="mb-8 text-3xl font-bold text-foreground">Order List</h1>
+        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">Order List</h1>
 
         {/* Filters */}
         <div className="mb-6 flex items-center gap-4 rounded-lg bg-white p-4 border">
@@ -85,6 +98,16 @@ export const OrderList = () => {
               <SelectItem value="today">Today</SelectItem>
               <SelectItem value="week">This Week</SelectItem>
               <SelectItem value="month">This Month</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={selectedType} onValueChange={setSelectedType}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Order Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sports">Sports</SelectItem>
+              <SelectItem value="electronics">Electronics</SelectItem>
+              <SelectItem value="clothing">Clothing</SelectItem>
             </SelectContent>
           </Select>
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -102,6 +125,7 @@ export const OrderList = () => {
             className="ml-auto text-red-500 hover:text-red-600"
             onClick={() => {
               setSelectedDate("")
+              setSelectedType("")
               setSelectedStatus("")
             }}
           >
@@ -118,6 +142,7 @@ export const OrderList = () => {
                 <TableHead>Name</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead>Date</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -128,12 +153,13 @@ export const OrderList = () => {
                   <TableCell>{order.name}</TableCell>
                   <TableCell>{order.address}</TableCell>
                   <TableCell>{order.date}</TableCell>
+                  <TableCell>{order.type}</TableCell>
                   <TableCell>
                     <span
                       className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
-                        order.status === "completed"
+                        order.status === "Completed"
                           ? "bg-emerald-100 text-emerald-800"
-                          : order.status === "pending"
+                          : order.status === "Processing"
                           ? "bg-gray-700 text-white"
                           : "bg-red-500 text-white"
                       }`}

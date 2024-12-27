@@ -1,44 +1,32 @@
 import express from "express";
-import homeController from "../controllers/homeController";
-import userController from "../controllers/userController";
-import gameController from "../controllers/gameController";
-import orderController from "../controllers/userController";
+import cors from "cors";
+import { getProducts, getProductById, getAllProducts } from "../controllers/productController.js";
+import { handleSignUp, handleSignIn, getAllUsers,banUser, getAllOrders } from "../controllers/userController";
+import {
+  validateSignUp,
+  validateSignIn,
+} from "../middleware/validationMiddleware";
+
 
 let router = express.Router();
 
 let initWebRoutes = (app) => {
-    router.get('/', homeController.getHomePage);
-    router.get('/about', homeController.getAboutPage);
-    router.get('/signup', homeController.getSignUpPage);
-    router.post('/api/signup', userController.handleSignUp);
-    router.get('/signin', homeController.getSignInPage);
-    router.post('/api/signin', userController.handleSignIn);
+    app.use(cors()); // Enable CORS
+    router.get('/api/game', getProducts);
+    router.get('/api/game/:productId', getProductById); // Add this line
+    router.post("/api/signup", validateSignUp, handleSignUp);
+    router.post("/api/signin", validateSignIn, handleSignIn);
 
     // User management routes
-    router.get('/api/users', userController.getAllUsers);
-    router.put('/api/users/ban/:id', userController.banUser);
-    router.delete('/api/users/:id', userController.deleteUser);
+    router.get('/api/users', getAllUsers);
+    router.put('/api/users/ban/:id', banUser);
+    // router.delete('/api/users/:id', deleteUser);
 
     // Game management routes
-    router.get('/api/games', gameController.getAllGames); // Add the new route
+    router.get('/api/products', getAllProducts); // Add the new route
 
     // Order management routes
-    router.get('/api/orders', orderController.getAllOrders); // Add the new route
-
-    // Upload Product Request
-    
-
-    // // Google authentication routes
-    // router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-    // router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signin' }), (req, res) => {
-    //     res.redirect('/');
-    // });
-
-    // // GitHub authentication routes
-    // router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
-    // router.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/signin' }), (req, res) => {
-    //     res.redirect('/');
-    // });
+    router.get('/api/orders', getAllOrders); // Add the new route
 
     return app.use("/", router);
 }
