@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 export default function SignIn() {
   const [username, setUsername] = useState('');
@@ -15,7 +16,15 @@ export default function SignIn() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      window.location.href = '/';
+      const decodedToken: any = jwtDecode(token);
+      const userRole = decodedToken.role;
+      if (userRole === 'admin') {
+        window.location.href = '/admin';
+      } else if (userRole === 'provider') {
+        window.location.href = '/provider';
+      } else {
+        window.location.href = '/';
+      }
     }
   }, []);
 
@@ -24,11 +33,19 @@ export default function SignIn() {
     try {
       const response = await axios.post('http://localhost:6969/api/signin', { username, password });
       if (response.data.success) {
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', response.data.token);     
         setShowSuccessPopup(true);
         setTimeout(() => {
           setShowSuccessPopup(false);
-          window.location.href = '/';
+          const decodedToken: any = jwtDecode(response.data.token);
+          const userRole = decodedToken.role;
+          if (userRole === 'admin') {
+            window.location.href = '/admin';
+          } else if (userRole === 'provider') {
+            window.location.href = '/provider';
+          } else {
+            window.location.href = '/';
+          }
         }, 2000);
       } else {
         setError(response.data.message || 'Sign-in failed. Please try again.');

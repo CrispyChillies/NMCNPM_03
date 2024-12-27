@@ -71,7 +71,10 @@ export const handleSignIn = async (req, res) => {
     const request = new sql.Request(dbConn);
     request.input("username", sql.VarChar, username);
     const result = await request.query(`
-      SELECT id, password FROM Account WHERE username = @username
+      SELECT Account.id, Account.password, Users.role 
+      FROM Account 
+      JOIN Users ON Account.id = Users.id 
+      WHERE Account.username = @username
     `);
     if (result.recordset.length === 0) {
       return res.status(401).json({ success: false, message: "Invalid username or password" });
@@ -81,8 +84,11 @@ export const handleSignIn = async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ success: false, message: "Invalid username or password" });
     }
-    const token = jwt.sign({ id: user.id, username: username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ success: true, message: "Sign-in successful", token: token });
+    console.log(token);
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decode);
   } catch (err) {
     console.error("Sign-in failed: ", err);
     res.status(500).json({ success: false, message: "Sign-in failed", error: err.message });

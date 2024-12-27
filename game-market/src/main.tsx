@@ -14,8 +14,8 @@ import Section from '@/app/page/section'
 import Product from '@/app/page/product'
 import ProfileUpdating from "@/app/page/user/profile-updating"
 import CartPage from "@/app/page/user/cart"
-import CheckoutPage from "@/app/page/user/checkout" // Import the CheckoutPage component
-import OrderConfirmPage from "@/app/page/user/order-confirm" // Import the OrderConfirmPage component
+import CheckoutPage from "@/app/page/user/checkout"
+import OrderConfirmPage from "@/app/page/user/order-confirm"
 import Dashboard from "@/app/page/admin/dashboard"
 import GameManagement from "@/app/page/admin/game-management"
 import UserManagement from "@/app/page/admin/user-management"
@@ -26,14 +26,29 @@ import ProductUploading from "@/app/page/provider/product-uploading"
 import ProductDetail from "@/app/page/product-detail"
 import SignIn from "@/app/page/auth/sign-in"
 import SignUp from "@/app/page/auth/sign-up"
+import ProtectedRoute from "@/components/protectedRoute"
 
-const data = {
+import { jwtDecode } from 'jwt-decode'
+
+let data = {
   user: {
-    name: "Phạm Văn Quyến",
-    email: "pvquyen22@clc.fitus.edu.vn",
+    id: "",
+    name: "Test",
+    email: "Test",
     avatar: "https://i.pinimg.com/736x/4e/ff/15/4eff156ff63f26f40a4280445631172d.jpg",
   },
-  userType: "user",
+  userType: "guest",
+}
+
+const token = localStorage.getItem('token');
+if (token) {
+  console.log('Token found');
+  const decoded = jwtDecode<{ id: string; username: string; role: string }>(token);
+  data.user.id = decoded.id;
+  data.user.name = decoded.username;
+  data.userType = decoded.role;
+} else {
+  console.log('No token found');
 }
 
 createRoot(document.querySelector('.root')!).render(
@@ -55,42 +70,43 @@ createRoot(document.querySelector('.root')!).render(
                       <Route path="/" element={<Home />} />
                       <Route path="/home" element={<Navigate to="/" />} />
                       <Route path="/user/game" element={<Section />} />
-                      <Route path="/user/account" element={<Section />} />
-                      <Route path="/user/purchase" element={<Section />} />
-                      <Route path="/user/notification" element={<Section />} />
-                      <Route path="/user/setting" element={<Section />} />
+                      <Route path="/user/account" element={<ProtectedRoute component={Section} roles={['user', 'admin', 'provider']} />} />
+                      <Route path="/user/purchase" element={<ProtectedRoute component={Section} roles={['user']} />} />
+                      <Route path="/user/notification" element={<ProtectedRoute component={Section} roles={['user', 'admin', 'provider']} />} />
+                      <Route path="/user/setting" element={<ProtectedRoute component={Section} roles={['user', 'admin', 'provider']} />} />
                       <Route path="/user/game/all" element={<Product />} />
                       <Route path="/user/game/:productId" element={<ProductDetail />} />
                       <Route path="/user/game/category" element={<Section />} />
-                      <Route path="/user/account/payment" element={<Section />} />
-                      <Route path="/user/account/profile" element={<ProfileUpdating />} />
-                      <Route path="user/account/address" element={<Section />} />
-                      <Route path="/user/account/password" element={<Section />} />
-                      <Route path="/user/purchase/order" element={<Section />} />
-                      <Route path="/user/purchase/history" element={<Section />} />
-                      <Route path="/user/notification/order" element={<Section />} />
-                      <Route path="/user/notification/promotion" element={<Section />} />
-                      <Route path="/user/setting/general" element={<Section />} />
-                      <Route path="/user/setting/notification" element={<Section />} />
-                      <Route path="/user/setting/privacy" element={<Section />} />
-                      <Route path="/user/cart" element={<CartPage />} />
-                      <Route path="/user/checkout" element={<CheckoutPage />} />
-                      <Route path="/user/order-confirm" element={<OrderConfirmPage />} />
-                      <Route path="/admin" element={<Section />} />
-                      <Route path="/admin/dashboard" element={<Dashboard />} />
-                      <Route path="/admin/game-management" element={<GameManagement />} />
-                      <Route path="/admin/user-management" element={<UserManagement />} />
-                      <Route path="/admin/become-seller" element={<BecomeSeller />} />
-                      <Route path="/admin/order-management" element={<OrderList />} />
-                      <Route path="/admin/report-management" element={<UserRequest />} />
-                      <Route path="/provider" element={<Section />} />
-                      <Route path="/provider/dashboard" element={<Section />} />
-                      <Route path="/provider/game" element={<ProductUploading />} />
-                      <Route path="/provider/order" element={<Section />} />
-                      <Route path="/provider/customer" element={<Section />} />
-                      <Route path="/provider/finance" element={<Section />} />
-                      <Route path="/provider/promotion" element={<Section />} />
-                      <Route path="/provider/report" element={<Section />} />
+                      <Route path="/user/game/favorite" element={<Section />} />
+                      <Route path="/user/account/payment" element={<ProtectedRoute component={Section} roles={['user']} />} />
+                      <Route path="/user/account/profile" element={<ProtectedRoute component={ProfileUpdating} roles={['user', 'admin', 'provider']} />} />
+                      <Route path="/user/account/address" element={<ProtectedRoute component={Section} roles={['user', 'provider']} />} />
+                      <Route path="/user/account/password" element={<ProtectedRoute component={Section} roles={['user', 'admin', 'provider']} />} />
+                      <Route path="/user/purchase/order" element={<ProtectedRoute component={Section} roles={['user']} />} />
+                      <Route path="/user/purchase/history" element={<ProtectedRoute component={Section} roles={['user']} />} />
+                      <Route path="/user/notification/order" element={<ProtectedRoute component={Section} roles={['user', 'admin', 'provider']} />} />
+                      <Route path="/user/notification/promotion" element={<ProtectedRoute component={Section} roles={['user', 'provider']} />} />
+                      <Route path="/user/setting/general" element={<ProtectedRoute component={Section} roles={['user', 'admin', 'provider']} />} />
+                      <Route path="/user/setting/notification" element={<ProtectedRoute component={Section} roles={['user', 'admin', 'provider']} />} />
+                      <Route path="/user/setting/privacy" element={<ProtectedRoute component={Section} roles={['user', 'admin', 'provider']} />} />
+                      <Route path="/user/cart" element={<ProtectedRoute component={CartPage} roles={['user']} />} />
+                      <Route path="/user/checkout" element={<ProtectedRoute component={CheckoutPage} roles={['user']} />} />
+                      <Route path="/user/order-confirm" element={<ProtectedRoute component={OrderConfirmPage} roles={['user']} />} />
+                      <Route path="/admin" element={<ProtectedRoute component={Section} roles={['admin']} />} />
+                      <Route path="/admin/dashboard" element={<ProtectedRoute component={Dashboard} roles={['admin']} />} />
+                      <Route path="/admin/game-management" element={<ProtectedRoute component={GameManagement} roles={['admin']} />} />
+                      <Route path="/admin/user-management" element={<ProtectedRoute component={UserManagement} roles={['admin']} />} />
+                      <Route path="/admin/become-seller" element={<ProtectedRoute component={BecomeSeller} roles={['admin']} />} />
+                      <Route path="/admin/order-management" element={<ProtectedRoute component={OrderList} roles={['admin']} />} />
+                      <Route path="/admin/report-management" element={<ProtectedRoute component={UserRequest} roles={['admin']} />} />
+                      <Route path="/provider" element={<ProtectedRoute component={Section} roles={['provider']} />} />
+                      <Route path="/provider/dashboard" element={<ProtectedRoute component={Section} roles={['provider']} />} />
+                      <Route path="/provider/game" element={<ProtectedRoute component={ProductUploading} roles={['provider']} />} />
+                      <Route path="/provider/order" element={<ProtectedRoute component={Section} roles={['provider']} />} />
+                      <Route path="/provider/customer" element={<ProtectedRoute component={Section} roles={['provider']} />} />
+                      <Route path="/provider/finance" element={<ProtectedRoute component={Section} roles={['provider']} />} />
+                      <Route path="/provider/promotion" element={<ProtectedRoute component={Section} roles={['provider']} />} />
+                      <Route path="/provider/report" element={<ProtectedRoute component={Section} roles={['provider']} />} />
                       <Route path="*" element={<Navigate to="/" />} />
                     </Routes>
                     <Footer className="bg-background z-10" />

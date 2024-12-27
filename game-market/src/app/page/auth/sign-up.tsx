@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { jwtDecode } from 'jwt-decode';
 
 export default function SignUp() {
   const [username, setUsername] = useState('');
@@ -17,9 +18,18 @@ export default function SignUp() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      window.location.href = '/';
+      const decodedToken: any = jwtDecode(token);
+      const userRole = decodedToken.role;
+      if (userRole === 'admin') {
+        window.location.href = '/admin';
+      } else if (userRole === 'provider') {
+        window.location.href = '/provider';
+      } else {
+        window.location.href = '/';
+      }
     }
   }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
