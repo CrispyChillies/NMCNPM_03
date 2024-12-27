@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ProductFiltersProps {
   onApplyFilters: (platforms: string[], genres: string[], conditions: string[], status: string[], tags: string[], sortBy: string) => void;
@@ -23,13 +24,13 @@ const platforms = [
 ];
 
 const genres = [
-  "Action",
-  "RPG", 
-  "FPS",
-  "Adventure",
-  "Sports",
-  "Racing",
-  "Strategy"
+  "action",
+  "rpg", 
+  "fps",
+  "adventure",
+  "sports",
+  "racing",
+  "strategy"
 ];
 
 const conditions = [
@@ -39,10 +40,10 @@ const conditions = [
   "fair"
 ];
 
-const statuses = [
-  "available",
-  "unavailable" 
-];
+// const statuses = [
+//   "available",
+//   "unavailable" 
+// ];
 
 const tags = [
   "bestSellers",
@@ -50,6 +51,32 @@ const tags = [
   "comingSoon", 
   "specialOffers"
 ];
+
+const DISPLAY_NAMES: { [key: string]: string } = {
+  playstation5: "Play Station 5",
+  playstation4: "Play Station 4",
+  xboxSeriesX: "Xbox Series X",
+  xboxOne: "Xbox One",
+  nintendoSwitch: "Nintendo Switch",
+  pc: "PC",
+  action: "Action",
+  rpg: "RPG",
+  fps: "FPS",
+  adventure: "Adventure",
+  sports: "Sports",
+  racing: "Racing",
+  strategy: "Strategy",
+  new: "New",
+  likeNew: "Like New",
+  good: "Good",
+  fair: "Fair",
+  // available: "Available",
+  // unavailable: "Unavailable",
+  bestSellers: "Best Sellers",
+  newReleases: "New Releases",
+  comingSoon: "Coming Soon",
+  specialOffers: "Special Offers"
+};
 
 type SortOption = {
   value: string;
@@ -67,25 +94,27 @@ export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps)
   const [tempPlatforms, setTempPlatforms] = useState<string[]>([]);
   const [tempGenres, setTempGenres] = useState<string[]>([]);
   const [tempConditions, setTempConditions] = useState<string[]>([]);
-  const [tempStatuses, setTempStatuses] = useState<string[]>([]);
+  // const [tempStatuses, setTempStatuses] = useState<string[]>([]);
   const [tempTags, setTempTags] = useState<string[]>([]);
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
 
   const handleApplyFilters = () => {
     onApplyFilters(
       tempPlatforms,
       tempGenres, 
       tempConditions,
-      tempStatuses,
+      [], // tempStatuses,
       tempTags,
       selectedSort
     );
+    // setIsFiltersVisible(false); // Collapse filters after applying
   };
 
   const handleResetFilters = () => {
     setTempPlatforms([]);
     setTempGenres([]);
     setTempConditions([]);
-    setTempStatuses([]);
+    // setTempStatuses([]);
     setTempTags([]);
     setSelectedSort('rating-desc');
     onReset(); // Call parent reset handler
@@ -120,111 +149,144 @@ export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps)
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          <Button variant="outline" onClick={() => setIsFiltersVisible(!isFiltersVisible)} className="w-36 justify-start">
+            {isFiltersVisible ? <ChevronUp className="mr-2" /> : <ChevronDown className="mr-2" />}
+            {isFiltersVisible ? 'Hide Filters' : 'Show Filters'}
+          </Button>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 p-4 border-b">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              Platforms ({tempPlatforms.length})
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            {platforms.map((platform) => (
-              <DropdownMenuCheckboxItem
-                key={platform}
-                checked={tempPlatforms.includes(platform)}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    setTempPlatforms([...tempPlatforms, platform]);
-                  } else {
-                    setTempPlatforms(tempPlatforms.filter(p => p !== platform));
-                  }
-                }}
-              >
-                {platform}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="border-b my-4"></div> {/* Separator line */}
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              Genres ({tempGenres.length})
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            {genres.map((genre) => (
-              <DropdownMenuCheckboxItem
-                key={genre}
-                checked={tempGenres.includes(genre)}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    setTempGenres([...tempGenres, genre]);
-                  } else {
-                    setTempGenres(tempGenres.filter(g => g !== genre));
-                  }
-                }}
-              >
-                {genre}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      {isFiltersVisible && (
+        <div className="flex flex-wrap items-center gap-4 px-4 mb-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Platforms ({tempPlatforms.length})
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {platforms.map((platform) => (
+                <DropdownMenuCheckboxItem
+                  key={platform}
+                  checked={tempPlatforms.includes(platform)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setTempPlatforms([...tempPlatforms, platform]);
+                    } else {
+                      setTempPlatforms(tempPlatforms.filter(p => p !== platform));
+                    }
+                  }}
+                >
+                  {DISPLAY_NAMES[platform]}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              Conditions ({tempConditions.length})
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            {conditions.map((condition) => (
-              <DropdownMenuCheckboxItem
-                key={condition}
-                checked={tempConditions.includes(condition)}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    setTempConditions([...tempConditions, condition]);
-                  } else {
-                    setTempConditions(tempConditions.filter(c => c !== condition));
-                  }
-                }}
-              >
-                {condition}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Genres ({tempGenres.length})
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {genres.map((genre) => (
+                <DropdownMenuCheckboxItem
+                  key={genre}
+                  checked={tempGenres.includes(genre)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setTempGenres([...tempGenres, genre]);
+                    } else {
+                      setTempGenres(tempGenres.filter(g => g !== genre));
+                    }
+                  }}
+                >
+                  {DISPLAY_NAMES[genre]}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              Tags ({tempTags.length})
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {tags.map((tag) => (
-              <DropdownMenuCheckboxItem
-                key={tag}
-                checked={tempTags.includes(tag)}
-                onCheckedChange={(checked) => {
-                  setTempTags(checked
-                    ? [...tempTags, tag]
-                    : tempTags.filter(t => t !== tag)
-                  );
-                }}
-              >
-                {tag}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Conditions ({tempConditions.length})
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {conditions.map((condition) => (
+                <DropdownMenuCheckboxItem
+                  key={condition}
+                  checked={tempConditions.includes(condition)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setTempConditions([...tempConditions, condition]);
+                    } else {
+                      setTempConditions(tempConditions.filter(c => c !== condition));
+                    }
+                  }}
+                >
+                  {DISPLAY_NAMES[condition]}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <div className="flex items-center w-full">
-          <div className="ml-auto flex gap-2">
+          {/* <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Status ({tempStatuses.length})
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {statuses.map((status) => (
+                <DropdownMenuCheckboxItem
+                  key={status}
+                  checked={tempStatuses.includes(status)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setTempStatuses([...tempStatuses, status]);
+                    } else {
+                      setTempStatuses(tempStatuses.filter(s => s !== status));
+                    }
+                  }}
+                >
+                  {DISPLAY_NAMES[status]}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu> */}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Tags ({tempTags.length})
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {tags.map((tag) => (
+                <DropdownMenuCheckboxItem
+                  key={tag}
+                  checked={tempTags.includes(tag)}
+                  onCheckedChange={(checked) => {
+                    setTempTags(checked
+                      ? [...tempTags, tag]
+                      : tempTags.filter(t => t !== tag)
+                    );
+                  }}
+                >
+                  {DISPLAY_NAMES[tag]}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="flex-grow"></div> {/* This will push the buttons to the right */}
+
+          <div className="flex items-center gap-2">
             <Button onClick={handleApplyFilters}>
               Apply Filters
             </Button>
@@ -233,7 +295,7 @@ export function ProductFilters({ onApplyFilters, onReset }: ProductFiltersProps)
             </Button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

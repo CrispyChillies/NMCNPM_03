@@ -68,7 +68,7 @@ export default function HomePage() {
     <>
       <CarouselBanner images={banner} />
       <ProductShowcase
-        category="Recommend for You"
+        category="Recommend For You"
         products={recommendedProducts}
       />
       {Object.entries(productsByTag).map(([tag, products], index) => (

@@ -10,7 +10,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './index.css'
 import Home from '@/app/page/home.tsx'
-import Section from '@/app/page/section'
+import Section from '@/components/section'
 import Product from '@/app/page/product'
 import ProfileUpdating from "@/app/page/user/profile-updating"
 import CartPage from "@/app/page/user/cart"

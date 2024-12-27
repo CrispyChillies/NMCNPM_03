@@ -31,7 +31,7 @@ export function ProductShowcase({ category, products }: ProductShowcaseProps) {
   const displayedProducts = showAll ? products : products.slice(0, 8);
 
   return (
-    <section className="py-8">
+    <section className="mt-8">
       <h2 className="text-xl font-bold mb-4 ml-10">{category}</h2>
       <ScrollArea className="w-full whitespace-nowrap rounded-md border">
         <div className="flex w-max space-x-4 p-4">
