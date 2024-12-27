@@ -26,11 +26,11 @@ const CheckoutPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black mt-10 mx-4">
+    <div className="min-h-screen bg-white text-black mt-8 mx-4">
       <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2">
         {/* Customer Information Form */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Address</h2>
+          <h2 className="text-xl font-bold ml-6 text-black">Address</h2>
           <div className="grid gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -89,7 +89,7 @@ const CheckoutPage: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-xl font-bold text-black">Payment Method</h2>
+            <h2 className="text-xl font-bold ml-6 text-black">Payment Method</h2>
             <RadioGroup className="space-y-2">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="mobileBanking" id="mobileBanking" />
@@ -108,7 +108,7 @@ const CheckoutPage: React.FC = () => {
 
         {/* Order Summary */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Order Summary</h2>
+          <h2 className="text-xl font-bold ml-6 text-black">Order Summary</h2>
           <Card className="bg-white text-black">
             <CardHeader>
               <CardTitle>Items</CardTitle>
@@ -122,7 +122,7 @@ const CheckoutPage: React.FC = () => {
                     className="flex items-center justify-between space-x-4 py-2"
                   >
                     <div className="flex items-center space-x-4">
-                      <div className="h-16 w-16 rounded-md overflow-hidden">
+                      <div className="h-16 w-24 rounded-md overflow-hidden">
                         <img 
                           src={item.image} 
                           alt={item.name}

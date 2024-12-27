@@ -76,13 +76,6 @@ export default function CartPage() {
     }
   };
 
-  const handleInputChange = (productId: number, value: string) => {
-    const newQuantity = parseInt(value, 10);
-    if (!isNaN(newQuantity)) {
-      handleQuantityChange(productId, newQuantity);
-    }
-  };
-
   const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleCheckout = () => {
@@ -99,7 +92,7 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto my-8 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-primary">Shopping Cart</h1>
+      <h1 className="text-xl font-bold ml-6 mb-8 text-primary">Shopping Cart</h1>
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           <span className="block sm:inline">{error}</span>
