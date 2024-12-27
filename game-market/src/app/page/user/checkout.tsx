@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
-interface OrderItem {
-  id: string;
+interface CartItem {
+  productId: number; // Change from id: string
   name: string;
   price: number;
-  imageUrl: string;
+  image: string;
   quantity: number;
 }
 
@@ -18,11 +19,77 @@ const CheckoutPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const cartItems = location.state?.cartItems || [];
+  
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [address, setAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("mobile banking");
+  const [error, setError] = useState("");
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handlePlaceOrder = () => {
-    // Simulate order processing
-    const orderNumber = "12345"; // You can generate a real order number here
-    navigate("/user/order-confirm", { state: { orderNumber, items: cartItems } });
+  const handlePlaceOrder = async () => {
+    setError(""); 
+    setIsLoading(true);
+
+    if (!firstName || !lastName || !address || !phoneNumber) {
+      setError("Please fill in all required fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    const fullName = `${firstName} ${lastName}`.trim();
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError("Please login first");
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await axios.post(
+        'http://localhost:6969/api/order',
+        {
+          name: fullName,
+          address: address,
+          phoneNumber: phoneNumber,
+          paymentMethod: paymentMethod,
+          total: total
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      // Handle ZaloPay payment
+      if (response.data.paymentUrl) {
+        // Save order details
+        const orderDetails = {
+          id: response.data.orderId,
+          total: total,
+          date: new Date().toISOString()
+        };
+        
+        localStorage.setItem('pendingOrderId', response.data.orderId);
+        localStorage.setItem('orderDetails', JSON.stringify(orderDetails));
+        
+        // Redirect to ZaloPay payment page
+        window.location.href = response.data.paymentUrl;
+      } else {
+        navigate('/user/cart');
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to place order");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBackToCart = () => {
@@ -38,73 +105,65 @@ const CheckoutPage: React.FC = () => {
           <div className="grid gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-black"
-                >
+                <Label htmlFor="firstName" className="block text-sm font-medium">
                   First Name
                 </Label>
                 <Input
                   id="firstName"
-                  className="w-full px-3 py-2 bg-white border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-black"
-                >
+                <Label htmlFor="lastName" className="block text-sm font-medium">
                   Last Name
                 </Label>
                 <Input
                   id="lastName"
-                  className="w-full px-3 py-2 bg-white border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label
-                htmlFor="address"
-                className="block text-sm font-medium text-black"
-              >
+              <Label htmlFor="address" className="block text-sm font-medium">
                 Address
               </Label>
               <Input
                 id="address"
-                className="w-full px-3 py-2 bg-white border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-                placeholder="Address"
+                placeholder="Shipping Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label
-                htmlFor="phone"
-                className="block text-sm font-medium text-black"
-              >
+              <Label htmlFor="phone" className="block text-sm font-medium">
                 Phone Number
               </Label>
               <Input
                 id="phone"
-                className="w-full px-3 py-2 bg-white border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="Phone Number"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                required
               />
             </div>
           </div>
-
           <div className="space-y-4">
-            <h2 className="text-xl font-bold ml-6 text-black">Payment Method</h2>
-            <RadioGroup className="space-y-2">
+            <Label className="block text-sm font-medium">Payment Method</Label>
+            <RadioGroup
+              defaultValue="mobile banking"
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="mobileBanking" id="mobileBanking" />
+                <RadioGroupItem value="mobile banking" id="mobileBanking" />
                 <Label htmlFor="mobileBanking">Mobile Banking</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value="Cash On Delivery"
-                  id="Cash On Delivery"
-                />
-                <Label htmlFor="Cash On Delivery">Cash On Delivery</Label>
               </div>
             </RadioGroup>
           </div>
@@ -127,10 +186,9 @@ const CheckoutPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Product List */}
                 {cartItems.map((item: CartItem) => (
-                  <div 
-                    key={item.id} 
+                  <div
+                    key={item.productId}
                     className="flex items-center justify-between space-x-4 py-2"
                   >
                     <div className="flex items-center space-x-4">
@@ -151,12 +209,16 @@ const CheckoutPage: React.FC = () => {
                     </div>
                   </div>
                 ))}
-
                 <div className="mt-6 space-y-2 border-t pt-4">
                   <div className="flex justify-between">
                     <span className="text-gray-500">Subtotal</span>
                     <span className="font-medium">
-                      ${cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
+                      ${cartItems
+                        .reduce(
+                          (total, item) => total + item.price * item.quantity,
+                          0
+                        )
+                        .toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -166,14 +228,10 @@ const CheckoutPage: React.FC = () => {
                     </span>
                   </div>
                 </div>
-
                 <div className="mt-6 pt-4 border-t">
-                  <Button 
-                    className="w-full" 
-                    size="lg"
-                    onClick={handlePlaceOrder}
-                  >
-                    Place Order
+                  {error && <p className="text-red-500 mb-4">{error}</p>}
+                  <Button className="w-full" size="lg" onClick={handlePlaceOrder} disabled={isLoading}>
+                    {isLoading ? "Placing Order..." : "Place Order"}
                   </Button>
                 </div>
               </div>

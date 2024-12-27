@@ -29,7 +29,7 @@ CREATE TABLE Users (
 ALTER TABLE Users ADD
     CONSTRAINT chk_userStatus CHECK (userStatus IN ('active','inactive','banned'));
 
--- 6. Create the Product Table (no foreign keys here)
+-- Create the Product Table (no foreign keys here)
 CREATE TABLE Product (
     productId INT  PRIMARY KEY,
     sellerId INT NOT NULL,
@@ -55,7 +55,7 @@ ALTER TABLE Product ADD
     CONSTRAINT chk_status CHECK (status IN ('available','unavailable')),
     CONSTRAINT chk_tag CHECK (tag IN ('bestSellers','newReleases','comingSoon','specialOffers'));
 
--- 7. Create the Cart Table (no foreign keys here)
+-- Create the Cart Table (no foreign keys here)
 CREATE TABLE Cart (
     cartId INT NOT NULL,
     productId INT NOT NULL,
@@ -63,8 +63,7 @@ CREATE TABLE Cart (
     PRIMARY KEY (cartId, productId),
 );
 
-
--- 8. Create the BecomeSellerRequest Table (no foreign keys here)
+-- Create the BecomeSellerRequest Table (no foreign keys here)
 CREATE TABLE BecomeSellerRequest (
     requestId INT  PRIMARY KEY,
     userId INT NOT NULL,
@@ -82,7 +81,7 @@ CREATE TABLE BecomeSellerRequest (
 ALTER TABLE BecomeSellerRequest ADD
     CONSTRAINT chk_bsr_status CHECK (status IN ('pending','accepted','declined'));
 
--- 9. Create the ProductRequest Table (no foreign keys here)
+-- Create the ProductRequest Table (no foreign keys here)
 CREATE TABLE ProductRequest (
     gameRequestId INT  PRIMARY KEY,
     userId INT NOT NULL,
@@ -95,7 +94,7 @@ CREATE TABLE ProductRequest (
 ALTER TABLE ProductRequest ADD
     CONSTRAINT chk_pr_status CHECK (status IN ('pending','accepted','rejected'));
 
--- 10. Create the OrderDetail Table (no foreign keys here)
+-- Create the OrderDetail Table (no foreign keys here)
 CREATE TABLE OrderDetail (
     orderDetailId INT NOT NULL,
     productId INT NOT NULL,
@@ -103,7 +102,7 @@ CREATE TABLE OrderDetail (
     PRIMARY KEY (orderDetailId, productId)
 );
 
--- 11. Create the Order Table (no foreign keys here)
+-- Create the Order Table (no foreign keys here)
 CREATE TABLE [Order] (
     orderId INT  PRIMARY KEY,
     userId INT NOT NULL,
@@ -118,11 +117,13 @@ CREATE TABLE [Order] (
 
 -- CHECK constraints for Order enums
 ALTER TABLE [Order] ADD
-    CONSTRAINT chk_order_status CHECK (status IN ('pending','completed','cancelled')),
-    CONSTRAINT chk_payment_method CHECK (paymentMethod IN ('mobile banking','cashOnDelivery'));
+    CONSTRAINT chk_order_status CHECK (status IN ('pending','completed','cancelled', 'paid'));
+    -- CONSTRAINT chk_payment_method CHECK (paymentMethod IN ('zalopay'));
+
 GO      
 
-INSERT INTO [Account] ([id], [username], [password]) VALUES ('1', 'user1', '0b14d501a594442a01c6859541bcb3e8164d183d32937b851835442f69d5c94e'),
+INSERT INTO [Account] ([id], [username], [password]) VALUES
+('1', 'user1', '0b14d501a594442a01c6859541bcb3e8164d183d32937b851835442f69d5c94e'),
 ('2', 'user2', '6cf615d5bcaac778352a8f1f3360d23f02f34ec182e259897fd6ce485d7870d4'),
 ('3', 'user3', '5906ac361a137e2d286465cd6588ebb5ac3f5ae955001100bc41577c3d751764'),
 ('4', 'user4', 'b97873a40f73abedd8d685a7cd5e5f85e4a9cfb83eac26886640a0813850122b'),
@@ -223,7 +224,8 @@ INSERT INTO [Account] ([id], [username], [password]) VALUES ('1', 'user1', '0b14
 ('99', 'user99', '5f5b24ad65531525ddcccace0598dafaa386e30749babf12c7b0cda2af45c582'),
 ('100', 'user100', 'b3351ed9be23d5ad99cc73bdc1aed73913503f064534ead302d7485b72b072fe');
 
-INSERT INTO [Users] ([id], [role], [firstName], [lastName], [citizenId], [email], [phoneNumber], [userAddress], [businessName], [businessDescription], [businessAddress], [userStatus], [cartId]) VALUES ('1', 'user', 'Melissa', 'Ellison', 'CITIZENID1', 'user1@example.com', '8644690976', 'PSC 9907, Box 7699, APO AP 25837', NULL, NULL, NULL, 'active', '1'),
+INSERT INTO [Users] ([id], [role], [firstName], [lastName], [citizenId], [email], [phoneNumber], [userAddress], [businessName], [businessDescription], [businessAddress], [userStatus], [cartId]) VALUES
+('1', 'user', 'Melissa', 'Ellison', 'CITIZENID1', 'user1@example.com', '8644690976', 'PSC 9907, Box 7699, APO AP 25837', NULL, NULL, NULL, 'active', '1'),
 ('2', 'user', 'Ashley', 'Palmer', 'CITIZENID2', 'user2@example.com', '631-999-1244x71053', '60739 Steven Mission Suite 207, Jenkinsview, PW 65437', NULL, NULL, NULL, 'active', '2'),
 ('3', 'user', 'Jacob', 'Strickland', 'CITIZENID3', 'user3@example.com', '684.887.8004x71177', '36660 Jeffrey Rapid Suite 837, Lopezmouth, WA 07549', NULL, NULL, NULL, 'active', '3'),
 ('4', 'user', 'Katherine', 'Kelley', 'CITIZENID4', 'user4@example.com', '321.978.8051x8593', 'USCGC Odom, FPO AE 44128', NULL, NULL, NULL, 'inactive', '4'),
@@ -324,7 +326,8 @@ INSERT INTO [Users] ([id], [role], [firstName], [lastName], [citizenId], [email]
 ('99', 'provider', 'Stephanie', 'Hall', 'CITIZENID99', 'provider99@example.com', '597-523-0214', '952 Barry Coves Apt. 305, Hodgeton, SD 35971', 'Webster and Sons', 'Forget effect there his. Congress red if market even.', '8318 Denise Circle Apt. 378, East Tylertown, WY 24914', 'active', '99'),
 ('100', 'admin', 'Yolanda', 'Shelton', 'CITIZENID100', 'admin100@example.com', '777.744.1000x8277', '96980 Sanchez Locks, Laurenborough, WI 76667', NULL, NULL, NULL, 'inactive', '100');
 
-INSERT INTO [Product] ([productId], [sellerId], [name], [price], [description], [stock], [platform], [genre], [condition], [image], [status], [releaseDay], [tag], [rating]) VALUES ('1', '85', 'Dota 2', '34.56', 'Colorful narrative with strategic elements. Engaging community worldwide.', '32', 'playstation4', 'action', 'new', 'https://steamcdn-a.akamaihd.net/steam/apps/570/header.jpg?t=1554408611', 'available', '2023-03-15', 'bestSellers', '4.5'),
+INSERT INTO [Product] ([productId], [sellerId], [name], [price], [description], [stock], [platform], [genre], [condition], [image], [status], [releaseDay], [tag], [rating]) VALUES
+('1', '85', 'Dota 2', '34.56', 'Colorful narrative with strategic elements. Engaging community worldwide.', '32', 'playstation4', 'action', 'new', 'https://steamcdn-a.akamaihd.net/steam/apps/570/header.jpg?t=1554408611', 'available', '2023-03-15', 'bestSellers', '4.5'),
 ('2', '94', 'Dota 2', '58.30', 'A renowned competitive title. Thrilling battles await every season.', '66', 'xboxOne', 'action', 'good', 'https://steamcdn-a.akamaihd.net/steam/apps/570/header.jpg?t=1554408611', 'available', '2023-10-03', 'comingSoon', '4.2'),
 ('3', '81', 'Dota 2', '22.45', 'Team-based strategy with deep mechanics. Endless replayability.', '12', 'nintendoSwitch', 'action', 'fair', 'https://steamcdn-a.akamaihd.net/steam/apps/570/header.jpg?t=1554408611', 'available', '2024-02-12', 'specialOffers', '4.7'),
 ('4', '86', 'Dota 2', '41.00', 'Popular esports title with regular updates. Complex meta evolves.', '78', 'pc', 'action', 'likeNew', 'https://steamcdn-a.akamaihd.net/steam/apps/570/header.jpg?t=1554408611', 'available', '2023-12-20', 'newReleases', '4.1'),
@@ -544,7 +547,9 @@ INSERT INTO [Product] ([productId], [sellerId], [name], [price], [description], 
 ('218', '90', 'Robocraft', '22.50', 'Build custom robots and engage in creative combat.', '11', 'nintendoSwitch', 'action', 'fair', 'https://steamcdn-a.akamaihd.net/steam/apps/301520/header.jpg?t=1553776646', 'unavailable', '2024-03-30', 'specialOffers', '4.1'),
 ('219', '82', 'Counter-Strike', '33.15', 'The classic tactical FPS that started a revolution.', '45', 'playstation4', 'action', 'good', 'https://steamcdn-a.akamaihd.net/steam/apps/10/header.jpg?t=1528733245', 'unavailable', '2023-05-08', 'bestSellers', '4.4'),
 ('220', '96', 'Counter-Strike: Global Offensive', '48.05', 'Modern competitive shooter defining esports standards.', '20', 'xboxOne', 'action', 'new', 'https://steamcdn-a.akamaihd.net/steam/apps/730/header.jpg?t=1554409309', 'unavailable', '2024-10-02', 'comingSoon', '4.5');
-INSERT INTO [Cart] ([cartId], [productId], [quantity]) VALUES ('1', '37', '3'),
+
+INSERT INTO [Cart] ([cartId], [productId], [quantity]) VALUES
+('1', '37', '3'),
 ('1', '38', '3'),
 ('2', '98', '5'),
 ('3', '90', '1'),
@@ -646,7 +651,8 @@ INSERT INTO [Cart] ([cartId], [productId], [quantity]) VALUES ('1', '37', '3'),
 ('99', '5', '4'),
 ('100', '43', '5');
 
-INSERT INTO [BecomeSellerRequest] ([requestId], [userId], [email], [phoneNumber], [businessAddress], [businessName], [productDescription], [address], [date], [status]) VALUES ('1', '1', 'request1@example.com', '359-718-8903x65391', 'PSC 1564, Box 3595, APO AA 79470', 'BusinessRequest1', 'Information common group easy people Congress spend. Officer in health whatever ever next. Guess save major ability think blue.', '854 Sanders Canyon, North Katieburgh, FM 64861', '2024-08-17', 'declined'),
+INSERT INTO [BecomeSellerRequest] ([requestId], [userId], [email], [phoneNumber], [businessAddress], [businessName], [productDescription], [address], [date], [status]) VALUES
+('1', '1', 'request1@example.com', '359-718-8903x65391', 'PSC 1564, Box 3595, APO AA 79470', 'BusinessRequest1', 'Information common group easy people Congress spend. Officer in health whatever ever next. Guess save major ability think blue.', '854 Sanders Canyon, North Katieburgh, FM 64861', '2024-08-17', 'declined'),
 ('2', '2', 'request2@example.com', '721.740.7315', '0458 Johnson Branch Suite 712, New Jennifer, IA 53662', 'BusinessRequest2', 'Area necessary special.
 Writer away sport represent hit look form. Threat pull read her move watch these. Win nation lot late.', '000 Zamora Port Apt. 092, Jensenside, VI 50285', '2024-05-12', 'pending'),
 ('3', '3', 'request3@example.com', '+1-531-382-6814x0042', '61010 Betty Coves, Jenniferborough, VT 54603', 'BusinessRequest3', 'Apply represent buy. Visit ability show end some vote.', '9584 Robert Inlet, Powellbury, IA 27268', '2024-04-06', 'pending'),
@@ -662,7 +668,8 @@ Example man when enter become miss tend. Along yes voice.', '828 Todd Junctions,
 ('12', '88', 'request12@example.com', '267-701-7490x80536', '49565 Nicole Square, New Alan, TN 76752', 'BusinessRequest12', 'Deep officer interview upon offer industry sing. Never think cover eight.
 Red film authority crime throw. Trial center PM at half sense.', '488 Austin Loaf Apt. 854, Debbieland, MI 32869', '2024-03-15', 'accepted');
 
-INSERT INTO [ProductRequest] ([gameRequestId], [userId], [productId], [status], [requestDate]) VALUES ('1', '97', '1', 'accepted', '2024-06-19'),
+INSERT INTO [ProductRequest] ([gameRequestId], [userId], [productId], [status], [requestDate]) VALUES
+('1', '97', '1', 'accepted', '2024-06-19'),
 ('2', '80', '2', 'accepted', '2024-12-04'),
 ('3', '82', '3', 'accepted', '2024-03-28'),
 ('4', '89', '4', 'accepted', '2024-05-26'),
@@ -882,7 +889,9 @@ INSERT INTO [ProductRequest] ([gameRequestId], [userId], [productId], [status], 
 ('218', '81', '218', 'rejected', '2024-12-06'),
 ('219', '96', '219', 'rejected', '2024-05-29'),
 ('220', '89', '220', 'rejected', '2024-11-21');
-INSERT INTO [OrderDetail] ([orderDetailId], [productId], [quantity]) VALUES ('1', '62', '4'),
+
+INSERT INTO [OrderDetail] ([orderDetailId], [productId], [quantity]) VALUES
+('1', '62', '4'),
 ('2', '28', '2'),
 ('2', '82', '1'),
 ('3', '80', '5'),
@@ -983,106 +992,107 @@ INSERT INTO [OrderDetail] ([orderDetailId], [productId], [quantity]) VALUES ('1'
 ('99', '72', '2'),
 ('100', '13', '1');
 
-INSERT INTO [Order] ([orderId], [userId], [status], [date], [orderDetailId], [name], [address], [phoneNumber], [paymentMethod]) VALUES ('1', '74', 'completed', '2024-10-23', '1', 'Faith Rice', '128 Jones Hollow Apt. 362, Jameschester, FL 52700', '827-920-6228', 'mobile banking'),
-('2', '40', 'pending', '2024-06-17', '2', 'Tyler Grant', 'USNV Taylor, FPO AE 74042', '896-922-0241', 'cashOnDelivery'),
-('3', '13', 'cancelled', '2024-09-30', '3', 'Matthew Maddox', '655 Jason Field, Chrisside, SD 46910', '+1-248-445-5479', 'mobile banking'),
-('4', '27', 'completed', '2024-10-22', '4', 'Jerry Butler', '5003 Christina Wells Apt. 815, Haydenberg, HI 96258', '6015651394', 'mobile banking'),
-('5', '63', 'completed', '2024-09-02', '5', 'Tammie Gutierrez', 'Unit 5415 Box 2415, DPO AP 47061', '982.328.4115', 'mobile banking'),
-('6', '88', 'pending', '2024-03-11', '6', 'Kathy Jackson', '184 Chan Drive, Jamesside, ID 64131', '518.425.7397x326', 'cashOnDelivery'),
-('7', '9', 'completed', '2024-05-07', '7', 'Andrea Lee', '42307 Jerry Cove, New Emilyhaven, WA 34395', '5325224207', 'mobile banking'),
-('8', '56', 'completed', '2024-10-02', '8', 'Chloe Williams', '540 Turner Lodge Apt. 153, New Caitlinton, MA 27335', '4824087901', 'mobile banking'),
-('9', '28', 'pending', '2024-11-08', '9', 'Elizabeth Garcia', '849 Christopher Drives Suite 137, East Yvette, IL 95899', '787.491.7600', 'cashOnDelivery'),
-('10', '65', 'completed', '2024-03-15', '10', 'Ricky Powell', '48889 Bill Path Suite 743, South Sarah, OK 64654', '001-510-516-9405', 'mobile banking'),
-('11', '21', 'cancelled', '2024-06-17', '11', 'Ashley Davis', '409 Warner Stream Suite 082, New Elizabethberg, OK 70399', '(801)977-5708', 'cashOnDelivery'),
-('12', '1', 'completed', '2024-04-05', '12', 'Brianna Mcdonald', '5383 Amber Pass Suite 144, Port Debra, NH 73942', '900-255-9561x50709', 'cashOnDelivery'),
-('13', '41', 'cancelled', '2024-07-11', '13', 'Stacey Matthews', '072 Conrad Brook Suite 971, Bennettshire, AL 92257', '326.662.2305', 'mobile banking'),
-('14', '17', 'pending', '2024-11-21', '14', 'Darren Burton', '57910 Alexander Junctions, Pagefort, RI 06416', '(812)288-6777x992', 'mobile banking'),
-('15', '33', 'pending', '2024-10-05', '15', 'Steven Gonzales', '59732 Michael Greens Apt. 200, West Philipshire, TN 61099', '(920)542-8588', 'mobile banking'),
-('16', '33', 'pending', '2024-03-22', '16', 'Tamara Jackson', '95390 Bishop Ports, East Jacobview, WY 29800', '001-445-220-5588x58171', 'mobile banking'),
-('17', '38', 'cancelled', '2024-03-20', '17', 'Amber Jones', '03935 Hernandez Park Apt. 576, Lake Katie, WA 93289', '001-690-403-3299', 'cashOnDelivery'),
-('18', '25', 'pending', '2024-05-07', '18', 'Pamela Cruz', '05884 Anne Brook Apt. 071, Leestad, MP 86303', '001-703-306-5753x6787', 'cashOnDelivery'),
-('19', '69', 'pending', '2024-03-04', '19', 'Joseph Williams', '0718 Boone Alley Suite 774, Port Lauraland, NM 74409', '(715)672-5548', 'mobile banking'),
-('20', '22', 'pending', '2024-03-24', '20', 'Albert Bentley', 'Unit 7202 Box 3634, DPO AE 21271', '+1-903-947-7141x0185', 'mobile banking'),
-('21', '96', 'pending', '2024-05-14', '21', 'Lisa Harris', '372 Antonio Skyway Suite 678, West Katrinatown, MH 86481', '001-886-310-5010x825', 'cashOnDelivery'),
-('22', '3', 'completed', '2024-09-13', '22', 'Matthew Hicks', '5639 Robert Neck, New Saraview, RI 89706', '+1-393-469-3383x2509', 'cashOnDelivery'),
-('23', '90', 'pending', '2024-12-15', '23', 'Christine Cabrera', '308 Jessica Street Suite 217, Kanetown, UT 92818', '902.587.0671x5889', 'mobile banking'),
-('24', '47', 'pending', '2024-03-18', '24', 'David Jones', '921 Bell Mountain Suite 122, South Andrew, SD 91922', '001-687-280-1632', 'cashOnDelivery'),
-('25', '56', 'cancelled', '2024-07-25', '25', 'Jared Doyle', 'PSC 2858, Box 6742, APO AP 91681', '444-285-4914x9271', 'cashOnDelivery'),
-('26', '7', 'cancelled', '2024-07-01', '26', 'Tracey Hensley', '5366 Rodriguez Crest Apt. 940, East Davidstad, IA 77987', '772-290-6803x2890', 'mobile banking'),
-('27', '76', 'completed', '2024-02-05', '27', 'Michele Mcdonald', '914 Long Light, South Saraview, NM 15974', '221-557-0152x273', 'mobile banking'),
-('28', '76', 'cancelled', '2024-05-15', '28', 'Kyle Holt', '332 Hughes Square, Edwardbury, IN 47458', '+1-566-381-5939', 'mobile banking'),
-('29', '81', 'completed', '2024-10-09', '29', 'Lynn Willis', '6708 Elizabeth Islands, Robbinsfort, MD 94521', '236-662-8426', 'mobile banking'),
-('30', '43', 'cancelled', '2024-03-28', '30', 'Sabrina Kelley', '3418 Gallagher Locks Apt. 654, Brandyshire, IA 72642', '644-519-9147', 'mobile banking'),
-('31', '4', 'completed', '2024-08-25', '31', 'Michael Salas', '23421 Travis View, West Kenneth, GU 78746', '582.214.3540x6820', 'mobile banking'),
-('32', '56', 'pending', '2024-04-16', '32', 'Kimberly Chambers', '7552 Wong Wells Apt. 530, South Stephanie, MD 52196', '513.297.4915x7317', 'mobile banking'),
-('33', '65', 'completed', '2024-11-20', '33', 'Ariana Olsen', '4038 William Mountains, Richardborough, GA 84464', '(655)994-0593x073', 'mobile banking'),
-('34', '48', 'completed', '2024-07-07', '34', 'Nancy Simpson', '2988 Mcdonald Islands, South Ryan, NE 59238', '673-938-2196', 'cashOnDelivery'),
-('35', '68', 'completed', '2024-10-09', '35', 'Rebecca Booker', '8556 Carl Meadow Apt. 331, Karinabury, KS 62808', '4546270706', 'mobile banking'),
-('36', '62', 'completed', '2024-09-03', '36', 'Keith Salas', '595 William Common Suite 109, New Dustin, VA 79568', '(960)511-2965x4121', 'mobile banking'),
-('37', '58', 'cancelled', '2024-06-04', '37', 'Matthew Thomas', 'Unit 1566 Box 4438, DPO AE 55859', '937.924.7283', 'mobile banking'),
-('38', '35', 'completed', '2024-10-05', '38', 'Brandi Murray', '56114 Allison Radial Apt. 275, Sanchezland, OR 46460', '(900)793-1969', 'cashOnDelivery'),
-('39', '33', 'completed', '2024-11-25', '39', 'Brandon Smith', '26945 Mcmahon Gateway, Stewartton, WI 05274', '546.451.2187x6992', 'mobile banking'),
-('40', '11', 'pending', '2024-04-26', '40', 'Kayla Mcdaniel', '4478 Cathy Village Apt. 385, Coreytown, ME 88158', '001-607-236-2083', 'mobile banking'),
-('41', '35', 'pending', '2024-08-16', '41', 'Jennifer Owens', '56676 Gray Flats, Craigport, MS 95807', '3329365560', 'mobile banking'),
-('42', '80', 'completed', '2024-06-06', '42', 'Darren Butler', '8904 Emily Bypass, Frankmouth, ND 98148', '+1-307-826-2667x017', 'mobile banking'),
-('43', '57', 'pending', '2024-11-19', '43', 'Jeffrey Mays', '0619 Lisa Cliffs, East Benjamin, WV 40733', '946.582.2695', 'cashOnDelivery'),
-('44', '39', 'completed', '2024-12-13', '44', 'Geoffrey Strickland', '32495 Curtis Cliffs, Gonzalezside, TN 49081', '+1-276-586-2297x55022', 'mobile banking'),
-('45', '91', 'pending', '2024-05-13', '45', 'Edward Burnett', '717 Karen Island Suite 577, Port David, AZ 72036', '(434)426-2067', 'mobile banking'),
-('46', '90', 'cancelled', '2024-11-14', '46', 'Benjamin Schmitt', 'Unit 7543 Box 2889, DPO AP 81694', '272-824-0146x91018', 'cashOnDelivery'),
-('47', '98', 'cancelled', '2024-11-04', '47', 'Brian Marquez', '4398 Gary Cape, Hartchester, WA 20419', '001-543-282-4554x2542', 'mobile banking'),
-('48', '7', 'cancelled', '2024-01-06', '48', 'Patrick Drake', '0818 Jack Place Suite 767, West Ryan, NH 41978', '(668)929-5578x3903', 'cashOnDelivery'),
-('49', '81', 'pending', '2024-05-19', '49', 'Robert Mendoza', '07654 Reeves Springs Apt. 414, Davisburgh, WI 61116', '2922100747', 'cashOnDelivery'),
-('50', '85', 'pending', '2024-02-20', '50', 'Daniel Gray', '55046 Patterson Court, Williamfort, PW 36493', '471.756.6122', 'cashOnDelivery'),
-('51', '71', 'completed', '2024-04-22', '51', 'Cindy Bowers', '281 Hannah Coves, New Olivia, ND 85830', '(888)772-2788x2768', 'cashOnDelivery'),
-('52', '97', 'cancelled', '2024-04-04', '52', 'Tracy Hinton', '1887 Vega Lock, Lake Ashley, AL 31625', '699.632.2407x2796', 'mobile banking'),
-('53', '72', 'completed', '2024-07-19', '53', 'Frances Rice', '9572 Jessica Ways, Lake Kyle, MP 34211', '+1-293-744-2799', 'mobile banking'),
-('54', '49', 'completed', '2024-03-11', '54', 'Danielle Malone', '997 Wong Bridge, Colemanville, KY 06214', '(861)200-9862x32639', 'cashOnDelivery'),
-('55', '7', 'pending', '2023-12-30', '55', 'Bruce Wright', 'USNV Walker, FPO AA 98556', '593.458.4039x472', 'cashOnDelivery'),
-('56', '2', 'pending', '2024-12-15', '56', 'Willie Richardson', '433 Jonathan View Apt. 221, Wallmouth, KS 48417', '5054862278', 'mobile banking'),
-('57', '71', 'pending', '2024-01-05', '57', 'Kevin Mosley', 'Unit 0874 Box 1484, DPO AA 23341', '5198585227', 'mobile banking'),
-('58', '42', 'pending', '2024-08-16', '58', 'Riley Hogan', '40037 Barton Roads Apt. 036, East Bruce, DC 45554', '(709)384-2776x1820', 'mobile banking'),
-('59', '28', 'cancelled', '2024-11-10', '59', 'Jessica Williams', '3250 Stevens Course, West Wendyborough, WV 46174', '001-451-660-2928x8223', 'mobile banking'),
-('60', '76', 'completed', '2024-08-16', '60', 'Cindy Wallace', '49254 Lee Center Suite 813, Bentonland, IA 37805', '365.989.7948x57620', 'cashOnDelivery'),
-('61', '31', 'cancelled', '2024-02-09', '61', 'Brittany Moore', '9155 Luis Expressway Apt. 143, Port Scottport, SC 69559', '001-946-750-3385x304', 'cashOnDelivery'),
-('62', '63', 'pending', '2024-06-15', '62', 'Nicholas Phillips', '514 Travis Via, East Lisa, ME 10433', '(323)636-4878x5804', 'cashOnDelivery'),
-('63', '20', 'pending', '2024-12-17', '63', 'Michael Howell', '58416 David Points, Port Alex, CA 11626', '961-226-5083', 'mobile banking'),
-('64', '76', 'cancelled', '2024-05-21', '64', 'Gloria Cummings', '92806 Diane Causeway Suite 463, New Gregoryville, WI 97124', '(915)908-4212', 'cashOnDelivery'),
-('65', '71', 'pending', '2024-08-01', '65', 'Christina Maxwell', '223 Dylan Rue, Pamview, WV 53392', '857.727.9151x99358', 'mobile banking'),
-('66', '70', 'completed', '2024-11-30', '66', 'Arthur Flynn', '543 Gonzales Field, Benjaminville, DC 45925', '693-313-2017x89485', 'mobile banking'),
-('67', '17', 'completed', '2024-11-05', '67', 'Tara French', '015 Camacho Curve Apt. 455, Jacobmouth, OK 68734', '001-842-248-1467x32859', 'mobile banking'),
-('68', '20', 'cancelled', '2024-04-09', '68', 'Robin Romero', '8108 Taylor Rapids Apt. 611, West Christopherfurt, OH 69813', '238-863-7817', 'cashOnDelivery'),
-('69', '74', 'cancelled', '2024-05-30', '69', 'Hannah Tucker', '2992 Sharp Mills, Jessicatown, NE 89613', '(730)645-1880', 'mobile banking'),
-('70', '43', 'completed', '2024-09-10', '70', 'Andrew Calderon', '0821 Nelson Brooks, New Ashleyfurt, GA 88436', '001-690-453-1214', 'cashOnDelivery'),
-('71', '86', 'completed', '2024-02-04', '71', 'Angela Edwards', '8184 Angela Mills Suite 955, Cynthiaburgh, NH 75201', '744-534-8493', 'cashOnDelivery'),
-('72', '96', 'completed', '2024-06-25', '72', 'Ashley Stanton', '01931 Krueger Ford Apt. 239, Jeffreytown, KY 05315', '(988)910-5574x70854', 'mobile banking'),
-('73', '15', 'completed', '2024-11-28', '73', 'Martin Perez', '109 Sherry Stravenue Suite 015, Austintown, DC 66691', '001-581-255-6979', 'mobile banking'),
-('74', '51', 'pending', '2024-03-22', '74', 'Mark Wright', '23233 Kayla Oval, Meganmouth, AL 01736', '001-455-939-3436x42325', 'mobile banking'),
-('75', '76', 'cancelled', '2024-08-20', '75', 'Sydney Wilson', '870 Jacobs Cape, South Lisa, IA 87949', '325.814.3730', 'cashOnDelivery'),
-('76', '94', 'pending', '2024-11-20', '76', 'Julian Sanchez', '271 Tina Cliff, Jonesport, RI 30273', '+1-554-227-4755x07916', 'cashOnDelivery'),
-('77', '62', 'cancelled', '2024-09-28', '77', 'Terri Kelley', '05452 Clayton Circles, Lake Kellymouth, NJ 35527', '001-246-903-5479x95013', 'cashOnDelivery'),
-('78', '16', 'completed', '2024-03-29', '78', 'Jamie Scott', '86626 Christy Track, Karenland, NJ 06327', '(605)895-5807x0864', 'mobile banking'),
-('79', '34', 'completed', '2024-03-18', '79', 'Kelsey Newman', '67092 Sarah Burg Apt. 572, East William, ME 12577', '(787)683-0973x56875', 'cashOnDelivery'),
-('80', '1', 'completed', '2024-05-05', '80', 'David Rogers', '73984 Lynn Street, North Molly, NV 74653', '(838)954-0282', 'mobile banking'),
-('81', '97', 'cancelled', '2024-09-02', '81', 'Hunter Henry', '72526 Wood Radial, South Raymond, TX 26359', '7422474797', 'mobile banking'),
-('82', '33', 'pending', '2024-04-29', '82', 'Shannon Orozco', '317 Elizabeth Ports, West Jason, MS 54369', '(683)807-9089x380', 'cashOnDelivery'),
-('83', '77', 'pending', '2024-02-28', '83', 'Jeffrey Love', '446 Hernandez Forest, Amyberg, PR 58297', '474-333-7258', 'cashOnDelivery'),
-('84', '17', 'completed', '2024-08-24', '84', 'Julia Kent', '60094 Jared Isle Suite 833, Willismouth, MD 72899', '6092734183', 'cashOnDelivery'),
-('85', '41', 'completed', '2024-01-17', '85', 'Angela Underwood', '24582 Kevin Lodge, Michaelbury, VI 02048', '798.779.5353x250', 'mobile banking'),
-('86', '54', 'pending', '2024-01-22', '86', 'Melinda Jones', '3647 Cummings Brooks Apt. 167, West Lesliemouth, VT 89875', '+1-775-595-2148x1855', 'cashOnDelivery'),
-('87', '37', 'cancelled', '2024-01-13', '87', 'Lisa Lawrence', '054 Smith Mountains Suite 212, North Melissafurt, PW 02462', '+1-285-711-9104', 'cashOnDelivery'),
-('88', '40', 'cancelled', '2024-12-07', '88', 'Tamara King', '4524 Kenneth Roads, Jodiberg, SC 13353', '(235)679-4564x87878', 'mobile banking'),
-('89', '33', 'pending', '2024-09-19', '89', 'David Larson', '481 Marcus Crossing Apt. 544, Acevedoland, SC 54847', '411.700.6001x98038', 'mobile banking'),
-('90', '53', 'cancelled', '2024-11-12', '90', 'Henry Marshall', '19178 Michael Ranch, Wagnerhaven, WA 89084', '(843)475-7766', 'mobile banking'),
-('91', '32', 'pending', '2024-10-21', '91', 'Julie Mcdaniel', '8081 Wilson Trail, New Dennis, WV 52014', '974-995-4254', 'mobile banking'),
-('92', '42', 'completed', '2024-07-18', '92', 'Megan Martinez', '7296 Baker Islands Apt. 588, Taylorton, FL 08545', '(279)614-3011x9045', 'mobile banking'),
-('93', '92', 'cancelled', '2024-04-27', '93', 'Craig Brown', '0889 Floyd Summit Suite 025, New Adam, NY 27821', '(375)798-7269x672', 'mobile banking'),
-('94', '45', 'pending', '2024-03-22', '94', 'Kendra Flores', '8335 Brown Shoal, Port Henry, NM 54820', '(734)641-8790x775', 'cashOnDelivery'),
-('95', '11', 'cancelled', '2024-08-06', '95', 'Erica Johnson', '813 Diaz Springs Suite 794, South Jessicastad, IA 52723', '550-284-9302', 'mobile banking'),
-('96', '89', 'pending', '2024-07-29', '96', 'Victoria Mason', '987 Fitzpatrick Landing Suite 974, Sandovalview, VT 72170', '(392)234-2416', 'cashOnDelivery'),
-('97', '89', 'pending', '2024-03-16', '97', 'Gabriel Simmons', '427 Jennifer Branch, East Kevin, MH 33711', '+1-928-737-3913x180', 'cashOnDelivery'),
-('98', '24', 'cancelled', '2024-11-24', '98', 'Ethan Robinson', '91458 Kelley Ports Suite 936, Wattsberg, MI 17644', '(610)737-9357x7382', 'cashOnDelivery'),
-('99', '65', 'cancelled', '2024-05-10', '99', 'Rodney Roberts', '54407 Dennis Canyon Suite 031, New Timothy, SC 78216', '(434)446-5821x90436', 'cashOnDelivery'),
-('100', '21', 'completed', '2024-04-07', '100', 'Timothy Hernandez', '31568 Wright Land, Lake Amandaland, SD 95045', '+1-929-392-8439x09563', 'mobile banking');
+INSERT INTO [Order] ([orderId], [userId], [status], [date], [orderDetailId], [name], [address], [phoneNumber], [paymentMethod]) VALUES
+('1', '74', 'completed', '2024-10-23', '1', 'Faith Rice', '128 Jones Hollow Apt. 362, Jameschester, FL 52700', '827-920-6228', 'zalopay'),
+('2', '40', 'pending', '2024-06-17', '2', 'Tyler Grant', 'USNV Taylor, FPO AE 74042', '896-922-0241', 'zalopay'),
+('3', '13', 'cancelled', '2024-09-30', '3', 'Matthew Maddox', '655 Jason Field, Chrisside, SD 46910', '+1-248-445-5479', 'zalopay'),
+('4', '27', 'completed', '2024-10-22', '4', 'Jerry Butler', '5003 Christina Wells Apt. 815, Haydenberg, HI 96258', '6015651394', 'zalopay'),
+('5', '63', 'completed', '2024-09-02', '5', 'Tammie Gutierrez', 'Unit 5415 Box 2415, DPO AP 47061', '982.328.4115', 'zalopay'),
+('6', '88', 'pending', '2024-03-11', '6', 'Kathy Jackson', '184 Chan Drive, Jamesside, ID 64131', '518.425.7397x326', 'zalopay'),
+('7', '9', 'completed', '2024-05-07', '7', 'Andrea Lee', '42307 Jerry Cove, New Emilyhaven, WA 34395', '5325224207', 'zalopay'),
+('8', '56', 'completed', '2024-10-02', '8', 'Chloe Williams', '540 Turner Lodge Apt. 153, New Caitlinton, MA 27335', '4824087901', 'zalopay'),
+('9', '28', 'pending', '2024-11-08', '9', 'Elizabeth Garcia', '849 Christopher Drives Suite 137, East Yvette, IL 95899', '787.491.7600', 'zalopay'),
+('10', '65', 'completed', '2024-03-15', '10', 'Ricky Powell', '48889 Bill Path Suite 743, South Sarah, OK 64654', '001-510-516-9405', 'zalopay'),
+('11', '21', 'cancelled', '2024-06-17', '11', 'Ashley Davis', '409 Warner Stream Suite 082, New Elizabethberg, OK 70399', '(801)977-5708', 'zalopay'),
+('12', '1', 'completed', '2024-04-05', '12', 'Brianna Mcdonald', '5383 Amber Pass Suite 144, Port Debra, NH 73942', '900-255-9561x50709', 'zalopay'),
+('13', '41', 'cancelled', '2024-07-11', '13', 'Stacey Matthews', '072 Conrad Brook Suite 971, Bennettshire, AL 92257', '326.662.2305', 'zalopay'),
+('14', '17', 'pending', '2024-11-21', '14', 'Darren Burton', '57910 Alexander Junctions, Pagefort, RI 06416', '(812)288-6777x992', 'zalopay'),
+('15', '33', 'pending', '2024-10-05', '15', 'Steven Gonzales', '59732 Michael Greens Apt. 200, West Philipshire, TN 61099', '(920)542-8588', 'zalopay'),
+('16', '33', 'pending', '2024-03-22', '16', 'Tamara Jackson', '95390 Bishop Ports, East Jacobview, WY 29800', '001-445-220-5588x58171', 'zalopay'),
+('17', '38', 'cancelled', '2024-03-20', '17', 'Amber Jones', '03935 Hernandez Park Apt. 576, Lake Katie, WA 93289', '001-690-403-3299', 'zalopay'),
+('18', '25', 'pending', '2024-05-07', '18', 'Pamela Cruz', '05884 Anne Brook Apt. 071, Leestad, MP 86303', '001-703-306-5753x6787', 'zalopay'),
+('19', '69', 'pending', '2024-03-04', '19', 'Joseph Williams', '0718 Boone Alley Suite 774, Port Lauraland, NM 74409', '(715)672-5548', 'zalopay'),
+('20', '22', 'pending', '2024-03-24', '20', 'Albert Bentley', 'Unit 7202 Box 3634, DPO AE 21271', '+1-903-947-7141x0185', 'zalopay'),
+('21', '96', 'pending', '2024-05-14', '21', 'Lisa Harris', '372 Antonio Skyway Suite 678, West Katrinatown, MH 86481', '001-886-310-5010x825', 'zalopay'),
+('22', '3', 'completed', '2024-09-13', '22', 'Matthew Hicks', '5639 Robert Neck, New Saraview, RI 89706', '+1-393-469-3383x2509', 'zalopay'),
+('23', '90', 'pending', '2024-12-15', '23', 'Christine Cabrera', '308 Jessica Street Suite 217, Kanetown, UT 92818', '902.587.0671x5889', 'zalopay'),
+('24', '47', 'pending', '2024-03-18', '24', 'David Jones', '921 Bell Mountain Suite 122, South Andrew, SD 91922', '001-687-280-1632', 'zalopay'),
+('25', '56', 'cancelled', '2024-07-25', '25', 'Jared Doyle', 'PSC 2858, Box 6742, APO AP 91681', '444-285-4914x9271', 'zalopay'),
+('26', '7', 'cancelled', '2024-07-01', '26', 'Tracey Hensley', '5366 Rodriguez Crest Apt. 940, East Davidstad, IA 77987', '772-290-6803x2890', 'zalopay'),
+('27', '76', 'completed', '2024-02-05', '27', 'Michele Mcdonald', '914 Long Light, South Saraview, NM 15974', '221-557-0152x273', 'zalopay'),
+('28', '76', 'cancelled', '2024-05-15', '28', 'Kyle Holt', '332 Hughes Square, Edwardbury, IN 47458', '+1-566-381-5939', 'zalopay'),
+('29', '81', 'completed', '2024-10-09', '29', 'Lynn Willis', '6708 Elizabeth Islands, Robbinsfort, MD 94521', '236-662-8426', 'zalopay'),
+('30', '43', 'cancelled', '2024-03-28', '30', 'Sabrina Kelley', '3418 Gallagher Locks Apt. 654, Brandyshire, IA 72642', '644-519-9147', 'zalopay'),
+('31', '4', 'completed', '2024-08-25', '31', 'Michael Salas', '23421 Travis View, West Kenneth, GU 78746', '582.214.3540x6820', 'zalopay'),
+('32', '56', 'pending', '2024-04-16', '32', 'Kimberly Chambers', '7552 Wong Wells Apt. 530, South Stephanie, MD 52196', '513.297.4915x7317', 'zalopay'),
+('33', '65', 'completed', '2024-11-20', '33', 'Ariana Olsen', '4038 William Mountains, Richardborough, GA 84464', '(655)994-0593x073', 'zalopay'),
+('34', '48', 'completed', '2024-07-07', '34', 'Nancy Simpson', '2988 Mcdonald Islands, South Ryan, NE 59238', '673-938-2196', 'zalopay'),
+('35', '68', 'completed', '2024-10-09', '35', 'Rebecca Booker', '8556 Carl Meadow Apt. 331, Karinabury, KS 62808', '4546270706', 'zalopay'),
+('36', '62', 'completed', '2024-09-03', '36', 'Keith Salas', '595 William Common Suite 109, New Dustin, VA 79568', '(960)511-2965x4121', 'zalopay'),
+('37', '58', 'cancelled', '2024-06-04', '37', 'Matthew Thomas', 'Unit 1566 Box 4438, DPO AE 55859', '937.924.7283', 'zalopay'),
+('38', '35', 'completed', '2024-10-05', '38', 'Brandi Murray', '56114 Allison Radial Apt. 275, Sanchezland, OR 46460', '(900)793-1969', 'zalopay'),
+('39', '33', 'completed', '2024-11-25', '39', 'Brandon Smith', '26945 Mcmahon Gateway, Stewartton, WI 05274', '546.451.2187x6992', 'zalopay'),
+('40', '11', 'pending', '2024-04-26', '40', 'Kayla Mcdaniel', '4478 Cathy Village Apt. 385, Coreytown, ME 88158', '001-607-236-2083', 'zalopay'),
+('41', '35', 'pending', '2024-08-16', '41', 'Jennifer Owens', '56676 Gray Flats, Craigport, MS 95807', '3329365560', 'zalopay'),
+('42', '80', 'completed', '2024-06-06', '42', 'Darren Butler', '8904 Emily Bypass, Frankmouth, ND 98148', '+1-307-826-2667x017', 'zalopay'),
+('43', '57', 'pending', '2024-11-19', '43', 'Jeffrey Mays', '0619 Lisa Cliffs, East Benjamin, WV 40733', '946.582.2695', 'zalopay'),
+('44', '39', 'completed', '2024-12-13', '44', 'Geoffrey Strickland', '32495 Curtis Cliffs, Gonzalezside, TN 49081', '+1-276-586-2297x55022', 'zalopay'),
+('45', '91', 'pending', '2024-05-13', '45', 'Edward Burnett', '717 Karen Island Suite 577, Port David, AZ 72036', '(434)426-2067', 'zalopay'),
+('46', '90', 'cancelled', '2024-11-14', '46', 'Benjamin Schmitt', 'Unit 7543 Box 2889, DPO AP 81694', '272-824-0146x91018', 'zalopay'),
+('47', '98', 'cancelled', '2024-11-04', '47', 'Brian Marquez', '4398 Gary Cape, Hartchester, WA 20419', '001-543-282-4554x2542', 'zalopay'),
+('48', '7', 'cancelled', '2024-01-06', '48', 'Patrick Drake', '0818 Jack Place Suite 767, West Ryan, NH 41978', '(668)929-5578x3903', 'zalopay'),
+('49', '81', 'pending', '2024-05-19', '49', 'Robert Mendoza', '07654 Reeves Springs Apt. 414, Davisburgh, WI 61116', '2922100747', 'zalopay'),
+('50', '85', 'pending', '2024-02-20', '50', 'Daniel Gray', '55046 Patterson Court, Williamfort, PW 36493', '471.756.6122', 'zalopay'),
+('51', '71', 'completed', '2024-04-22', '51', 'Cindy Bowers', '281 Hannah Coves, New Olivia, ND 85830', '(888)772-2788x2768', 'zalopay'),
+('52', '97', 'cancelled', '2024-04-04', '52', 'Tracy Hinton', '1887 Vega Lock, Lake Ashley, AL 31625', '699.632.2407x2796', 'zalopay'),
+('53', '72', 'completed', '2024-07-19', '53', 'Frances Rice', '9572 Jessica Ways, Lake Kyle, MP 34211', '+1-293-744-2799', 'zalopay'),
+('54', '49', 'completed', '2024-03-11', '54', 'Danielle Malone', '997 Wong Bridge, Colemanville, KY 06214', '(861)200-9862x32639', 'zalopay'),
+('55', '7', 'pending', '2023-12-30', '55', 'Bruce Wright', 'USNV Walker, FPO AA 98556', '593.458.4039x472', 'zalopay'),
+('56', '2', 'pending', '2024-12-15', '56', 'Willie Richardson', '433 Jonathan View Apt. 221, Wallmouth, KS 48417', '5054862278', 'zalopay'),
+('57', '71', 'pending', '2024-01-05', '57', 'Kevin Mosley', 'Unit 0874 Box 1484, DPO AA 23341', '5198585227', 'zalopay'),
+('58', '42', 'pending', '2024-08-16', '58', 'Riley Hogan', '40037 Barton Roads Apt. 036, East Bruce, DC 45554', '(709)384-2776x1820', 'zalopay'),
+('59', '28', 'cancelled', '2024-11-10', '59', 'Jessica Williams', '3250 Stevens Course, West Wendyborough, WV 46174', '001-451-660-2928x8223', 'zalopay'),
+('60', '76', 'completed', '2024-08-16', '60', 'Cindy Wallace', '49254 Lee Center Suite 813, Bentonland, IA 37805', '365.989.7948x57620', 'zalopay'),
+('61', '31', 'cancelled', '2024-02-09', '61', 'Brittany Moore', '9155 Luis Expressway Apt. 143, Port Scottport, SC 69559', '001-946-750-3385x304', 'zalopay'),
+('62', '63', 'pending', '2024-06-15', '62', 'Nicholas Phillips', '514 Travis Via, East Lisa, ME 10433', '(323)636-4878x5804', 'zalopay'),
+('63', '20', 'pending', '2024-12-17', '63', 'Michael Howell', '58416 David Points, Port Alex, CA 11626', '961-226-5083', 'zalopay'),
+('64', '76', 'cancelled', '2024-05-21', '64', 'Gloria Cummings', '92806 Diane Causeway Suite 463, New Gregoryville, WI 97124', '(915)908-4212', 'zalopay'),
+('65', '71', 'pending', '2024-08-01', '65', 'Christina Maxwell', '223 Dylan Rue, Pamview, WV 53392', '857.727.9151x99358', 'zalopay'),
+('66', '70', 'completed', '2024-11-30', '66', 'Arthur Flynn', '543 Gonzales Field, Benjaminville, DC 45925', '693-313-2017x89485', 'zalopay'),
+('67', '17', 'completed', '2024-11-05', '67', 'Tara French', '015 Camacho Curve Apt. 455, Jacobmouth, OK 68734', '001-842-248-1467x32859', 'zalopay'),
+('68', '20', 'cancelled', '2024-04-09', '68', 'Robin Romero', '8108 Taylor Rapids Apt. 611, West Christopherfurt, OH 69813', '238-863-7817', 'zalopay'),
+('69', '74', 'cancelled', '2024-05-30', '69', 'Hannah Tucker', '2992 Sharp Mills, Jessicatown, NE 89613', '(730)645-1880', 'zalopay'),
+('70', '43', 'completed', '2024-09-10', '70', 'Andrew Calderon', '0821 Nelson Brooks, New Ashleyfurt, GA 88436', '001-690-453-1214', 'zalopay'),
+('71', '86', 'completed', '2024-02-04', '71', 'Angela Edwards', '8184 Angela Mills Suite 955, Cynthiaburgh, NH 75201', '744-534-8493', 'zalopay'),
+('72', '96', 'completed', '2024-06-25', '72', 'Ashley Stanton', '01931 Krueger Ford Apt. 239, Jeffreytown, KY 05315', '(988)910-5574x70854', 'zalopay'),
+('73', '15', 'completed', '2024-11-28', '73', 'Martin Perez', '109 Sherry Stravenue Suite 015, Austintown, DC 66691', '001-581-255-6979', 'zalopay'),
+('74', '51', 'pending', '2024-03-22', '74', 'Mark Wright', '23233 Kayla Oval, Meganmouth, AL 01736', '001-455-939-3436x42325', 'zalopay'),
+('75', '76', 'cancelled', '2024-08-20', '75', 'Sydney Wilson', '870 Jacobs Cape, South Lisa, IA 87949', '325.814.3730', 'zalopay'),
+('76', '94', 'pending', '2024-11-20', '76', 'Julian Sanchez', '271 Tina Cliff, Jonesport, RI 30273', '+1-554-227-4755x07916', 'zalopay'),
+('77', '62', 'cancelled', '2024-09-28', '77', 'Terri Kelley', '05452 Clayton Circles, Lake Kellymouth, NJ 35527', '001-246-903-5479x95013', 'zalopay'),
+('78', '16', 'completed', '2024-03-29', '78', 'Jamie Scott', '86626 Christy Track, Karenland, NJ 06327', '(605)895-5807x0864', 'zalopay'),
+('79', '34', 'completed', '2024-03-18', '79', 'Kelsey Newman', '67092 Sarah Burg Apt. 572, East William, ME 12577', '(787)683-0973x56875', 'zalopay'),
+('80', '1', 'completed', '2024-05-05', '80', 'David Rogers', '73984 Lynn Street, North Molly, NV 74653', '(838)954-0282', 'zalopay'),
+('81', '97', 'cancelled', '2024-09-02', '81', 'Hunter Henry', '72526 Wood Radial, South Raymond, TX 26359', '7422474797', 'zalopay'),
+('82', '33', 'pending', '2024-04-29', '82', 'Shannon Orozco', '317 Elizabeth Ports, West Jason, MS 54369', '(683)807-9089x380', 'zalopay'),
+('83', '77', 'pending', '2024-02-28', '83', 'Jeffrey Love', '446 Hernandez Forest, Amyberg, PR 58297', '474-333-7258', 'zalopay'),
+('84', '17', 'completed', '2024-08-24', '84', 'Julia Kent', '60094 Jared Isle Suite 833, Willismouth, MD 72899', '6092734183', 'zalopay'),
+('85', '41', 'completed', '2024-01-17', '85', 'Angela Underwood', '24582 Kevin Lodge, Michaelbury, VI 02048', '798.779.5353x250', 'zalopay'),
+('86', '54', 'pending', '2024-01-22', '86', 'Melinda Jones', '3647 Cummings Brooks Apt. 167, West Lesliemouth, VT 89875', '+1-775-595-2148x1855', 'zalopay'),
+('87', '37', 'cancelled', '2024-01-13', '87', 'Lisa Lawrence', '054 Smith Mountains Suite 212, North Melissafurt, PW 02462', '+1-285-711-9104', 'zalopay'),
+('88', '40', 'cancelled', '2024-12-07', '88', 'Tamara King', '4524 Kenneth Roads, Jodiberg, SC 13353', '(235)679-4564x87878', 'zalopay'),
+('89', '33', 'pending', '2024-09-19', '89', 'David Larson', '481 Marcus Crossing Apt. 544, Acevedoland, SC 54847', '411.700.6001x98038', 'zalopay'),
+('90', '53', 'cancelled', '2024-11-12', '90', 'Henry Marshall', '19178 Michael Ranch, Wagnerhaven, WA 89084', '(843)475-7766', 'zalopay'),
+('91', '32', 'pending', '2024-10-21', '91', 'Julie Mcdaniel', '8081 Wilson Trail, New Dennis, WV 52014', '974-995-4254', 'zalopay'),
+('92', '42', 'completed', '2024-07-18', '92', 'Megan Martinez', '7296 Baker Islands Apt. 588, Taylorton, FL 08545', '(279)614-3011x9045', 'zalopay'),
+('93', '92', 'cancelled', '2024-04-27', '93', 'Craig Brown', '0889 Floyd Summit Suite 025, New Adam, NY 27821', '(375)798-7269x672', 'zalopay'),
+('94', '45', 'pending', '2024-03-22', '94', 'Kendra Flores', '8335 Brown Shoal, Port Henry, NM 54820', '(734)641-8790x775', 'zalopay'),
+('95', '11', 'cancelled', '2024-08-06', '95', 'Erica Johnson', '813 Diaz Springs Suite 794, South Jessicastad, IA 52723', '550-284-9302', 'zalopay'),
+('96', '89', 'pending', '2024-07-29', '96', 'Victoria Mason', '987 Fitzpatrick Landing Suite 974, Sandovalview, VT 72170', '(392)234-2416', 'zalopay'),
+('97', '89', 'pending', '2024-03-16', '97', 'Gabriel Simmons', '427 Jennifer Branch, East Kevin, MH 33711', '+1-928-737-3913x180', 'zalopay'),
+('98', '24', 'cancelled', '2024-11-24', '98', 'Ethan Robinson', '91458 Kelley Ports Suite 936, Wattsberg, MI 17644', '(610)737-9357x7382', 'zalopay'),
+('99', '65', 'cancelled', '2024-05-10', '99', 'Rodney Roberts', '54407 Dennis Canyon Suite 031, New Timothy, SC 78216', '(434)446-5821x90436', 'zalopay'),
+('100', '21', 'completed', '2024-04-07', '100', 'Timothy Hernandez', '31568 Wright Land, Lake Amandaland, SD 95045', '+1-929-392-8439x09563', 'zalopay');
 
 GO   
 
@@ -1126,9 +1136,6 @@ FOREIGN KEY (productId) REFERENCES Product(productId);
 ALTER TABLE [Order]
 ADD CONSTRAINT fk_order_user
 FOREIGN KEY (userId) REFERENCES Users(id);
-
-
-
 
 GO 
 
@@ -1178,7 +1185,6 @@ SELECT @maxOrderID = ISNULL(MAX(orderId), 0) FROM [Order];
 SET @sql = 'ALTER SEQUENCE OrderID_Sequence RESTART WITH ' + CAST(@maxOrderID + 1 AS NVARCHAR(50));
 EXEC(@sql);
 
-
 -- Account Table
 ALTER TABLE Account
 ADD CONSTRAINT DF_AccountID DEFAULT NEXT VALUE FOR AccountID_Sequence FOR id;
@@ -1202,5 +1208,3 @@ ADD CONSTRAINT DF_ProductRequestID DEFAULT NEXT VALUE FOR ProductRequestID_Seque
 -- Order Table
 ALTER TABLE [Order]
 ADD CONSTRAINT DF_OrderID DEFAULT NEXT VALUE FOR OrderID_Sequence FOR orderId;
-
-
