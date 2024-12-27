@@ -37,6 +37,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [isFavorite, setIsFavorite] = useState(false);
   const [isQuickLookOpen, setIsQuickLookOpen] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
 
   const handleFavoriteClick = () => {
     setIsFavorite(!isFavorite);
@@ -73,7 +74,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       }
     } catch (error) {
       console.error('Error adding product to cart:', error);
-      alert('Failed to add product to cart.');
+      if (error.response && error.response.data && error.response.data.message === "Quantity exceeds available stock") {
+        setShowErrorPopup(true);
+      } else {
+        alert('Failed to add product to cart.');
+      }
     }
   };
 
@@ -191,6 +196,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <DialogTitle>Product Added to Cart</DialogTitle>
           </DialogHeader>
           <p>The product has been added to your cart successfully.</p>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={showErrorPopup} onOpenChange={setShowErrorPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Stock Limit Reached</DialogTitle>
+          </DialogHeader>
+          <p>The quantity exceeds the available stock.</p>
         </DialogContent>
       </Dialog>
     </Card>

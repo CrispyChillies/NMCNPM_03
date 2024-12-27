@@ -6,7 +6,6 @@ import { checkRole } from "../middleware/authMiddleware.js";
 export const addToCart = async (req, res) => {
   const { productId, quantity } = req.body;
   const userId = req.user.id;
-  console.log(req.user.id);
 
   try {
     const pool = await connectDB();
@@ -22,18 +21,38 @@ export const addToCart = async (req, res) => {
 
     const cartId = userResult.recordset[0].cartId;
 
+    // Check the available stock
+    const productResult = await pool.request()
+      .input('productId', sql.Int, productId)
+      .query('SELECT stock FROM Product WHERE productId = @productId');
+
+    if (productResult.recordset.length === 0) {
+      return res.status(404).json({ error: true, message: "Product not found" });
+    }
+
+    const availableStock = productResult.recordset[0].stock;
+
     // Check if the product is already in the cart
     const cartItemResult = await pool.request()
       .input('cartId', sql.Int, cartId)
       .input('productId', sql.Int, productId)
       .query('SELECT * FROM Cart WHERE cartId = @cartId AND productId = @productId');
 
+    let newQuantity = quantity;
+    if (cartItemResult.recordset.length > 0) {
+      newQuantity += cartItemResult.recordset[0].quantity;
+    }
+
+    if (newQuantity > availableStock) {
+      return res.status(400).json({ error: true, message: "Quantity exceeds available stock" });
+    }
+
     if (cartItemResult.recordset.length > 0) {
       // Update the quantity if the product is already in the cart
       await pool.request()
         .input('cartId', sql.Int, cartId)
         .input('productId', sql.Int, productId)
-        .input('quantity', sql.Int, cartItemResult.recordset[0].quantity + quantity)
+        .input('quantity', sql.Int, newQuantity)
         .query('UPDATE Cart SET quantity = @quantity WHERE cartId = @cartId AND productId = @productId');
     } else {
       // Add the product to the cart
@@ -68,11 +87,11 @@ export const viewCart = async (req, res) => {
 
     const cartId = userResult.recordset[0].cartId;
 
-    // Get the cart items
+    // Get the cart items with current stock
     const cartItemsResult = await pool.request()
       .input('cartId', sql.Int, cartId)
       .query(`
-        SELECT Cart.productId, Cart.quantity, Product.name, Product.price, Product.image
+        SELECT Cart.productId, Cart.quantity, Product.name, Product.price, Product.image, Product.stock
         FROM Cart
         JOIN Product ON Cart.productId = Product.productId
         WHERE Cart.cartId = @cartId
@@ -135,6 +154,21 @@ export const updateCartQuantity = async (req, res) => {
 
     const cartId = userResult.recordset[0].cartId;
 
+    // Check the available stock
+    const productResult = await pool.request()
+      .input('productId', sql.Int, productId)
+      .query('SELECT stock FROM Product WHERE productId = @productId');
+
+    if (productResult.recordset.length === 0) {
+      return res.status(404).json({ error: true, message: "Product not found" });
+    }
+
+    const availableStock = productResult.recordset[0].stock;
+
+    if (quantity > availableStock) {
+      return res.status(400).json({ error: true, message: "Quantity exceeds available stock", availableStock });
+    }
+
     // Update the product quantity in the cart
     await pool.request()
       .input('cartId', sql.Int, cartId)
@@ -147,6 +181,7 @@ export const updateCartQuantity = async (req, res) => {
     return res.status(500).json({ error: true, message: "Internal server error" });
   }
 };
+
 
 // Middleware to check if the user has the role 'user'
 export const checkUserRole = checkRole(['user']);
