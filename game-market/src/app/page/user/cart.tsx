@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface CartItem {
   productId: number;
@@ -14,14 +16,17 @@ interface CartItem {
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get('http://localhost:6969/api/cart', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming the token is stored in localStorage
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
         if (response.data.success) {
@@ -29,6 +34,9 @@ export default function CartPage() {
         }
       } catch (error) {
         console.error('Error fetching cart items:', error);
+        setError('Failed to load cart items. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -47,21 +55,31 @@ export default function CartPage() {
       }
     } catch (error) {
       console.error('Error removing item from cart:', error);
+      setError('Failed to remove item. Please try again.');
     }
   };
 
-  const handleQuantityChange = async (productId: number, quantity: number) => {
+  const handleQuantityChange = async (productId: number, newQuantity: number) => {
+    if (newQuantity < 1) return;
     try {
-      const response = await axios.put(`http://localhost:6969/api/cart/${productId}`, { quantity }, {
+      const response = await axios.put(`http://localhost:6969/api/cart/${productId}`, { quantity: newQuantity }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.data.success) {
-        setCartItems(cartItems.map(item => item.productId === productId ? { ...item, quantity } : item));
+        setCartItems(cartItems.map(item => item.productId === productId ? { ...item, quantity: newQuantity } : item));
       }
     } catch (error) {
       console.error('Error updating item quantity:', error);
+      setError('Failed to update quantity. Please try again.');
+    }
+  };
+
+  const handleInputChange = (productId: number, value: string) => {
+    const newQuantity = parseInt(value, 10);
+    if (!isNaN(newQuantity)) {
+      handleQuantityChange(productId, newQuantity);
     }
   };
 
@@ -71,51 +89,105 @@ export default function CartPage() {
     navigate('/user/checkout', { state: { cartItems } });
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full max-w-screen mx-auto my-8 px-4">
-      <h1 className="text-xl font-bold mb-6 mx-6 text-left text-primary">Shopping Cart</h1>
+    <div className="container mx-auto my-8 px-4">
+      <h1 className="text-3xl font-bold mb-8 text-primary">Shopping Cart</h1>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
       {cartItems.length === 0 ? (
-        <p className="text-lg text-primary">Your cart is empty.</p>
+        <div className="text-center py-16">
+          <ShoppingCart className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <p className="text-xl text-gray-600 mb-4">Your cart is empty</p>
+          <Link to="/" className="text-primary hover:underline">
+            Continue Shopping
+          </Link>
+        </div>
       ) : (
-        <div className="space-y-6">
-          <div className="flex flex-wrap gap-4 justify-start ml-[5%]">
-            {cartItems.map(item => (
-              <Card key={item.productId} className="bg-card text-card-foreground w-64"> {/* Added w-64 class for fixed width */}
-                <CardHeader className="flex flex-col items-center space-y-4">
-                  <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded" />
-                  <div className="text-center">
-                    <CardTitle className="text-foreground">{item.name}</CardTitle>
-                    <p className="text-foreground">${item.price.toFixed(2)}</p>
-                    <div className="flex items-center justify-center space-x-2 mt-2">
-                      <label htmlFor={`quantity-${item.productId}`} className="text-foreground">Quantity:</label>
-                      <input
-                        id={`quantity-${item.productId}`}
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) => handleQuantityChange(item.productId, parseInt(e.target.value))}
-                        className="w-16 bg-card text-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                      />
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            <AnimatePresence>
+              {cartItems.map(item => (
+                <motion.div
+                  key={item.productId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Card className="flex items-center p-4 hover:shadow-md transition-shadow duration-300">
+                    <img src={item.image} alt={item.name} className="w-32 h-24 object-cover rounded mr-4" />
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-lg mb-1">{item.name}</h3>
+                      <p className="text-primary font-medium">${item.price.toFixed(2)}</p>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="text-lg">{item.quantity}</span>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-1 text-red-500 hover:text-red-700"
+                      onClick={() => handleRemoveItem(item.productId)}
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
+                  </Card>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+          <div className="lg:col-span-1">
+            <div className="sticky top-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Order Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Subtotal</span>
+                      <span>${total.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold">
+                      <span>Total</span>
+                      <span className="text-primary">${total.toFixed(2)}</span>
                     </div>
                   </div>
                   <Button
-                    onClick={() => handleRemoveItem(item.productId)}
-                    className="bg-primary hover:bg-primary-foreground text-primary-foreground py-2 px-4 rounded-[30px]"
+                    onClick={handleCheckout}
+                    className="w-full mt-6"
+                    size="lg"
                   >
-                    Remove
+                    Proceed to Checkout
                   </Button>
-                </CardHeader>
+                </CardContent>
               </Card>
-            ))}
-          </div>
-          <div className="text-right">
-            <p className="text-xl font-bold text-foreground">Total: ${total.toFixed(2)}</p>
-            <Button
-              onClick={handleCheckout}
-              className="mt-4 bg-primary hover:bg-primary-foreground text-primary-foreground py-3 text-lg font-semibold transition-colors duration-200 rounded-[30px]"
-            >
-              Proceed to Checkout
-            </Button>
+            </div>
           </div>
         </div>
       )}

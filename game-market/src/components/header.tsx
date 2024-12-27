@@ -142,7 +142,7 @@ export function Header({ user, userType }: HeaderProps) {
           <Input
             type="search"
             placeholder="Search..."
-            className="w-56 pl-8"
+            className="w-36 pl-8 sm:w-48 lg:w-64"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
