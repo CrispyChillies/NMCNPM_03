@@ -8,7 +8,7 @@ import {
   validateSignUp,
   validateSignIn,
 } from "../middleware/validationMiddleware";
-import { createOrder,  getLatestUserOrder} from "../controllers/orderController.js";
+import { createOrder, getLatestUserOrder} from "../controllers/orderController.js";
 import { handlePaymentCallback } from "../controllers/paymentController.js";
 
 let router = express.Router();

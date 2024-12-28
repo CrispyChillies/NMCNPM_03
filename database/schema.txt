@@ -1,0 +1,111 @@
+CREATE TABLE [dbo].[Account] (
+    [id]       INT           CONSTRAINT [DF_AccountID] DEFAULT (NEXT VALUE FOR [AccountID_Sequence]) NOT NULL,
+    [username] VARCHAR (255) NOT NULL,
+    [password] VARCHAR (255) NOT NULL,
+    PRIMARY KEY CLUSTERED ([id] ASC),
+    UNIQUE NONCLUSTERED ([username] ASC)
+);
+
+CREATE TABLE [dbo].[BecomeSellerRequest] (
+    [requestId]          INT           CONSTRAINT [DF_BecomeSellerRequestID] DEFAULT (NEXT VALUE FOR [BecomeSellerRequestID_Sequence]) NOT NULL,
+    [userId]             INT           NOT NULL,
+    [email]              VARCHAR (255) NOT NULL,
+    [phoneNumber]        VARCHAR (50)  NOT NULL,
+    [businessAddress]    TEXT          NOT NULL,
+    [businessName]       VARCHAR (255) NOT NULL,
+    [productDescription] TEXT          NOT NULL,
+    [address]            TEXT          NOT NULL,
+    [date]               DATE          NOT NULL,
+    [status]             VARCHAR (20)  NOT NULL,
+    PRIMARY KEY CLUSTERED ([requestId] ASC),
+    CONSTRAINT [chk_bsr_status] CHECK ([status]='declined' OR [status]='accepted' OR [status]='pending'),
+    CONSTRAINT [fk_becomeseller_user] FOREIGN KEY ([userId]) REFERENCES [dbo].[Users] ([id]),
+    UNIQUE NONCLUSTERED ([email] ASC)
+);
+
+CREATE TABLE [dbo].[Cart] (
+    [cartId]    INT NOT NULL,
+    [productId] INT NOT NULL,
+    [quantity]  INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([cartId] ASC, [productId] ASC),
+    CONSTRAINT [fk_cart_product] FOREIGN KEY ([productId]) REFERENCES [dbo].[Product] ([productId])
+);
+
+CREATE TABLE [dbo].[Order] (
+    [orderId]       INT           CONSTRAINT [DF_OrderID] DEFAULT (NEXT VALUE FOR [OrderID_Sequence]) NOT NULL,
+    [userId]        INT           NOT NULL,
+    [status]        VARCHAR (20)  NOT NULL,
+    [date]          DATE          NOT NULL,
+    [orderDetailId] INT           NOT NULL,
+    [name]          VARCHAR (255) NOT NULL,
+    [address]       TEXT          NOT NULL,
+    [phoneNumber]   VARCHAR (50)  NOT NULL,
+    [paymentMethod] VARCHAR (20)  NOT NULL,
+    PRIMARY KEY CLUSTERED ([orderId] ASC),
+    CONSTRAINT [chk_order_status] CHECK ([status]='paid' OR [status]='cancelled' OR [status]='completed' OR [status]='pending'),
+    CONSTRAINT [fk_order_user] FOREIGN KEY ([userId]) REFERENCES [dbo].[Users] ([id])
+);
+
+CREATE TABLE [dbo].[OrderDetail] (
+    [orderDetailId] INT NOT NULL,
+    [productId]     INT NOT NULL,
+    [quantity]      INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([orderDetailId] ASC, [productId] ASC),
+    CONSTRAINT [fk_orderdetail_product] FOREIGN KEY ([productId]) REFERENCES [dbo].[Product] ([productId])
+);
+
+CREATE TABLE [dbo].[Product] (
+    [productId]   INT             CONSTRAINT [DF_ProductID] DEFAULT (NEXT VALUE FOR [ProductID_Sequence]) NOT NULL,
+    [sellerId]    INT             NOT NULL,
+    [name]        VARCHAR (255)   NOT NULL,
+    [price]       DECIMAL (10, 2) NOT NULL,
+    [description] TEXT            NOT NULL,
+    [stock]       INT             NOT NULL,
+    [platform]    VARCHAR (50)    NOT NULL,
+    [genre]       VARCHAR (50)    NOT NULL,
+    [condition]   VARCHAR (20)    NOT NULL,
+    [image]       VARCHAR (2083)  NULL,
+    [status]      VARCHAR (20)    NOT NULL,
+    [releaseDay]  DATE            NOT NULL,
+    [tag]         VARCHAR (20)    NOT NULL,
+    [rating]      FLOAT (53)      NULL,
+    PRIMARY KEY CLUSTERED ([productId] ASC),
+    CONSTRAINT [chk_condition] CHECK ([condition]='fair' OR [condition]='good' OR [condition]='likeNew' OR [condition]='new'),
+    CONSTRAINT [chk_platform] CHECK ([platform]='pc' OR [platform]='nintendoSwitch' OR [platform]='xboxOne' OR [platform]='xboxSeriesX' OR [platform]='playstation4' OR [platform]='playstation5'),
+    CONSTRAINT [chk_status] CHECK ([status]='unavailable' OR [status]='available'),
+    CONSTRAINT [chk_tag] CHECK ([tag]='specialOffers' OR [tag]='comingSoon' OR [tag]='newReleases' OR [tag]='bestSellers'),
+    CONSTRAINT [fk_product_user] FOREIGN KEY ([sellerId]) REFERENCES [dbo].[Users] ([id])
+);
+
+CREATE TABLE [dbo].[ProductRequest] (
+    [gameRequestId] INT          CONSTRAINT [DF_ProductRequestID] DEFAULT (NEXT VALUE FOR [ProductRequestID_Sequence]) NOT NULL,
+    [userId]        INT          NOT NULL,
+    [productId]     INT          NOT NULL,
+    [status]        VARCHAR (20) NOT NULL,
+    [requestDate]   DATE         NULL,
+    PRIMARY KEY CLUSTERED ([gameRequestId] ASC),
+    CONSTRAINT [chk_pr_status] CHECK ([status]='rejected' OR [status]='accepted' OR [status]='pending'),
+    CONSTRAINT [fk_productrequest_product] FOREIGN KEY ([productId]) REFERENCES [dbo].[Product] ([productId]),
+    CONSTRAINT [fk_productrequest_user] FOREIGN KEY ([userId]) REFERENCES [dbo].[Users] ([id])
+);
+
+CREATE TABLE [dbo].[Users] (
+    [id]                  INT           NOT NULL,
+    [role]                VARCHAR (20)  NOT NULL,
+    [firstName]           VARCHAR (255) NOT NULL,
+    [lastName]            VARCHAR (255) NOT NULL,
+    [citizenId]           VARCHAR (50)  NOT NULL,
+    [email]               VARCHAR (255) NOT NULL,
+    [phoneNumber]         VARCHAR (50)  NOT NULL,
+    [userAddress]         TEXT          NOT NULL,
+    [businessName]        VARCHAR (255) NULL,
+    [businessDescription] TEXT          NULL,
+    [businessAddress]     TEXT          NULL,
+    [userStatus]          VARCHAR (20)  NOT NULL,
+    [cartId]              INT           NULL,
+    PRIMARY KEY CLUSTERED ([id] ASC),
+    CONSTRAINT [chk_userStatus] CHECK ([userStatus]='banned' OR [userStatus]='inactive' OR [userStatus]='active'),
+    CONSTRAINT [fk_user_account] FOREIGN KEY ([id]) REFERENCES [dbo].[Account] ([id]),
+    UNIQUE NONCLUSTERED ([citizenId] ASC),
+    UNIQUE NONCLUSTERED ([email] ASC)
+);
