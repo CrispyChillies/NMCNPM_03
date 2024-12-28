@@ -180,3 +180,4 @@ export const updateCartQuantity = async (req, res) => {
     return res.status(500).json({ error: true, message: "Internal server error" });
   }
 };
+

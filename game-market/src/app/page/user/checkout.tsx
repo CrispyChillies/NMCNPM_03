@@ -24,7 +24,7 @@ const CheckoutPage: React.FC = () => {
   const [lastName, setLastName] = useState("");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("mobile banking");
+  const [paymentMethod, setPaymentMethod] = useState("zalopay");
   const [error, setError] = useState("");
   const [orderId, setOrderId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -157,13 +157,13 @@ const CheckoutPage: React.FC = () => {
           <div className="space-y-4">
             <Label className="block text-sm font-medium">Payment Method</Label>
             <RadioGroup
-              defaultValue="mobile banking"
+              defaultValue="zalopay"
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="mobile banking" id="mobileBanking" />
-                <Label htmlFor="mobileBanking">Mobile Banking</Label>
+                <RadioGroupItem value="zalopay" id="zalopay" />
+                <Label htmlFor="zalopay">ZaloPay</Label>
               </div>
             </RadioGroup>
           </div>

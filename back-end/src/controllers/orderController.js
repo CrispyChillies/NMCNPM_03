@@ -38,7 +38,7 @@ export const createOrder = async (req, res) => {
       await pool.request()
         .input("orderId", sql.Int, newOrderId)
         .input("userId", sql.Int, userId)
-        .input("status", sql.VarChar, "Pending")
+        .input("status", sql.VarChar, "pending")
         .input("date", sql.DateTime, new Date())
         .input("name", sql.VarChar, name)
         .input("address", sql.Text, address)

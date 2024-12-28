@@ -21,7 +21,7 @@ export const handlePaymentCallback = async (req, res) => {
         }
 
         const paymentData = JSON.parse(dataStr);
-        const [userId, orderId] = paymentData.app_user.match(/user_(\d+)_order(\d+)/).slice(1);
+        const [userId, orderId] = paymentData.app_user.match(/user_(\d+)_order_(\d+)/).slice(1);
         const status = paymentData.status === 1 ? 'cancelled' : 'paid';
 
         const pool = await connectDB();
@@ -35,8 +35,30 @@ export const handlePaymentCallback = async (req, res) => {
             .input('userId', sql.Int, userId)
             .query(`
             DELETE FROM Cart 
-            WHERE cartId = @userId)
+            WHERE cartId = @userId
             `);
+
+        await pool.request()
+            .input('orderId', sql.Int, orderId)
+            .query(`
+                SELECT productId, quantity 
+                FROM OrderDetail 
+                WHERE orderDetailId = @orderId
+            `)
+            .then(result => {
+                const orderDetails = result.recordset;
+                const updateStockPromises = orderDetails.map(detail => {
+                    return pool.request()
+                        .input('productId', sql.Int, detail.productId)
+                        .input('quantity', sql.Int, detail.quantity)
+                        .query(`
+                            UPDATE Product 
+                            SET stock = stock - @quantity 
+                            WHERE productId = @productId
+                        `);
+                });
+                return Promise.all(updateStockPromises);
+            });
 
         return res.json({ 
             return_code: 1, 

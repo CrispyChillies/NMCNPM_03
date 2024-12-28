@@ -30,7 +30,8 @@ const genres = [
   "adventure",
   "sports",
   "racing",
-  "strategy"
+  "strategy",
+  "others"
 ];
 
 const conditions = [
@@ -66,6 +67,7 @@ const DISPLAY_NAMES: { [key: string]: string } = {
   sports: "Sports",
   racing: "Racing",
   strategy: "Strategy",
+  others: "Others",
   new: "New",
   likeNew: "Like New",
   good: "Good",

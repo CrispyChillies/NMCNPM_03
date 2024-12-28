@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { StrictMode } from 'react'
+import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './index.css'
@@ -27,7 +27,6 @@ import ProductDetail from "@/app/page/product-detail"
 import SignIn from "@/app/page/auth/sign-in"
 import SignUp from "@/app/page/auth/sign-up"
 import ProtectedRoute from "@/components/protectedRoute"
-
 import { jwtDecode } from 'jwt-decode'
 
 let data = {

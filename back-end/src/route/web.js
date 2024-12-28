@@ -17,17 +17,17 @@ let router = express.Router();
 let initWebRoutes = (app) => {
     app.use(cors()); // Enable CORS
     router.get('/api/game', getProducts);
-    router.get('/api/game/:productId', getProductById); // Add this line
+    router.get('/api/game/:productId', getProductById);
     router.post("/api/signup", validateSignUp, handleSignUp);
     router.post("/api/signin", validateSignIn, handleSignIn);
-    router.post("/api/cart", verifyToken, checkRole(['user']), addToCart); // Update this line
-    router.get("/api/cart", verifyToken, checkRole(['user']), viewCart); // Add this line
-    router.delete("/api/cart/:productId", verifyToken, checkRole(['user']), removeFromCart); // Update this line
-    router.put("/api/cart/:productId", verifyToken, checkRole(['user']), updateCartQuantity); // Update this line
+    router.post("/api/cart", verifyToken, checkRole(['user']), addToCart);
+    router.get("/api/cart", verifyToken, checkRole(['user']), viewCart);
+    router.delete("/api/cart/:productId", verifyToken, checkRole(['user']), removeFromCart);
+    router.put("/api/cart/:productId", verifyToken, checkRole(['user']), updateCartQuantity);
     router.post("/api/order", verifyToken, checkRole(['user']), createOrder);
     router.post("/api/payment/callback", handlePaymentCallback);
-    router.get("/api/latest_order", verifyToken, checkRole(['user']), getLatestUserOrder); // Changed from POST to GET
-
+    router.get("/api/latest_order", verifyToken, checkRole(['user']), getLatestUserOrder);
+    
     return app.use("/", router);
 }
 

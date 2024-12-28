@@ -14,12 +14,12 @@ async function createZaloPayOrder(amount, orderId, userId) {
         const order = {
             app_id: config.app_id,
             app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
-            app_user: `user_${userId}_order${orderId}`,
+            app_user: `user_${userId}_order_${orderId}`,
             app_time: Date.now(),
             item: JSON.stringify(items),
             embed_data: JSON.stringify(embed_data),
             amount: amount,
-            callback_url: 'https://6e57-2402-9d80-38b-e255-406d-182a-9dc5-6442.ngrok-free.app/api/payment/callback',
+            callback_url: 'https://0056-115-73-219-158.ngrok-free.app/api/payment/callback',
             description: `Payment for Order #${orderId}`,
             bank_code: ''
         };

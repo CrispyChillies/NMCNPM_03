@@ -36,13 +36,52 @@ export default function ProductDetail() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const DISPLAY_NAMES: { [key: string]: string } = {
+    playstation5: "Play Station 5",
+    playstation4: "Play Station 4",
+    xboxSeriesX: "Xbox Series X",
+    xboxOne: "Xbox One",
+    nintendoSwitch: "Nintendo Switch",
+    pc: "PC",
+    action: "Action",
+    rpg: "RPG",
+    fps: "FPS",
+    adventure: "Adventure",
+    sports: "Sports",
+    racing: "Racing",
+    strategy: "Strategy",
+    others: "Others",
+    new: "New",
+    likeNew: "Like New",
+    good: "Good",
+    fair: "Fair",
+    available: "Available",
+    unavailable: "Unavailable",
+    bestSellers: "Best Sellers",
+    newReleases: "New Releases",
+    comingSoon: "Coming Soon",
+    specialOffers: "Special Offers"
+  };
+  
+  const transformData = (data: Product) => {
+    return {
+      ...data,
+      platform: DISPLAY_NAMES[data.platform] || data.platform,
+      genre: DISPLAY_NAMES[data.genre] || data.genre,
+      condition: DISPLAY_NAMES[data.condition] || data.condition,
+      status: DISPLAY_NAMES[data.status] || data.status,
+      tag: DISPLAY_NAMES[data.tag] || data.tag,
+      releaseDay: data.releaseDay?.split('T')[0] || data.releaseDay,
+    };
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const id = productId?.split('-g').pop();
         const response = await fetch(`http://localhost:6969/api/game/${id}`);
         const data = await response.json();
-        setProduct(data);
+        setProduct(transformData(data));
       } catch (error) {
         console.error('Error fetching product:', error);
       }
@@ -56,7 +95,9 @@ export default function ProductDetail() {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
-        const cartItem = response.data.cartItems.find((item: { productId: number }) => item.productId === Number(id));
+        const cartItem = response.data.cartItems.find(
+          (item: { productId: number }) => item.productId === Number(id)
+        );
         if (cartItem) {
           setCartQuantity(cartItem.quantity);
         }
@@ -86,17 +127,17 @@ export default function ProductDetail() {
         quantity: quantity
       }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming the token is stored in localStorage
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.data.success) {
         setShowSuccessPopup(true);
         setTimeout(() => setShowSuccessPopup(false), 800);
-        setQuantity(1); // Reset quantity to 1
-        setCartQuantity(cartQuantity + quantity); // Update cart quantity
-        setErrorMessage(null); // Clear any previous error messages
+        setQuantity(1);
+        setCartQuantity(cartQuantity + quantity);
+        setErrorMessage(null);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding product to cart:', error);
       if (error.response && error.response.data && error.response.data.message === "Quantity exceeds available stock") {
         setShowErrorPopup(true);
@@ -135,7 +176,12 @@ export default function ProductDetail() {
           </Card>
           <div className="grid grid-cols-4 gap-2">
             {[...Array(4)].map((_, i) => (
-              <img key={i} src={product.image} alt={`${product.name} thumbnail ${i + 1}`} className="w-full h-auto rounded-md cursor-pointer hover:opacity-75 transition-opacity" />
+              <img 
+                key={i} 
+                src={product.image} 
+                alt={`${product.name} thumbnail ${i + 1}`} 
+                className="w-full h-auto rounded-md cursor-pointer hover:opacity-75 transition-opacity" 
+              />
             ))}
           </div>
         </div>
