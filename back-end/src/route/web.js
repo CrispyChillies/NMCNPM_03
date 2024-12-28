@@ -10,7 +10,6 @@ import {
 } from "../middleware/validationMiddleware";
 import { createOrder, getLatestUserOrder} from "../controllers/orderController.js";
 import { handlePaymentCallback } from "../controllers/paymentController.js";
-import { getDashboardStats } from "../controllers/adminController.js";
 import { checkRole } from "../middleware/authMiddleware.js";
 
 let router = express.Router();
