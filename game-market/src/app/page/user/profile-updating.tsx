@@ -7,59 +7,53 @@ import { validatePersonalInfo } from "@/lib/validations";
 import { toast } from "sonner";
 import { jwtDecode } from "jwt-decode";
 
-interface UserProfile {
-  firstName: string;
-  lastName: string;
-  citizenId: string;
-  email: string;
-  phoneNumber: string;
-  userAddress: string;
-}
-
 export default function ProfileUpdating() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState<UserProfile>({
+  const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
-    citizenId: "",
     email: "",
+    citizenId: "",
     phoneNumber: "",
     userAddress: "",
   });
-  const [editableProfile, setEditableProfile] = useState<UserProfile>({
-    ...profile,
-  });
+  const [editableProfile, setEditableProfile] = useState({ ...profile });
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          toast.error("Please sign in first");
+          return;
+        }
+
+        const decoded = jwtDecode<{ id: string }>(token);
+
+        // Debug
+        console.log("Decoded token ID:", decoded.id);
+
+        const response = await fetch(
+          `http://localhost:6969/api/users/profile/${decoded.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch profile");
+
+        const data = await response.json();
+        setProfile(data);
+        setEditableProfile(data);
+      } catch (error) {
+        toast.error("Failed to load profile");
+      }
+    };
+
     fetchProfile();
   }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const decoded = jwtDecode<{ id: string }>(token!);
-
-      // Debug
-      console.log(decoded.id);
-
-      const response = await fetch(
-        `http://localhost:6969/api/users/profile/${decoded.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch profile");
-
-      const data = await response.json();
-      setProfile(data);
-      setEditableProfile(data);
-    } catch (error) {
-      toast.error("Failed to load profile");
-    }
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditableProfile({ ...editableProfile, [e.target.name]: e.target.value });
@@ -75,7 +69,12 @@ export default function ProfileUpdating() {
 
     try {
       const token = localStorage.getItem("token");
-      const decoded = jwtDecode<{ id: string }>(token!);
+      if (!token) {
+        toast.error("Please sign in first");
+        return;
+      }
+
+      const decoded = jwtDecode<{ id: string }>(token);
 
       // First, check if email exists and belongs to another user
       const emailCheckResponse = await fetch(
@@ -107,10 +106,7 @@ export default function ProfileUpdating() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            ...editableProfile,
-            userId: decoded.id,
-          }),
+          body: JSON.stringify(editableProfile),
         }
       );
 

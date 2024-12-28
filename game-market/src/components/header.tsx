@@ -1,5 +1,14 @@
-import { useLocation, Link} from 'react-router-dom';
-import { Bell, Search, ShoppingCart, User, HandCoins, Settings, LogOut, LogIn } from 'lucide-react';
+import { useLocation, Link } from "react-router-dom";
+import {
+  Bell,
+  Search,
+  ShoppingCart,
+  User,
+  HandCoins,
+  Settings,
+  LogOut,
+  LogIn,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,11 +31,15 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { projects, navSecondary, navMainByUserType } from "@/components/data/data-sidebar";
-import { useState, useEffect } from 'react';
+import {
+  projects,
+  navSecondary,
+  navMainByUserType,
+} from "@/components/data/data-sidebar";
+import { useState, useEffect } from "react";
 
 const flattenNavItems = (items, map = {}) => {
-  items.forEach(item => {
+  items.forEach((item) => {
     map[item.url] = item.title || item.name;
     if (item.items) {
       flattenNavItems(item.items, map);
@@ -42,24 +55,24 @@ const urlToTitleMap = {
   ...flattenNavItems(navMainByUserType.admin),
   ...flattenNavItems(projects),
   ...flattenNavItems(navSecondary),
-  '/user/cart': 'Shopping Cart',
-  '/user/checkout': 'Checkout',
-  '/user/order-confirm': 'Order Confirmation',
+  "/user/cart": "Shopping Cart",
+  "/user/checkout": "Checkout",
+  "/user/order-confirm": "Order Confirmation",
 };
 
 interface HeaderProps {
   user: {
-    name: string
-    email: string
-    avatar: string
-  },
-  userType: string,
+    name: string;
+    email: string;
+    avatar: string;
+  };
+  userType: string;
 }
 
 export function Header({ user, userType }: HeaderProps) {
   const location = useLocation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [productName, setProductName] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [productName, setProductName] = useState("");
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -69,24 +82,31 @@ export function Header({ user, userType }: HeaderProps) {
   useEffect(() => {
     const fetchProductName = async (productId) => {
       try {
-        const response = await fetch(`http://localhost:6969/api/game/${productId}`);
+        const response = await fetch(
+          `http://localhost:6969/api/game/${productId}`
+        );
         const data = await response.json();
         setProductName(data.name);
       } catch (error) {
-        console.error('Error fetching product name:', error);
+        console.error("Error fetching product name:", error);
       }
     };
 
-    const pathnames = location.pathname.split('/').filter((x) => x);
-    if (pathnames[0] === 'user' && pathnames[1] === 'game' && pathnames[2]) {
-      const productId = pathnames[2].split('-g').pop();
+    const pathnames = location.pathname.split("/").filter((x) => x);
+    if (pathnames[0] === "user" && pathnames[1] === "game" && pathnames[2]) {
+      const productId = pathnames[2].split("-g").pop();
       fetchProductName(productId);
     }
   }, [location.pathname]);
 
   const generateBreadcrumbs = () => {
-    const pathnames = location.pathname.split('/').filter((x) => x);
-    if (pathnames.length === 0 || pathnames[0] === "" || pathnames[0] === "#" || pathnames[0] === "home") {
+    const pathnames = location.pathname.split("/").filter((x) => x);
+    if (
+      pathnames.length === 0 ||
+      pathnames[0] === "" ||
+      pathnames[0] === "#" ||
+      pathnames[0] === "home"
+    ) {
       return (
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -98,10 +118,10 @@ export function Header({ user, userType }: HeaderProps) {
     return (
       <BreadcrumbList>
         {pathnames.map((value, index) => {
-          const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+          const to = `/${pathnames.slice(0, index + 1).join("/")}`;
           const isLast = index === pathnames.length - 1;
           let title = urlToTitleMap[to];
-          if (to.includes('/user/game/') && !title) {
+          if (to.includes("/user/game/") && !title) {
             title = productName;
           }
           if (!title) return null;
@@ -125,8 +145,8 @@ export function Header({ user, userType }: HeaderProps) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.location.href = '/';
+    localStorage.removeItem("token");
+    window.location.href = "/";
   };
 
   return (
@@ -165,16 +185,26 @@ export function Header({ user, userType }: HeaderProps) {
               <Avatar className="h-8 w-8 text-foreground">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback>
-                  {user.name.split(' ').map((n) => n[0]).join('').toUpperCase()}
+                  {user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 bg-background" align="end" forceMount>
+          <DropdownMenuContent
+            className="w-56 bg-background"
+            align="end"
+            forceMount
+          >
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{user.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user.email}
+                </p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -182,12 +212,12 @@ export function Header({ user, userType }: HeaderProps) {
               <>
                 {userType === "user" && (
                   <>
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        <HandCoins />
-                        Become a Seller
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
+                    <DropdownMenuItem asChild>
+                      <Link to="/user/become-seller">
+                        <HandCoins className="mr-2 h-4 w-4" />
+                        <span>Become a Seller</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                   </>
                 )}

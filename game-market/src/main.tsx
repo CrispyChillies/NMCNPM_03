@@ -16,7 +16,7 @@ import OrderConfirmPage from "@/app/page/user/order-confirm";
 import Dashboard from "@/app/page/admin/dashboard";
 import GameManagement from "@/app/page/admin/game-management";
 import UserManagement from "@/app/page/admin/user-management";
-import BecomeSeller from "@/app/page/admin/become-seller";
+import BecomeSeller from "@/app/page/user/become-seller";
 import OrderList from "@/app/page/admin/order-list";
 import UserRequest from "@/app/page/admin/user-request";
 import ProductUploading from "@/app/page/provider/product-uploading";
@@ -25,6 +25,7 @@ import SignIn from "@/app/page/auth/sign-in";
 import SignUp from "@/app/page/auth/sign-up";
 import ProtectedRoute from "@/components/protectedRoute";
 import PasswordChange from "@/app/page/user/password-change";
+import AdminBecomeSeller from "@/app/page/admin/become-seller";
 
 import { jwtDecode } from "jwt-decode"; // Import hàm jwtDecode từ thư
 // từ thư viện jwt-decode. Hàm này dùng để giải mã token JWT,
@@ -90,6 +91,15 @@ createRoot(document.querySelector(".root")!).render(
                       <Route path="/" element={<Home />} />
                       <Route path="/home" element={<Navigate to="/" />} />
                       <Route path="/user/game" element={<Section />} />
+                      <Route
+                        path="/user/become-seller"
+                        element={
+                          <ProtectedRoute
+                            component={BecomeSeller}
+                            roles={["user"]}
+                          />
+                        }
+                      />
                       <Route
                         path="/user/account"
                         element={
@@ -307,7 +317,7 @@ createRoot(document.querySelector(".root")!).render(
                         path="/admin/become-seller"
                         element={
                           <ProtectedRoute
-                            component={BecomeSeller}
+                            component={AdminBecomeSeller}
                             roles={["admin"]}
                           />
                         }

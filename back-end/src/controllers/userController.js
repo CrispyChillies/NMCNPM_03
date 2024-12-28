@@ -142,9 +142,10 @@ let deleteUser = async (req, res) => {
   }
 };
 
-const updatePersonalInfo = async (req, res) => {
+export const updatePersonalInfo = async (req, res) => {
   const { firstName, lastName, citizenId, email, phoneNumber, userAddress } =
     req.body;
+  console.log(req.body);
   const userId = req.params.id;
 
   try {
@@ -172,6 +173,7 @@ const updatePersonalInfo = async (req, res) => {
     }
 
     res.json(result.recordset[0]);
+    console.log("Updated user profile:", result.recordset[0]);
   } catch (err) {
     console.error("Failed to update profile: ", err);
     if (err.message.includes("UNIQUE")) {
@@ -182,8 +184,12 @@ const updatePersonalInfo = async (req, res) => {
   }
 };
 
-const getUserProfile = async (req, res) => {
+export const getUserProfile = async (req, res) => {
   const userId = req.params.id;
+
+  // Debug
+  console.log("Fetching profile for user ID:", userId);
+
   try {
     await connectDB();
     const result = await sql.query`
@@ -191,6 +197,9 @@ const getUserProfile = async (req, res) => {
       FROM Users
       WHERE id = ${userId}
     `;
+
+    // Debug
+    console.log("Query result:", result.recordset);
 
     if (result.recordset.length === 0) {
       return res.status(404).json({ error: "User not found" });
