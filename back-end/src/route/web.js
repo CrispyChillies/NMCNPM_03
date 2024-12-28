@@ -1,16 +1,12 @@
 import express from "express";
 import cors from "cors";
-import { getProducts, getProductById } from "../controllers/productController.js";
-import { handleSignUp, handleSignIn } from "../controllers/userController";
-import { addToCart, viewCart, removeFromCart, updateCartQuantity, checkUserRole } from '../controllers/cartController.js';
-import { verifyToken } from "../middleware/authMiddleware.js";
-import {
-  validateSignUp,
-  validateSignIn,
-} from "../middleware/validationMiddleware";
-import { createOrder, getLatestUserOrder} from "../controllers/orderController.js";
+import { verifyToken, checkRole } from "../middleware/authMiddleware.js";
+import { validateSignUp, validateSignIn } from "../middleware/validationMiddleware";
+import { getProducts, getProductById, getAllProducts, deleteProductById, getTotalProducts } from "../controllers/productController.js";
+import { getAllOrders, createOrder, getLatestUserOrder, getTotalOrderCount, getTotalSales, getTotalPendingOrders } from "../controllers/orderController.js";
+import { addToCart, viewCart, removeFromCart, updateCartQuantity } from '../controllers/cartController.js';
+import { getUserPendingBecomeSellerRequests, acceptUserRequestBecomeSeller, declineUserRequestBecomeSeller, getUserRequests, acceptUserRequestProductUpload, declineUserRequestProductUpload, handleSignUp, handleSignIn, getTotalUsers, getAllUsers, banUser, unbanUser, deleteUserById } from "../controllers/userController";
 import { handlePaymentCallback } from "../controllers/paymentController.js";
-import { checkRole } from "../middleware/authMiddleware.js";
 
 let router = express.Router();
 
@@ -27,8 +23,25 @@ let initWebRoutes = (app) => {
     router.post("/api/order", verifyToken, checkRole(['user']), createOrder);
     router.post("/api/payment/callback", handlePaymentCallback);
     router.get("/api/latest_order", verifyToken, checkRole(['user']), getLatestUserOrder);
-    
-    return app.use("/", router);
+    router.get("/api/admin/orders/count", verifyToken, checkRole(['admin']), getTotalOrderCount);
+    router.get("/api/admin/orders/sales", verifyToken, checkRole(['admin']), getTotalSales);
+    router.get("/api/admin/orders/pending", verifyToken, checkRole(['admin']), getTotalPendingOrders);
+    router.get("/api/admin/users/count", verifyToken, checkRole(['admin']), getTotalUsers);
+    router.get("/api/admin/products", verifyToken, checkRole(['admin']), getAllProducts);
+    router.get("/api/admin/products/count", verifyToken, checkRole(['admin']), getTotalProducts);
+    router.delete("/api/admin/products/:id", verifyToken, checkRole(['admin']), deleteProductById);
+    router.get('/api/admin/users', verifyToken, checkRole(['admin']), getAllUsers);
+    router.post('/api/admin/users/:id/ban', verifyToken, checkRole(['admin']), banUser);
+    router.post('/api/admin/users/:id/unban', verifyToken, checkRole(['admin']), unbanUser);
+    router.delete('/api/admin/users/:id', verifyToken, checkRole(['admin']), deleteUserById);
+    router.get('/api/admin/orders', verifyToken, checkRole(['admin']), getAllOrders);
+    router.get('/api/admin/game-requests', verifyToken, checkRole(['admin']), getUserRequests);
+    router.post('/api/admin/game-requests/:id/accept', verifyToken, checkRole(['admin']), acceptUserRequestProductUpload);
+    router.post('/api/admin/game-requests/:id/decline', verifyToken, checkRole(['admin']), declineUserRequestProductUpload);
+    router.get('/api/admin/become-seller-requests', verifyToken, checkRole(['admin']), getUserPendingBecomeSellerRequests);
+    router.post('/api/admin/become-seller-requests/:id/accept', verifyToken, checkRole(['admin']), acceptUserRequestBecomeSeller);
+    router.post('/api/admin/become-seller-requests/:id/decline', verifyToken, checkRole(['admin']), declineUserRequestBecomeSeller);
+    app.use("/", router);
 }
 
 module.exports = initWebRoutes;

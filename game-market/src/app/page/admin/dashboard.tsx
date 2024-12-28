@@ -1,8 +1,46 @@
-import { Users, Package, DollarSign, Clock } from 'lucide-react'
-import { StatCard } from "@/components/ui/stat-card"
-import { SalesChart } from "@/components/sales-chart"
+import { useEffect, useState } from 'react';
+import { Users, Package, DollarSign, Clock } from 'lucide-react';
+import { StatCard } from "@/components/ui/stat-card";
+import { SalesChart } from "@/components/sales-chart";
+import axios from 'axios';
 
 export default function Dashboard() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalOrders: 0,
+    totalSales: 0,
+    totalPending: 0,
+  });
+
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const headers = {
+          'Authorization': `Bearer ${token}`
+        };
+
+        const [usersResponse, ordersResponse, salesResponse, pendingResponse] = await axios.all([
+          axios.get('http://localhost:6969/api/admin/users/count', { headers }),
+          axios.get('http://localhost:6969/api/admin/orders/count', { headers }),
+          axios.get('http://localhost:6969/api/admin/orders/sales', { headers }),
+          axios.get('http://localhost:6969/api/admin/orders/pending', { headers })
+        ]);
+
+        setStats({
+          totalUsers: usersResponse.data.totalUsers,
+          totalOrders: ordersResponse.data.totalOrders,
+          totalSales: salesResponse.data.totalSales,
+          totalPending: pendingResponse.data.totalPending,
+        });
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+
+    fetchDashboardStats();
+  }, []);
+
   return (
     <div className="w-full">
       <div className="border-t">
@@ -14,7 +52,7 @@ export default function Dashboard() {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <StatCard
                     title="Total User"
-                    value="40,689"
+                    value={stats.totalUsers}
                     icon={Users}
                     change={{
                       value: "8.5%",
@@ -24,7 +62,7 @@ export default function Dashboard() {
                   />
                   <StatCard
                     title="Total Order"
-                    value="10293"
+                    value={stats.totalOrders}
                     icon={Package}
                     change={{
                       value: "1.3%",
@@ -34,7 +72,7 @@ export default function Dashboard() {
                   />
                   <StatCard
                     title="Total Sales"
-                    value="$89,000"
+                    value={`$${stats.totalSales}`}
                     icon={DollarSign}
                     change={{
                       value: "4.3%",
@@ -44,7 +82,7 @@ export default function Dashboard() {
                   />
                   <StatCard
                     title="Total Pending"
-                    value="2040"
+                    value={`$${stats.totalSales}`}
                     icon={Clock}
                     change={{
                       value: "1.8%",
@@ -62,6 +100,5 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

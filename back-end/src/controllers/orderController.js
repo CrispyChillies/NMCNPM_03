@@ -149,3 +149,101 @@ export const getLatestUserOrder = async (req, res) => {
     return res.status(500).json({ error: true, message: "Internal server error" });
   }
 };
+
+export const getTotalOrderCount = async (req, res) => {
+  try {
+    const pool = await connectDB();
+    console.log("Database connection established");
+
+    // Get total order count
+    const totalOrderCountResult = await pool.request()
+      .query("SELECT COUNT(*) as totalOrders FROM [Order]");
+    console.log("Query executed successfully");
+
+    const totalOrders = totalOrderCountResult.recordset[0].totalOrders;
+    console.log("Total orders:", totalOrders);
+
+    return res.status(200).json({
+      success: true,
+      totalOrders
+    });
+  } catch (error) {
+    console.error("Error in getTotalOrderCount:", error);
+    return res.status(500).json({ error: true, message: "Internal server error" });
+  }
+};
+
+export const getTotalSales = async (req, res) => {
+  try {
+    const pool = await connectDB();
+    console.log("Database connection established");
+
+    // Get total sales for completed orders
+    const totalSalesResult = await pool.request()
+      .query(`
+        SELECT SUM(od.quantity * p.price) as totalSales
+        FROM OrderDetail od
+        JOIN [Order] o ON od.orderDetailId = o.orderId
+        JOIN Product p ON od.productId = p.productId
+        WHERE o.status = 'completed'
+      `);
+    console.log("Query executed successfully");
+
+    const totalSales = totalSalesResult.recordset[0].totalSales;
+    console.log("Total sales:", totalSales);
+
+    return res.status(200).json({
+      success: true,
+      totalSales
+    });
+  } catch (error) {
+    console.error("Error in getTotalSales:", error);
+    return res.status(500).json({ error: true, message: "Internal server error" });
+  }
+};
+
+export const getTotalPendingOrders = async (req, res) => {
+  try {
+    const pool = await connectDB();
+    console.log("Database connection established");
+
+    // Get total pending order count
+    const totalPendingOrdersResult = await pool.request()
+      .query("SELECT COUNT(*) as totalPendingOrders FROM [Order] WHERE status = 'pending'");
+    console.log("Query executed successfully");
+
+    const totalPendingOrders = totalPendingOrdersResult.recordset[0].totalPendingOrders;
+    console.log("Total pending orders:", totalPendingOrders);
+
+    return res.status(200).json({
+      success: true,
+      totalPendingOrders
+    });
+  } catch (error) {
+    console.error("Error in getTotalPendingOrders:", error);
+    return res.status(500).json({ error: true, message: "Internal server error" });
+  }
+};
+
+export const getAllOrders = async (req, res) => {
+  try {
+    const pool = await connectDB();
+    console.log("Database connection established");
+
+    // Get all orders
+    const allOrdersResult = await pool.request()
+      .query("SELECT orderId as id, name, address, date, status FROM [Order]");
+    console.log("Query executed successfully");
+
+    const allOrders = allOrdersResult.recordset;
+    console.log("All orders:", allOrders);
+
+    return res.status(200).json({
+      success: true,
+      orders: allOrders
+    });
+  } catch (error) {
+    console.error("Error in getAllOrders:", error);
+    return res.status(500).json({ error: true, message: "Internal server error" });
+  }
+};

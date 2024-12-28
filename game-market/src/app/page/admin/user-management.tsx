@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Trash, Ban } from 'lucide-react'
+import { Filter, Trash, Ban } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -23,49 +24,38 @@ interface User {
   id: string
   name: string
   email: string
-  role: "Admin" | "User" | "Moderator"
-  status: "Active" | "Inactive" | "Banned"
+  role: "admin" | "user" | "provider"
+  status: "active" | "inactive" | "banned"
 }
-
-// Sample data
-const users: User[] = [
-  {
-    id: "001",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "Admin",
-    status: "Active",
-  },
-  {
-    id: "002",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "User",
-    status: "Active",
-  },
-  {
-    id: "003",
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    role: "Moderator",
-    status: "Inactive",
-  },
-  {
-    id: "004",
-    name: "Alice Brown",
-    email: "alice@example.com",
-    role: "User",
-    status: "Banned",
-  },
-  // Add more sample data as needed
-]
 
 export default function UserManagementPage() {
   const [selectedRole, setSelectedRole] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("")
   const [nameFilter, setNameFilter] = useState("")
   const [emailFilter, setEmailFilter] = useState("")
-  const [userData, setUserData] = useState(users)
+  const [userData, setUserData] = useState<User[]>([])
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const headers = {
+          'Authorization': `Bearer ${token}`
+        };
+
+        const response = await axios.get('http://localhost:6969/api/admin/users', { headers });
+        if (response.data.success && Array.isArray(response.data.users)) {
+          setUserData(response.data.users);
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const filterData = userData.filter((user) => {
     const matchesRole = selectedRole ? user.role.toLowerCase() === selectedRole.toLowerCase() : true
@@ -76,27 +66,54 @@ export default function UserManagementPage() {
     return matchesRole && matchesStatus && matchesName && matchesEmail
   })
 
-  const handleDelete = (id: string) => {
-    setUserData(userData.filter(user => user.id !== id))
-  }
+  const handleDelete = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
 
-  const handleBanUnban = (id: string) => {
-    setUserData(userData.map(user => 
-      user.id === id 
-        ? { ...user, status: user.status === "Banned" ? "Active" : "Banned" } 
-        : user
-    ))
-  }
+      await axios.delete(`http://localhost:6969/api/admin/users/${id}`, { headers });
+      setUserData(userData.filter(user => user.id !== id));
+      console.log('User deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+    }
+  };
+
+  const handleBanUnban = async (id: string, status: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
+      if (status === "banned") {
+        await axios.post(`http://localhost:6969/api/admin/users/${id}/unban`, {}, { headers });
+        setUserData(userData.map(user => 
+          user.id === id 
+            ? { ...user, status: "active" } 
+            : user
+        ));
+        console.log('User unbanned successfully');
+      } else {
+        await axios.post(`http://localhost:6969/api/admin/users/${id}/ban`, {}, { headers });
+        setUserData(userData.map(user => 
+          user.id === id 
+            ? { ...user, status: "banned" } 
+            : user
+        ));
+        console.log('User banned successfully');
+      }
+    } catch (error) {
+      console.error('Failed to ban/unban user:', error);
+    }
+  };
 
   return (
-    <div className="flex h-screen bg-background w-full">
-      {/* Sidebar */}
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto p-8">
+    <div className="flex bg-background w-full">
+      <div className="flex-1 p-8 overflow-y-hidden">
         <h1 className="mb-8 text-xl font-bold text-foreground mx-2">User Management</h1>
-
-        {/* Filters */}
         <div className="mb-6 flex items-center gap-4 rounded-lg bg-white p-4 border">
           <Filter className="h-5 w-5 text-gray-500" />
           <span className="text-gray-700">Filter By</span>
@@ -119,7 +136,7 @@ export default function UserManagementPage() {
             <SelectContent>
               <SelectItem value="admin">Admin</SelectItem>
               <SelectItem value="user">User</SelectItem>
-              <SelectItem value="moderator">Moderator</SelectItem>
+              <SelectItem value="provider">Provider</SelectItem>
             </SelectContent>
           </Select>
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -169,9 +186,9 @@ export default function UserManagementPage() {
                   <TableCell>
                     <span
                       className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
-                        user.status === "Active"
+                        user.status === "active"
                           ? "bg-emerald-100 text-emerald-800"
-                          : user.status === "Inactive"
+                          : user.status === "inactive"
                           ? "bg-gray-700 text-white"
                           : "bg-red-500 text-white"
                       }`}
@@ -210,15 +227,15 @@ export default function UserManagementPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              {user.status === "Banned" 
+                              {user.status === "banned" 
                                 ? "This will unban the user account." 
                                 : "This will ban the user account."}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleBanUnban(user.id)}>
-                              {user.status === "Banned" ? "Unban" : "Ban"}
+                            <AlertDialogAction onClick={() => handleBanUnban(user.id, user.status)}>
+                              {user.status === "banned" ? "Unban" : "Ban"}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

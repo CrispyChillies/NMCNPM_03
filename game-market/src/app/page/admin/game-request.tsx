@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Eye, Check, X, XCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -36,49 +37,35 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 interface GameRequest {
-  id: string
-  user: string
-  date: string
+  gameRequestId: string
+  userId: string
+  requestDate: string
   status: string
-  topics: string
-  gameName: string
-  gameDescription: string
+  name: string
+  description: string
   price: number
-  category: string
-  imageUrl: string
+  genre: string
+  image: string
 }
 
-// Sample data
-const gameRequests: GameRequest[] = [
-  {
-    id: "001",
-    user: "John Doe",
-    date: "2023-06-01",
-    status: "Pending",
-    topics: "RPG",
-    gameName: "The Witcher 3",
-    gameDescription: "An open-world RPG with a rich story",
-    price: 39.99,
-    category: "RPG",
-    imageUrl: "/placeholder.svg"
-  },
-  {
-    id: "002",
-    user: "Jane Smith",
-    date: "2023-06-02",
-    status: "Pending",
-    topics: "Sports",
-    gameName: "FIFA 22",
-    gameDescription: "A popular football simulation game",
-    price: 59.99,
-    category: "Sports",
-    imageUrl: "/placeholder.svg"
-  },
-  // Add more sample data as needed
-]
+const genres = [
+  "action",
+  "rpg", 
+  "fps",
+  "adventure",
+  "sports",
+  "racing",
+  "strategy",
+  "others"
+];
+
+// Utility function to capitalize the first letter of a string
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
 
 export default function GameRequest() {
-  const [requests, setRequests] = useState(gameRequests)
+  const [requests, setRequests] = useState<GameRequest[]>([])
   const [selectedStatus, setSelectedStatus] = useState("")
   const [selectedTopic, setSelectedTopic] = useState("")
   const [userFilter, setUserFilter] = useState("")
@@ -88,39 +75,83 @@ export default function GameRequest() {
   const [declineReason, setDeclineReason] = useState("")
   const [customDeclineReason, setCustomDeclineReason] = useState("")
 
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const headers = {
+          'Authorization': `Bearer ${token}`
+        };
+
+        const response = await axios.get('http://localhost:6969/api/admin/game-requests', { headers });
+        if (response.data.success && Array.isArray(response.data.recordset)) {
+          setRequests(response.data.recordset);
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching game requests:', error);
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
   const filterData = requests.filter((request) => {
     const matchesStatus = selectedStatus ? request.status.toLowerCase() === selectedStatus.toLowerCase() : true
-    const matchesTopic = selectedTopic ? request.topics.toLowerCase() === selectedTopic.toLowerCase() : true
-    const matchesUser = userFilter ? request.user.toLowerCase().includes(userFilter.toLowerCase()) : true
-    const matchesStartDate = startDate ? new Date(request.date) >= new Date(startDate) : true
-    const matchesEndDate = endDate ? new Date(request.date) <= new Date(endDate) : true
+    const matchesTopic = selectedTopic ? request.genre.toLowerCase() === selectedTopic.toLowerCase() : true
+    const matchesUser = userFilter ? request.userId.toLowerCase().includes(userFilter.toLowerCase()) : true
+    const matchesStartDate = startDate ? new Date(request.requestDate) >= new Date(startDate) : true
+    const matchesEndDate = endDate ? new Date(request.requestDate) <= new Date(endDate) : true
 
     return matchesStatus && matchesTopic && matchesUser && matchesStartDate && matchesEndDate
   })
 
-  const handleAccept = (id: string) => {
-    setRequests(requests.map(request => 
-      request.id === id ? { ...request, status: 'Accepted' } : request
-    ))
+  const handleAccept = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
+      await axios.post(`http://localhost:6969/api/admin/game-requests/${id}/accept`, {}, { headers });
+      setRequests(requests.map(request => 
+        request.gameRequestId === id ? { ...request, status: 'accepted' } : request
+      ));
+      console.log('Request accepted successfully');
+    } catch (error) {
+      console.error('Failed to accept request:', error);
+    }
   }
 
-  const handleDecline = (id: string) => {
-    const reason = declineReason === 'Other' ? customDeclineReason : declineReason
-    setRequests(requests.map(request => 
-      request.id === id ? { ...request, status: 'Declined' } : request
-    ))
-    // Here you would typically send the reason to the user
-    console.log(`Request ${id} declined. Reason: ${reason}`)
-    setDeclineReason("")
-    setCustomDeclineReason("")
+  const handleDecline = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
+      const reason = declineReason === 'Other' ? customDeclineReason : declineReason;
+      await axios.post(`http://localhost:6969/api/admin/game-requests/${id}/decline`, { reason }, { headers });
+      setRequests(requests.map(request => 
+        request.gameRequestId === id ? { ...request, status: 'rejected' } : request
+      ));
+      console.log(`Request ${id} rejected. Reason: ${reason}`);
+      setDeclineReason("");
+      setCustomDeclineReason("");
+    } catch (error) {
+      console.error('Failed to reject request:', error);
+    }
   }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // Format the date as "MM/DD/YYYY"
+  };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto p-8">
+    <div className="flex w-full bg-background">
+      <div className="flex-1 overflow-hidden p-8">
         <h1 className="mb-8 text-xl font-bold text-foreground mx-2">Game Request Pending</h1>
 
         {/* Filters */}
@@ -140,7 +171,7 @@ export default function GameRequest() {
             <SelectContent>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="accepted">Accepted</SelectItem>
-              <SelectItem value="declined">Declined</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
           <Select value={selectedTopic} onValueChange={setSelectedTopic}>
@@ -148,9 +179,9 @@ export default function GameRequest() {
               <SelectValue placeholder="Topic" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="rpg">RPG</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-              <SelectItem value="sandbox">Sandbox</SelectItem>
+              {genres.map((genre) => (
+                <SelectItem key={genre} value={genre}>{capitalizeFirstLetter(genre)}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Input
@@ -191,18 +222,30 @@ export default function GameRequest() {
                 <TableHead>User</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Topics</TableHead>
+                <TableHead>Genres</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filterData.map((request) => (
-                <TableRow key={request.id}>
-                  <TableCell className="text-center">{request.id}</TableCell>
-                  <TableCell>{request.user}</TableCell>
-                  <TableCell>{request.date}</TableCell>
-                  <TableCell>{request.status}</TableCell>
-                  <TableCell>{request.topics}</TableCell>
+                <TableRow key={request.gameRequestId}>
+                  <TableCell className="text-center">{request.gameRequestId}</TableCell>
+                  <TableCell>{request.userId}</TableCell>
+                  <TableCell>{formatDate(request.requestDate)}</TableCell>
+                  <TableCell>
+                    <span
+                        className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
+                          request.status.toLowerCase() === "accepted"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : request.status.toLowerCase() === "rejected"
+                            ? "bg-red-500 text-white"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {request.status}
+                      </span>
+                    </TableCell>
+                  <TableCell>{capitalizeFirstLetter(request.genre)}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Dialog>
@@ -219,18 +262,18 @@ export default function GameRequest() {
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
-                            <img src={request.imageUrl} alt={request.gameName} className="w-full h-48 object-cover rounded-lg" />
+                            <img src={request.image} alt={request.name} className="w-full h-48 object-cover rounded-lg" />
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="name" className="text-right">
                                 Name
                               </Label>
-                              <Input id="name" value={request.gameName} className="col-span-3" readOnly />
+                              <Input id="name" value={request.name} className="col-span-3" readOnly />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="description" className="text-right">
                                 Description
                               </Label>
-                              <Textarea id="description" value={request.gameDescription} className="col-span-3" readOnly />
+                              <Textarea id="description" value={request.description} className="col-span-3" readOnly />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="price" className="text-right">
@@ -242,7 +285,7 @@ export default function GameRequest() {
                               <Label htmlFor="category" className="text-right">
                                 Category
                               </Label>
-                              <Input id="category" value={request.category} className="col-span-3" readOnly />
+                              <Input id="category" value={request.genre} className="col-span-3" readOnly />
                             </div>
                           </div>
                           <DialogClose asChild>
@@ -252,7 +295,7 @@ export default function GameRequest() {
                           </DialogClose>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="icon" className="bg-green-500 hover:bg-green-600 text-white" onClick={() => handleAccept(request.id)}>
+                      <Button variant="outline" size="icon" className="bg-green-500 hover:bg-green-600 text-white" onClick={() => handleAccept(request.gameRequestId)}>
                         <Check className="h-4 w-4" />
                       </Button>
                       <Popover>
@@ -294,7 +337,7 @@ export default function GameRequest() {
                                 onChange={(e) => setCustomDeclineReason(e.target.value)}
                               />
                             )}
-                            <Button onClick={() => handleDecline(request.id)}>Submit</Button>
+                            <Button onClick={() => handleDecline(request.gameRequestId)}>Submit</Button>
                           </div>
                         </PopoverContent>
                       </Popover>

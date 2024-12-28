@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from "react"
-import { Bell, Filter, Heart, LogOut, MessageSquare, Settings, Trash, Edit, Plus } from 'lucide-react'
+import { useState, useEffect } from "react"
+import { Filter, Trash, Edit } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import axios from "axios"
 import {
   Select,
   SelectContent,
@@ -30,94 +31,79 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-// import { useRouter } from 'next/navigation'
 
 interface Game {
-  id: string
+  productId: string
   name: string
-  category: string
-  developers: string
+  genre: string
   price: number
-  releaseDate: string
+  releaseDay: string
+  status: "available" | "unavailable"
 }
 
-// Sample data
-const games: Game[] = [
-  {
-    id: "001",
-    name: "The Witcher 3",
-    category: "RPG",
-    developers: "CD Projekt Red",
-    price: 39.99,
-    releaseDate: "2015-05-19",
-  },
-  {
-    id: "002",
-    name: "FIFA 22",
-    category: "Sports",
-    developers: "EA Sports",
-    price: 59.99,
-    releaseDate: "2021-10-01",
-  },
-  {
-    id: "003",
-    name: "Minecraft",
-    category: "Sandbox",
-    developers: "Mojang",
-    price: 26.95,
-    releaseDate: "2011-11-18",
-  },
-  {
-    id: "004",
-    name: "Cyberpunk 2077",
-    category: "RPG",
-    developers: "CD Projekt Red",
-    price: 59.99,
-    releaseDate: "2020-12-10",
-  },
-  // Add more sample data as needed
-]
-
 export default function GameManagementPage() {
-  const [gameData, setGameData] = useState(games)
+  const [gameData, setGameData] = useState<Game[]>([])
   const [selectedCategory, setSelectedCategory] = useState("")
   const [selectedDeveloper, setSelectedDeveloper] = useState("")
   const [nameFilter, setNameFilter] = useState("")
   const [minPrice, setMinPrice] = useState("")
   const [maxPrice, setMaxPrice] = useState("")
-  // const router = useRouter()
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const headers = {
+          'Authorization': `Bearer ${token}`
+        };
+
+        const response = await axios.get('http://localhost:6969/api/admin/products', { headers });
+        if (Array.isArray(response.data.recordset)) {
+          setGameData(response.data.recordset);
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching games:', error);
+      }
+    };
+
+    fetchGames();
+  }, []);
 
   const filterData = gameData.filter((game) => {
-    const matchesCategory = selectedCategory ? game.category.toLowerCase() === selectedCategory.toLowerCase() : true
-    const matchesDeveloper = selectedDeveloper ? game.developers.toLowerCase() === selectedDeveloper.toLowerCase() : true
+    const matchesCategory = selectedCategory ? game.genre.toLowerCase() === selectedCategory.toLowerCase() : true
     const matchesName = nameFilter ? game.name.toLowerCase().includes(nameFilter.toLowerCase()) : true
     const matchesMinPrice = minPrice ? game.price >= parseFloat(minPrice) : true
     const matchesMaxPrice = maxPrice ? game.price <= parseFloat(maxPrice) : true
 
-    return matchesCategory && matchesDeveloper && matchesName && matchesMinPrice && matchesMaxPrice
+    return matchesCategory && matchesName && matchesMinPrice && matchesMaxPrice
   })
 
-  const handleDelete = (id: string) => {
-    setGameData(gameData.filter(game => game.id !== id))
-  }
+  const handleDelete = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
 
-  // const handleEdit = (id: string) => {
-  //   router.push(`/edit-game/${id}`)
-  // }
+      await axios.delete(`http://localhost:6969/api/admin/products/${id}`, { headers });
+      setGameData(gameData.filter(game => game.productId !== id));
+      console.log('Product deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+    }
+  };
 
-  // const handleAddGame = () => {
-  //   router.push('/add-game')
-  // }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // Format the date as "MM/DD/YYYY"
+  };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto p-8">
-        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">Game Product Management</h1>
-
-        {/* Filters */}
+    <div className="flex bg-background w-full">
+      <div className="flex-1 overflow-y-hidden p-8">
+        <h1 className="mb-8 text-3xl font-bold text-foreground">Game Product Management</h1>
         <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-white p-4 border">
           <Filter className="h-5 w-5 text-gray-500" />
           <span className="text-gray-700">Filter By</span>
@@ -133,18 +119,8 @@ export default function GameManagementPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="rpg">RPG</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-              <SelectItem value="sandbox">Sandbox</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={selectedDeveloper} onValueChange={setSelectedDeveloper}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Developer" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="cd projekt red">CD Projekt Red</SelectItem>
-              <SelectItem value="ea sports">EA Sports</SelectItem>
-              <SelectItem value="mojang">Mojang</SelectItem>
+              <SelectItem value="others">Others</SelectItem>
+              <SelectItem value="action">Action</SelectItem>
             </SelectContent>
           </Select>
           <Input
@@ -184,27 +160,35 @@ export default function GameManagementPage() {
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead>Game</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Developers</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>Prices</TableHead>
                 <TableHead>Release Date</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filterData.map((game) => (
-                <TableRow key={game.id}>
-                  <TableCell className="text-center">{game.id}</TableCell>
+                <TableRow key={game.productId}>
+                  <TableCell className="text-center">{game.productId}</TableCell>
                   <TableCell>{game.name}</TableCell>
-                  <TableCell>{game.category}</TableCell>
-                  <TableCell>{game.developers}</TableCell>
+                  <TableCell>{game.genre}</TableCell>
                   <TableCell>${game.price.toFixed(2)}</TableCell>
-                  <TableCell>{game.releaseDate}</TableCell>
+                  <TableCell>{formatDate(game.releaseDay)}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${
+                        game.status === "available"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : game.status === "unavailable"
+                          ? "bg-yellow-100 text-yellow-800" : 
+                          "bg-red-500 text-white"
+                      }`}
+                    >
+                      {game.status} 
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="icon"> 
-                        {/* onClick={() => handleEdit(game.id)}> */}
-                        <Edit className="h-4 w-4" />
-                      </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="outline" size="icon">
@@ -220,7 +204,7 @@ export default function GameManagementPage() {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(game.id)}>Delete</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleDelete(game.productId)}>Delete</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

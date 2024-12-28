@@ -41,3 +41,49 @@ export async function getProductById(req, res) {
     res.status(500).send('Failed to fetch product');
   }
 }
+
+export async function getAllProducts(req, res) {
+  try {
+      await connectDB();
+      const result = await sql.query`SELECT productId, name, genre, price, releaseDay, status FROM Product`;
+      res.json(result);
+  } catch (err) {
+      console.error('Failed to fetch games: ', err);
+      res.status(500).send('Failed to fetch games');
+  }
+}
+
+export const deleteProductById = async (req, res) => {
+  let { id } = req.params;
+  console.log(id);
+  try {
+    await connectDB();
+    await sql.query`
+      DELETE FROM Cart
+      WHERE productId = ${id}
+      DELETE FROM ProductRequest
+      WHERE productId = ${id}
+      DELETE FROM OrderDetail
+      WHERE productId = ${id}
+      DELETE FROM Product 
+      WHERE productId = ${id}
+    `;
+    res.send("Product deleted successfully");
+    console.log("Product deleted successfully");
+  } catch (err) {
+    console.error("Failed to delete product: ", err);
+    res.status(500).send("Failed to ban user");
+    console.log("Failed to delete product: ", err);
+  }
+};
+
+export const getTotalProducts = async (req, res) => {
+  try {
+      await connectDB();
+      const result = await sql.query`SELECT COUNT(*) as numbProducts FROM Product`;
+      res.json(result);
+  } catch (err) {
+      console.error('Failed to fetch total games: ', err);
+      res.status(500).send('Failed to fetch total games');
+  }
+}
