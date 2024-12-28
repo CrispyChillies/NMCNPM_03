@@ -21,7 +21,7 @@ import GameManagement from "@/app/page/admin/game-management"
 import UserManagement from "@/app/page/admin/user-management"
 import BecomeSeller from "@/app/page/admin/become-seller"
 import OrderList from "@/app/page/admin/order-list"
-import UserRequest from "@/app/page/admin/user-request"
+import GameRequest from "@/app/page/admin/game-request"
 import ProductUploading from "@/app/page/provider/product-uploading"
 import ProductDetail from "@/app/page/product-detail"
 import SignIn from "@/app/page/auth/sign-in"
@@ -98,7 +98,7 @@ createRoot(document.querySelector('.root')!).render(
                       <Route path="/admin/user-management" element={<ProtectedRoute component={UserManagement} roles={['admin']} />} />
                       <Route path="/admin/become-seller" element={<ProtectedRoute component={BecomeSeller} roles={['admin']} />} />
                       <Route path="/admin/order-management" element={<ProtectedRoute component={OrderList} roles={['admin']} />} />
-                      <Route path="/admin/report-management" element={<ProtectedRoute component={UserRequest} roles={['admin']} />} />
+                      <Route path="/admin/game-request" element={<ProtectedRoute component={GameRequest} roles={['admin']} />} />
                       <Route path="/provider" element={<ProtectedRoute component={Section} roles={['provider']} />} />
                       <Route path="/provider/dashboard" element={<ProtectedRoute component={Section} roles={['provider']} />} />
                       <Route path="/provider/game" element={<ProtectedRoute component={ProductUploading} roles={['provider']} />} />

@@ -1,6 +1,5 @@
 import sql from "mssql";
 import { connectDB } from "../config/connectDB.js";
-import { checkRole } from "../middleware/authMiddleware.js";
 import { createZaloPayOrder } from '../services/zalopayService.js'; // Change to import
 
 export const createOrder = async (req, res) => {
@@ -150,5 +149,3 @@ export const getLatestUserOrder = async (req, res) => {
     return res.status(500).json({ error: true, message: "Internal server error" });
   }
 };
-
-export const checkUserRole = checkRole(['user']);

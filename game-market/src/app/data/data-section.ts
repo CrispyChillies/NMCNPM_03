@@ -180,9 +180,9 @@ export const featureSection = [
         icon: React.createElement(Users, { className: "h-8 w-8" }),
       },
       {
-        title: "Reports Management",
-        description: "Generate and view detailed reports on various aspects of the platform, including sales, user activity, and performance metrics.",
-        url: "/admin/report-management",
+        title: "Games Requests",
+        description: "Manage and view requests for new games, including user suggestions and approval status.",
+        url: "/admin/game-request",
         icon: React.createElement(BarChart, { className: "h-8 w-8" }),
       },
     ],

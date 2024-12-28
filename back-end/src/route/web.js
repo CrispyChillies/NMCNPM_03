@@ -10,6 +10,8 @@ import {
 } from "../middleware/validationMiddleware";
 import { createOrder, getLatestUserOrder} from "../controllers/orderController.js";
 import { handlePaymentCallback } from "../controllers/paymentController.js";
+import { getDashboardStats } from "../controllers/adminController.js";
+import { checkRole } from "../middleware/authMiddleware.js";
 
 let router = express.Router();
 
@@ -19,13 +21,14 @@ let initWebRoutes = (app) => {
     router.get('/api/game/:productId', getProductById); // Add this line
     router.post("/api/signup", validateSignUp, handleSignUp);
     router.post("/api/signin", validateSignIn, handleSignIn);
-    router.post("/api/cart", verifyToken, checkUserRole, addToCart); // Add this line
-    router.get("/api/cart", verifyToken, checkUserRole, viewCart); // Add this line
-    router.delete("/api/cart/:productId", verifyToken, checkUserRole, removeFromCart); // Update this line
-    router.put("/api/cart/:productId", verifyToken, checkUserRole, updateCartQuantity); // Update this line
-    router.post("/api/order", verifyToken, checkUserRole, createOrder);
+    router.post("/api/cart", verifyToken, checkRole(['user']), addToCart); // Update this line
+    router.get("/api/cart", verifyToken, checkRole(['user']), viewCart); // Add this line
+    router.delete("/api/cart/:productId", verifyToken, checkRole(['user']), removeFromCart); // Update this line
+    router.put("/api/cart/:productId", verifyToken, checkRole(['user']), updateCartQuantity); // Update this line
+    router.post("/api/order", verifyToken, checkRole(['user']), createOrder);
     router.post("/api/payment/callback", handlePaymentCallback);
-    router.get("/api/latest_order", verifyToken, checkUserRole, getLatestUserOrder); // Changed from POST to GET
+    router.get("/api/latest_order", verifyToken, checkRole(['user']), getLatestUserOrder); // Changed from POST to GET
+
     return app.use("/", router);
 }
 

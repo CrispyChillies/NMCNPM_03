@@ -218,8 +218,8 @@ export const navMainByUserType = {
           url: "/admin/user-management",
         },
         {
-          title: "Reports Management",
-          url: "/admin/report-management",
+          title: "Games Requests",
+          url: "/admin/game-request",
         },
       ],
     },

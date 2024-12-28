@@ -35,31 +35,31 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
-interface UserRequest {
+interface GameRequest {
   id: string
   user: string
   date: string
   status: string
   topics: string
-  productName: string
-  productDescription: string
+  gameName: string
+  gameDescription: string
   price: number
   category: string
   imageUrl: string
 }
 
 // Sample data
-const userRequests: UserRequest[] = [
+const gameRequests: GameRequest[] = [
   {
     id: "001",
     user: "John Doe",
     date: "2023-06-01",
     status: "Pending",
-    topics: "Electronics",
-    productName: "Smartphone X",
-    productDescription: "Latest model with advanced features",
-    price: 599.99,
-    category: "Mobile Phones",
+    topics: "RPG",
+    gameName: "The Witcher 3",
+    gameDescription: "An open-world RPG with a rich story",
+    price: 39.99,
+    category: "RPG",
     imageUrl: "/placeholder.svg"
   },
   {
@@ -67,24 +67,24 @@ const userRequests: UserRequest[] = [
     user: "Jane Smith",
     date: "2023-06-02",
     status: "Pending",
-    topics: "Furniture",
-    productName: "Leather Sofa",
-    productDescription: "Comfortable 3-seater sofa",
-    price: 899.99,
-    category: "Living Room",
+    topics: "Sports",
+    gameName: "FIFA 22",
+    gameDescription: "A popular football simulation game",
+    price: 59.99,
+    category: "Sports",
     imageUrl: "/placeholder.svg"
   },
   // Add more sample data as needed
 ]
 
-export default function UserRequestPending() {
-  const [requests, setRequests] = useState(userRequests)
+export default function GameRequest() {
+  const [requests, setRequests] = useState(gameRequests)
   const [selectedStatus, setSelectedStatus] = useState("")
   const [selectedTopic, setSelectedTopic] = useState("")
   const [userFilter, setUserFilter] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
-  const [selectedRequest, setSelectedRequest] = useState<UserRequest | null>(null)
+  const [selectedRequest, setSelectedRequest] = useState<GameRequest | null>(null)
   const [declineReason, setDeclineReason] = useState("")
   const [customDeclineReason, setCustomDeclineReason] = useState("")
 
@@ -121,7 +121,7 @@ export default function UserRequestPending() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-8">
-        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">User Request Pending</h1>
+        <h1 className="mb-8 text-xl font-bold text-foreground mx-2">Game Request Pending</h1>
 
         {/* Filters */}
         <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-white p-4 border">
@@ -148,9 +148,9 @@ export default function UserRequestPending() {
               <SelectValue placeholder="Topic" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="electronics">Electronics</SelectItem>
-              <SelectItem value="furniture">Furniture</SelectItem>
-              <SelectItem value="clothing">Clothing</SelectItem>
+              <SelectItem value="rpg">RPG</SelectItem>
+              <SelectItem value="sports">Sports</SelectItem>
+              <SelectItem value="sandbox">Sandbox</SelectItem>
             </SelectContent>
           </Select>
           <Input
@@ -213,24 +213,24 @@ export default function UserRequestPending() {
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                           <DialogHeader>
-                            <DialogTitle>Product Details</DialogTitle>
+                            <DialogTitle>Game Details</DialogTitle>
                             <DialogDescription>
-                              View the details of the product request.
+                              View the details of the game request.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
-                            <img src={request.imageUrl} alt={request.productName} className="w-full h-48 object-cover rounded-lg" />
+                            <img src={request.imageUrl} alt={request.gameName} className="w-full h-48 object-cover rounded-lg" />
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="name" className="text-right">
                                 Name
                               </Label>
-                              <Input id="name" value={request.productName} className="col-span-3" readOnly />
+                              <Input id="name" value={request.gameName} className="col-span-3" readOnly />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="description" className="text-right">
                                 Description
                               </Label>
-                              <Textarea id="description" value={request.productDescription} className="col-span-3" readOnly />
+                              <Textarea id="description" value={request.gameDescription} className="col-span-3" readOnly />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="price" className="text-right">
@@ -309,4 +309,3 @@ export default function UserRequestPending() {
     </div>
   )
 }
-

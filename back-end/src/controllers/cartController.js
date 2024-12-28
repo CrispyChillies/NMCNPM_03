@@ -1,6 +1,5 @@
 import sql from 'mssql';
 import { connectDB } from '../config/connectDB.js';
-import { checkRole } from "../middleware/authMiddleware.js";
 
 // Add product to cart
 export const addToCart = async (req, res) => {
@@ -181,7 +180,3 @@ export const updateCartQuantity = async (req, res) => {
     return res.status(500).json({ error: true, message: "Internal server error" });
   }
 };
-
-
-// Middleware to check if the user has the role 'user'
-export const checkUserRole = checkRole(['user']);
