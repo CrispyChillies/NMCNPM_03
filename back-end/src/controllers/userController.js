@@ -2,7 +2,7 @@ import sql from "mssql";
 import bcrypt from "bcrypt";
 import { connectDB } from "../config/connectDB";
 import jwt from "jsonwebtoken";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -77,21 +77,31 @@ export const handleSignIn = async (req, res) => {
       WHERE Account.username = @username
     `);
     if (result.recordset.length === 0) {
-      return res.status(401).json({ success: false, message: "Invalid username or password" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid username or password" });
     }
     const user = result.recordset[0];
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ success: false, message: "Invalid username or password" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid username or password" });
     }
-    const token = jwt.sign({ id: user.id, username: username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { id: user.id, username: username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
     res.json({ success: true, message: "Sign-in successful", token: token });
     console.log(token);
     const decode = jwt.verify(token, process.env.JWT_SECRET);
     console.log(decode);
   } catch (err) {
     console.error("Sign-in failed: ", err);
-    res.status(500).json({ success: false, message: "Sign-in failed", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Sign-in failed", error: err.message });
   }
 };
 
@@ -132,26 +142,36 @@ let deleteUser = async (req, res) => {
   }
 };
 
-let updatePersonalInfo = async (req, res) => {
+const updatePersonalInfo = async (req, res) => {
   const { firstName, lastName, citizenId, email, phoneNumber, userAddress } =
     req.body;
-  const userId = req.body.userId; // Should come from auth token in production
+  const userId = req.params.id;
+
   try {
     await connectDB();
+    await sql.query`
+      UPDATE Users 
+      SET firstName = ${firstName},
+          lastName = ${lastName},
+          citizenId = ${citizenId},
+          email = ${email},
+          phoneNumber = ${phoneNumber},
+          userAddress = ${userAddress}
+      WHERE id = ${userId}
+    `;
+
+    // Fetch updated user data
     const result = await sql.query`
-            UPDATE Users 
-            SET firstName = ${firstName},
-                lastName = ${lastName},
-                citizenId = ${citizenId},
-                email = ${email},
-                phoneNumber = ${phoneNumber},
-                userAddress = ${userAddress}
-            WHERE id = ${userId}
-        `;
-    if (result.rowsAffected[0] === 0) {
+      SELECT firstName, lastName, citizenId, email, phoneNumber, userAddress
+      FROM Users
+      WHERE id = ${userId}
+    `;
+
+    if (result.recordset.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.json({ message: "Profile updated successfully" });
+
+    res.json(result.recordset[0]);
   } catch (err) {
     console.error("Failed to update profile: ", err);
     if (err.message.includes("UNIQUE")) {
@@ -159,5 +179,26 @@ let updatePersonalInfo = async (req, res) => {
     } else {
       res.status(500).json({ error: "Failed to update profile" });
     }
+  }
+};
+
+const getUserProfile = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    await connectDB();
+    const result = await sql.query`
+      SELECT firstName, lastName, citizenId, email, phoneNumber, userAddress
+      FROM Users
+      WHERE id = ${userId}
+    `;
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(result.recordset[0]);
+  } catch (err) {
+    console.error("Failed to fetch profile: ", err);
+    res.status(500).json({ error: "Failed to fetch profile" });
   }
 };

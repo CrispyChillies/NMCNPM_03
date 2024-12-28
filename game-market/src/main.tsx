@@ -24,6 +24,7 @@ import ProductDetail from "@/app/page/product-detail";
 import SignIn from "@/app/page/auth/sign-in";
 import SignUp from "@/app/page/auth/sign-up";
 import ProtectedRoute from "@/components/protectedRoute";
+import PasswordChange from "@/app/page/user/password-change";
 
 import { jwtDecode } from "jwt-decode"; // Import hàm jwtDecode từ thư
 // từ thư viện jwt-decode. Hàm này dùng để giải mã token JWT,
@@ -50,15 +51,19 @@ const token = localStorage.getItem("token");
 // cho phép lưu trữ dữ liệu dưới dạng key-value.
 // Ở đây, "token" là key, giá trị của token JWT là value.
 
+// Nếu có token
 if (token) {
   console.log("Token found");
+  // Giải mã token lấy id, username và role của người dùng
   const decoded = jwtDecode<{ id: string; username: string; role: string }>(
     token
   );
+  // Cập nhật data với thông tin người dùng
   data.user.id = decoded.id;
   data.user.name = decoded.username;
   data.userType = decoded.role;
 } else {
+  // Nếu không có token
   console.log("No token found");
 }
 
@@ -167,7 +172,7 @@ createRoot(document.querySelector(".root")!).render(
                         path="/user/account/password"
                         element={
                           <ProtectedRoute
-                            component={Section}
+                            component={PasswordChange}
                             roles={["user", "admin", "provider"]}
                           />
                         }

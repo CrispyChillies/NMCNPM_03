@@ -1,16 +1,24 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { validatePersonalInfo } from "@/lib/validations";
 import { toast } from "sonner";
+import { jwtDecode } from "jwt-decode";
+
+interface UserProfile {
+  firstName: string;
+  lastName: string;
+  citizenId: string;
+  email: string;
+  phoneNumber: string;
+  userAddress: string;
+}
 
 export default function ProfileUpdating() {
-  const [personalInfo, setPersonalInfo] = useState({
+  const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState<UserProfile>({
     firstName: "",
     lastName: "",
     citizenId: "",
@@ -18,41 +26,91 @@ export default function ProfileUpdating() {
     phoneNumber: "",
     userAddress: "",
   });
-
-  const [password, setPassword] = useState({
-    current: "",
-    new: "",
-    confirm: "",
+  const [editableProfile, setEditableProfile] = useState<UserProfile>({
+    ...profile,
   });
 
-  const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPersonalInfo({ ...personalInfo, [e.target.name]: e.target.value });
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const decoded = jwtDecode<{ id: string }>(token!);
+
+      // Debug
+      console.log(decoded.id);
+
+      const response = await fetch(
+        `http://localhost:6969/api/users/profile/${decoded.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch profile");
+
+      const data = await response.json();
+      setProfile(data);
+      setEditableProfile(data);
+    } catch (error) {
+      toast.error("Failed to load profile");
+    }
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword({ ...password, [e.target.name]: e.target.value });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditableProfile({ ...editableProfile, [e.target.name]: e.target.value });
   };
 
   const handleUpdate = async () => {
-    const validation = validatePersonalInfo(personalInfo);
+    const validation = validatePersonalInfo(editableProfile);
 
     if (!validation.isValid) {
-      const firstError = Object.values(validation.errors)[0];
-      toast.error("Validation Error", {
-        description: firstError,
-      });
+      toast.error(Object.values(validation.errors)[0]);
       return;
     }
 
     try {
+      const token = localStorage.getItem("token");
+      const decoded = jwtDecode<{ id: string }>(token!);
+
+      // First, check if email exists and belongs to another user
+      const emailCheckResponse = await fetch(
+        `http://localhost:6969/api/users/check-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email: editableProfile.email,
+            userId: decoded.id,
+          }),
+        }
+      );
+
+      if (!emailCheckResponse.ok) {
+        const error = await emailCheckResponse.json();
+        throw new Error(error.error || "Email already exists");
+      }
+
+      // If email check passes, proceed with update
       const response = await fetch(
-        `http://localhost:6969/api/users/profile/1`,
+        `http://localhost:6969/api/users/profile/${decoded.id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(personalInfo),
+          body: JSON.stringify({
+            ...editableProfile,
+            userId: decoded.id,
+          }),
         }
       );
 
@@ -61,80 +119,66 @@ export default function ProfileUpdating() {
         throw new Error(error.error || "Failed to update profile");
       }
 
-      await response.json();
-      toast.success("Profile Updated", {
-        description: "Your profile has been updated successfully",
-      });
+      const updatedData = await response.json();
+      setProfile(updatedData);
+      setEditableProfile(updatedData);
+      setIsEditing(false);
+      toast.success("Profile Updated Successfully");
     } catch (error) {
-      toast.error("Update Failed", {
-        description:
-          error instanceof Error ? error.message : "Failed to update profile",
-      });
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update profile"
+      );
     }
   };
 
-  const handlePasswordUpdate = () => {
-    console.log("Password update requested");
-    // Here you would typically send this data to your backend using an API call
-  };
-
   return (
-    <div className="w-full max-w-screen-2xl mx-auto my-8 px-4 min-h-screen">
-      <h1 className="text-xl font-bold mb-6 mx-6 text-left text-primary">
-        Profile Updating
-      </h1>
-      <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-secondary">
-          <TabsTrigger
-            value="personal"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-primary"
-          >
-            Personal Information
-          </TabsTrigger>
-          <TabsTrigger
-            value="password"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-primary"
-          >
-            Change Password
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="personal">
-          <Card className="bg-card text-card-foreground">
-            <CardHeader>
-              <CardTitle className="text-card-foreground">
-                Personal Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-card-foreground">
-                    First Name
-                  </Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    value={personalInfo.firstName}
-                    onChange={handlePersonalInfoChange}
-                    required
-                    className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-card-foreground">
-                    Last Name
-                  </Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    value={personalInfo.lastName}
-                    onChange={handlePersonalInfoChange}
-                    required
-                    className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                  />
-                </div>
+    <Card className="bg-card text-card-foreground mt-8">
+      <CardHeader>
+        <CardTitle className="text-card-foreground">
+          Profile Information
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {isEditing ? (
+          // Edit Mode
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-card-foreground">
+                  First Name
+                </Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={editableProfile.firstName}
+                  onChange={handleInputChange}
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
+                />
               </div>
-
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-card-foreground">
+                  Last Name
+                </Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  value={editableProfile.lastName}
+                  onChange={handleInputChange}
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="citizenId" className="text-card-foreground">
+                  Citizen ID
+                </Label>
+                <Input
+                  id="citizenId"
+                  name="citizenId"
+                  value={editableProfile.citizenId}
+                  onChange={handleInputChange}
+                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-card-foreground">
                   Email
@@ -143,27 +187,11 @@ export default function ProfileUpdating() {
                   id="email"
                   name="email"
                   type="email"
-                  value={personalInfo.email}
-                  onChange={handlePersonalInfoChange}
-                  required
+                  value={editableProfile.email}
+                  onChange={handleInputChange}
                   className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="citizenId" className="text-card-foreground">
-                  Citizen Identification Number
-                </Label>
-                <Input
-                  id="citizenId"
-                  name="citizenId"
-                  value={personalInfo.citizenId}
-                  onChange={handlePersonalInfoChange}
-                  required
-                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                />
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="phoneNumber" className="text-card-foreground">
                   Phone Number
@@ -171,13 +199,11 @@ export default function ProfileUpdating() {
                 <Input
                   id="phoneNumber"
                   name="phoneNumber"
-                  value={personalInfo.phoneNumber}
-                  onChange={handlePersonalInfoChange}
-                  required
+                  value={editableProfile.phoneNumber}
+                  onChange={handleInputChange}
                   className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="userAddress" className="text-card-foreground">
                   Address
@@ -185,88 +211,71 @@ export default function ProfileUpdating() {
                 <Input
                   id="userAddress"
                   name="userAddress"
-                  value={personalInfo.userAddress}
-                  onChange={handlePersonalInfoChange}
-                  required
+                  value={editableProfile.userAddress}
+                  onChange={handleInputChange}
                   className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
                 />
               </div>
-
+            </div>
+            <div className="flex justify-end space-x-4">
+              <Button
+                onClick={() => {
+                  setEditableProfile(profile);
+                  setIsEditing(false);
+                }}
+                variant="outline"
+                className="rounded-[30px]"
+              >
+                Cancel
+              </Button>
               <Button
                 onClick={handleUpdate}
-                className="w-full bg-primary hover:bg-primary-foreground text-primary-foreground py-3 text-lg font-semibold transition-colors duration-200 rounded-[30px]"
+                className="bg-primary hover:bg-primary-foreground text-primary-foreground rounded-[30px]"
               >
-                UPDATE
+                Save Changes
               </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="password">
-          <Card className="bg-card text-card-foreground">
-            <CardHeader>
-              <CardTitle className="text-card-foreground">
-                Change Password
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
+            </div>
+          </>
+        ) : (
+          // View Mode
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label
-                  htmlFor="currentPassword"
-                  className="text-card-foreground"
-                >
-                  Current Password
-                </Label>
-                <Input
-                  id="currentPassword"
-                  name="current"
-                  type="password"
-                  value={password.current}
-                  onChange={handlePasswordChange}
-                  required
-                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                />
+                <Label className="text-muted-foreground">First Name</Label>
+                <p className="text-card-foreground">{profile.firstName}</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="newPassword" className="text-card-foreground">
-                  New Password
-                </Label>
-                <Input
-                  id="newPassword"
-                  name="new"
-                  type="password"
-                  value={password.new}
-                  onChange={handlePasswordChange}
-                  required
-                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                />
+                <Label className="text-muted-foreground">Last Name</Label>
+                <p className="text-card-foreground">{profile.lastName}</p>
               </div>
               <div className="space-y-2">
-                <Label
-                  htmlFor="confirmPassword"
-                  className="text-card-foreground"
-                >
-                  Confirm New Password
-                </Label>
-                <Input
-                  id="confirmPassword"
-                  name="confirm"
-                  type="password"
-                  value={password.confirm}
-                  onChange={handlePasswordChange}
-                  required
-                  className="bg-card text-card-foreground border-2 border-border focus:border-primary focus:ring-primary rounded-[30px]"
-                />
+                <Label className="text-muted-foreground">Citizen ID</Label>
+                <p className="text-card-foreground">{profile.citizenId}</p>
               </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Email</Label>
+                <p className="text-card-foreground">{profile.email}</p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Phone Number</Label>
+                <p className="text-card-foreground">{profile.phoneNumber}</p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Address</Label>
+                <p className="text-card-foreground">{profile.userAddress}</p>
+              </div>
+            </div>
+            <div className="flex justify-end">
               <Button
-                onClick={handlePasswordUpdate}
-                className="w-full bg-primary hover:bg-primary-foreground text-primary-foreground py-3 text-lg font-semibold transition-colors duration-200 rounded-[30px]"
+                onClick={() => setIsEditing(true)}
+                className="bg-primary hover:bg-primary-foreground text-primary-foreground rounded-[30px]"
               >
-                Change Password
+                Edit Profile
               </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }
