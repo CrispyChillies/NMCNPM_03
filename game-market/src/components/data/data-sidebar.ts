@@ -44,7 +44,7 @@ const home = {
   icon: Home,
 };
 
-const userCategories = [
+const guestCategories = [
   {
     title: "Games",
     url: "/user/game",
@@ -60,10 +60,14 @@ const userCategories = [
       },
       {
         title: "Favorites",
-        url: "/user/favorite",
+        url: "/user/game/favorite",
       },
     ],
   },
+];
+
+const userCategories = [
+  ...guestCategories,
   {
     title: "My Account",
     url: "/user/account",
@@ -141,21 +145,7 @@ const userCategories = [
 export const navMainByUserType = {
   guest: [
     home,
-    {
-      title: "Games",
-      url: "/user/game",
-      icon: Gamepad2,
-      items: [
-        {
-          title: "All Games",
-          url: "/user/game/all",
-        },
-        {
-          title: "Categories",
-          url: "/user/game/category",
-        },
-      ],
-    },
+    ...guestCategories,
   ],
   user: [
     home,

@@ -1,5 +1,5 @@
-import express from 'express';
-import { connectDB, queryDemo } from './config/connectDB.js';
+import express from "express";
+import { connectDB, queryDemo } from "./config/connectDB.js";
 
 const app = express();
 const port = 3000;
